@@ -1,18 +1,19 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 
 const mainLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/doctors', label: 'Doctors' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/dashboard', label: 'Dashboard' },
-]
+  { href: "/", label: "Home" },
+  { href: "/doctors", label: "Doctors" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  // { href: "/dashboard", label: "Dashboard" },
+];
 
 const authLinks = [
   { href: '/login', label: 'Login' },
@@ -22,6 +23,7 @@ const authLinks = [
 export default function Navbar() {
   const [isDark, setIsDark] = useState(false)
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     try {
@@ -49,6 +51,14 @@ export default function Navbar() {
     }
   }
 
+  // Helper function to check if a link is active
+  const isActiveLink = (href) => {
+    if (href === '/') {
+      return pathname === '/'
+    }
+    return pathname.startsWith(href)
+  }
+
   return (
     <header className="w-full sticky top-0 z-50 border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
       <nav className="mx-auto w-11/12 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center py-3 gap-4">
@@ -61,7 +71,15 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center justify-center gap-4 text-sm">
           {mainLinks.map(link => (
-            <Link key={link.href} href={link.href} className="hover:underline">
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className={`transition-colors ${
+                isActiveLink(link.href) 
+                  ? 'text-primary font-medium underline' 
+                  : 'text-foreground hover:underline'
+              }`}
+            >
               {link.label}
             </Link>
           ))}
@@ -70,7 +88,15 @@ export default function Navbar() {
         <div className="flex items-center justify-end gap-2 md:gap-3 justify-self-end">
           <div className="hidden md:flex items-center gap-3">
             {authLinks.map(link => (
-              <Link key={link.href} href={link.href} className="text-sm hover:underline">
+              <Link 
+                key={link.href} 
+                href={link.href} 
+                className={`text-sm transition-colors ${
+                  isActiveLink(link.href) 
+                    ? 'text-primary font-medium underline' 
+                    : 'text-foreground hover:underline'
+                }`}
+              >
                 {link.label}
               </Link>
             ))}
@@ -97,13 +123,31 @@ export default function Navbar() {
             <div className="rounded-xl border bg-background/70 dark:bg-background/30 backdrop-blur-md p-4">
               <div className="flex flex-col gap-3 text-sm">
                 {mainLinks.map(link => (
-                  <Link key={link.href} href={link.href} className="hover:underline" onClick={() => setOpen(false)}>
+                  <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className={`transition-colors ${
+                      isActiveLink(link.href) 
+                        ? 'text-primary font-medium underline' 
+                        : 'text-foreground hover:underline'
+                    }`}
+                    onClick={() => setOpen(false)}
+                  >
                     {link.label}
                   </Link>
                 ))}
                 <div className="h-px bg-border my-1" />
                 {authLinks.map(link => (
-                  <Link key={link.href} href={link.href} className="hover:underline" onClick={() => setOpen(false)}>
+                  <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className={`transition-colors ${
+                      isActiveLink(link.href) 
+                        ? 'text-primary font-medium underline' 
+                        : 'text-foreground hover:underline'
+                    }`}
+                    onClick={() => setOpen(false)}
+                  >
                     {link.label}
                   </Link>
                 ))}
