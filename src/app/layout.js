@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/nav/navbar";
 import ThemeProvider from "@/components/theme-provider";
 import Footer from "@/components/footer/footer";
+import BackToTop from "@/components/back-to-top/back-to-top";
 
 
 const poppins = Poppins({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
           <Footer />
+          <BackToTop />
         </ThemeProvider>
       </body>
     </html>
