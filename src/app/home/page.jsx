@@ -1,10 +1,13 @@
 import React from 'react'
 import CTA from './cta/page'
+import Banner from './banner/page';
+import About from './about/page';
 
 export default function Home() {
   return (
     <div className="">
-      <div>This is home page</div>
+      <Banner></Banner>
+      <About></About>
       <CTA />
     </div>
   );
