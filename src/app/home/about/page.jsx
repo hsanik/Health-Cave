@@ -24,7 +24,7 @@ const page = () => {
               <h3 className="text-xl font-semibold text-[#515151] dark:text-white">
                 Why Choose HealthCave?
               </h3>
-              <ul className="mt-5 space-y-4 text-[#333333]">
+              <ul className="mt-5 space-y-4 text-[#333333] dark:text-white">
                 <li className="flex items-start gap-3">
                   <span className="w-3 h-3 bg-[#4c69c6] rounded-full mt-2"></span>
                   Personalized health and fitness insights tailored to your goals.
