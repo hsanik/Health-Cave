@@ -10,7 +10,7 @@ const page = () => {
           {/* Heading */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-semibold text-[#515151] dark:text-white">About HealthCave</h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-3 text-gray-600 dark:text-white max-w-2xl mx-auto">
               HealthCave is your trusted space for fitness, nutrition, and
               wellness. We combine expert guidance, smart tools, and a
               supportive community to help you live healthier every day.
