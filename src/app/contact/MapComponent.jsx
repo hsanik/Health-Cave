@@ -20,8 +20,10 @@ export default function MapComponent() {
       })
 
       if (mapRef.current && !mapInstanceRef.current) {
+
+        const Coordinates = [23.753, 90.3789];
         // Initialize map centered on the office location
-        const map = L.map(mapRef.current).setView([39.2904, -76.6122], 13) // Baltimore, MD coordinates
+        const map = L.map(mapRef.current).setView(Coordinates, 13); // Baltimore, MD coordinates
         
         // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -56,22 +58,26 @@ export default function MapComponent() {
         })
 
         // Add marker for HealthCave office
-        L.marker([39.2904, -76.6122], { icon: customIcon })
+        L.marker(Coordinates, { icon: customIcon })
           .addTo(map)
-          .bindPopup(`
+          .bindPopup(
+            `
             <div style="text-align: center; padding: 10px;">
               <h3 style="margin: 0 0 8px 0; color: #435ba1; font-weight: bold;">HealthCave</h3>
               <p style="margin: 0; color: #515151; font-size: 14px;">
-                123 Healthcare Avenue<br>
-                Medical District, MD 12345<br>
-                United States
+                71/A Satmasjid Road
+                      <br />
+                      Dhanmondi, Dhaka 1209
+                      <br />
+                      Bangladesh
               </p>
               <p style="margin: 8px 0 0 0; color: #43d5cb; font-size: 12px; font-weight: 500;">
-                📞 +1 (555) 123-4567
+                📞 +880 (171) 123-4567
               </p>
             </div>
-          `)
-          .openPopup()
+          `
+          )
+          .openPopup();
 
         mapInstanceRef.current = map
       }
