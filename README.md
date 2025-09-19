@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Project Name: HealthCave.
 
-## Getting Started
+Purpose:
 
-First, run the development server:
+The purpose of HealthCave is to provide a modern health and wellness platform where users of all ages can manage their health journey. The platform will allow patients, doctors, nutritionists, and trainers to connect digitally for better health monitoring, consultations, and personalized care.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Goals:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    1. Deliver a user-friendly health dashboard with real-time updates.
+    2. Enable telemedicine and e-consultation with doctors and nutritionists.
+    3. Provide tools like BMI & health calculators to encourage self-monitoring.
+    4. Ensure data security and privacy for sensitive health information.
+    5. Create a multi-language, scalable, and SEO-friendly platform.
+    6. Offer audio therapy, blogs, and wellness articles for lifestyle improvement.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Features:
 
-## Learn More
+    1. User Profile & Health Dashboard – Personalized dashboard showing user’s health stats, progress, and goals.
+    2. BMI & Health Calculator – Automatic BMI, calorie, and hydration calculators.
+    3. Appointment Booking – Schedule consultations with doctors, nutritionists, or trainers.
+    4. Real time chatting
+    5. Health blog and articles.
+    6. Multi-language Support
+    7. Role based dashboard control
+    8. Online payment gateway
+    9. Doctor and patient real time consultation
+    10. E-prescription generator
+    11. Audio therapy and relaxation music
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Conclusion:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Health Cave will be a next-generation digital health platform built with Next.js to deliver performance, scalability, and SEO-friendly architecture. It combines health monitoring tools, telemedicine, e-prescriptions, and wellness resources into one integrated system. With role-based dashboards, multilingual support, and real-time features, HealthCave aims to make healthcare accessible, efficient, and user-focused.
