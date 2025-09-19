@@ -61,11 +61,11 @@ export default function Navbar() {
 
   return (
     <header className="w-full sticky top-0 z-9999 border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
-      <nav className="mx-auto w-11/12 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center py-3 gap-4">
+      <nav className="w-11/12 mx-auto grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center py-3 gap-4">
         <div className="flex items-center">
           <Link href="/">
-            <Image src="/images/logo_light.png" alt="HealthCave" width={132} height={36} className="block dark:hidden object-contain" style={{ width: 'auto' }} />
-            <Image src="/images/logo_dark.png" alt="HealthCave" width={132} height={36} className="hidden dark:block object-contain" style={{ width: 'auto' }} />
+            <Image src="/images/logo_light.png" alt="HealthCave" width={172} height={36} className="block dark:hidden object-contain" />
+            <Image src="/images/logo_dark.png" alt="HealthCave" width={172} height={36} className="hidden dark:block object-contain" />
           </Link>
         </div>
 

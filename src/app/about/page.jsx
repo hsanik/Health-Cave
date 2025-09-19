@@ -65,7 +65,7 @@ export default function About() {
       {/* Hero Section */}
       <section className="relative py-20 w-full flex items-center justify-center rounded-2xl overflow-hidden mb-16">
         <div className="absolute inset-0 bg-gradient-to-r from-[#435ba1] via-[#4c69c6] to-[#43d5cb]"></div>
-        
+
         <div className="relative z-10 max-w-4xl px-6 lg:px-16 text-center">
           <header>
             <h1 className="text-[#43d5cb] text-xl pb-3 tracking-widest font-medium">
@@ -76,11 +76,12 @@ export default function About() {
               <span className="font-semibold">Healthcare Excellence</span>
             </h1>
           </header>
-          
+
           <p className="text-base lg:text-lg text-[#fafafa] max-w-2xl mx-auto leading-relaxed">
-            At HealthCave, we believe that quality healthcare should be accessible, 
-            compassionate, and personalized. Our mission is to revolutionize healthcare 
-            delivery through innovation and unwavering commitment to patient care.
+            At HealthCave, we believe that quality healthcare should be
+            accessible, compassionate, and personalized. Our mission is to
+            revolutionize healthcare delivery through innovation and unwavering
+            commitment to patient care.
           </p>
         </div>
       </section>
@@ -94,12 +95,15 @@ export default function About() {
                 <div className="p-3 rounded-full bg-[#43d5cb] bg-opacity-10 mr-4">
                   <Target className="h-8 w-8 text-[#435ba1]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#515151] dark:text-white">Our Mission</h2>
+                <h2 className="text-2xl font-bold text-[#515151] dark:text-white">
+                  Our Mission
+                </h2>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-                To provide accessible, high-quality healthcare services that empower individuals 
-                to lead healthier lives. We are committed to breaking down barriers to healthcare 
-                access and delivering personalized, compassionate care to every patient we serve.
+                To provide accessible, high-quality healthcare services that
+                empower individuals to lead healthier lives. We are committed to
+                breaking down barriers to healthcare access and delivering
+                personalized, compassionate care to every patient we serve.
               </p>
             </article>
 
@@ -108,12 +112,15 @@ export default function About() {
                 <div className="p-3 rounded-full bg-[#43d5cb] bg-opacity-10 mr-4">
                   <Eye className="h-8 w-8 text-[#435ba1]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#515151] dark:text-white">Our Vision</h2>
+                <h2 className="text-2xl font-bold text-[#515151] dark:text-white">
+                  Our Vision
+                </h2>
               </div>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-                To be the leading healthcare platform that transforms how people access and 
-                experience medical care. We envision a future where quality healthcare is 
-                universally accessible, technology-enhanced, and truly patient-centered.
+                To be the leading healthcare platform that transforms how people
+                access and experience medical care. We envision a future where
+                quality healthcare is universally accessible,
+                technology-enhanced, and truly patient-centered.
               </p>
             </article>
           </div>
@@ -130,7 +137,7 @@ export default function About() {
                 Numbers that reflect our commitment to healthcare excellence
               </p>
             </header>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
@@ -161,7 +168,10 @@ export default function About() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
-              <article key={index} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow text-center">
+              <article
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow text-center"
+              >
                 <div className="flex justify-center mb-4">
                   <div className="p-4 rounded-full bg-[#43d5cb] bg-opacity-10">
                     <value.icon className="h-8 w-8 text-[#435ba1]" />
@@ -192,7 +202,7 @@ export default function About() {
                   Founded with a vision to transform healthcare delivery
                 </p>
               </header>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-[#43d5cb] rounded-full flex items-center justify-center mr-4 mt-1">
@@ -203,12 +213,13 @@ export default function About() {
                       Founded in 2009
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      HealthCave was established by a team of passionate healthcare professionals 
-                      who recognized the need for more accessible and patient-centered care.
+                      HealthCave was established by a team of passionate
+                      healthcare professionals who recognized the need for more
+                      accessible and patient-centered care.
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-[#43d5cb] rounded-full flex items-center justify-center mr-4 mt-1">
                     <CheckCircle className="h-5 w-5 text-white" />
@@ -218,12 +229,13 @@ export default function About() {
                       Technology Integration
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      We pioneered the integration of cutting-edge technology with traditional 
-                      healthcare practices to improve patient outcomes and experience.
+                      We pioneered the integration of cutting-edge technology
+                      with traditional healthcare practices to improve patient
+                      outcomes and experience.
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-8 h-8 bg-[#43d5cb] rounded-full flex items-center justify-center mr-4 mt-1">
                     <CheckCircle className="h-5 w-5 text-white" />
@@ -233,31 +245,39 @@ export default function About() {
                       Community Impact
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      Today, we serve thousands of patients across multiple communities, 
-                      maintaining our commitment to excellence and innovation.
+                      Today, we serve thousands of patients across multiple
+                      communities, maintaining our commitment to excellence and
+                      innovation.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <div className="bg-gradient-to-br from-[#435ba1] to-[#43d5cb] rounded-xl p-8 text-white">
                 <div className="text-center">
                   <Star className="h-16 w-16 mx-auto mb-4 text-[#fafafa]" />
-                  <h3 className="text-2xl font-bold mb-4">Award-Winning Care</h3>
+                  <h3 className="text-2xl font-bold mb-4">
+                    Award-Winning Care
+                  </h3>
                   <p className="text-[#fafafa] mb-6">
-                    Recognized by the Healthcare Excellence Awards for outstanding 
-                    patient care and innovative healthcare solutions.
+                    Recognized by the Healthcare Excellence Awards for
+                    outstanding patient care and innovative healthcare
+                    solutions.
                   </p>
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
                       <div className="text-2xl font-bold">2023</div>
-                      <div className="text-sm text-[#fafafa]">Best Healthcare Platform</div>
+                      <div className="text-sm text-[#fafafa]">
+                        Best Healthcare Platform
+                      </div>
                     </div>
                     <div>
                       <div className="text-2xl font-bold">2022</div>
-                      <div className="text-sm text-[#fafafa]">Patient Care Excellence</div>
+                      <div className="text-sm text-[#fafafa]">
+                        Patient Care Excellence
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -275,13 +295,17 @@ export default function About() {
               Meet Our Expert Team
             </h2>
             <p className="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
-              Our dedicated healthcare professionals are committed to providing you with the best possible care
+              Our dedicated healthcare professionals are committed to providing
+              you with the best possible care
             </p>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
-              <article key={index} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow text-center">
+              <article
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow text-center"
+              >
                 <div className="relative mb-6">
                   <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                     <Image
@@ -298,13 +322,11 @@ export default function About() {
                     </div>
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl font-semibold text-[#515151] dark:text-white mb-2">
                   {member.name}
                 </h3>
-                <p className="text-[#435ba1] font-medium mb-2">
-                  {member.role}
-                </p>
+                <p className="text-[#435ba1] font-medium mb-2">{member.role}</p>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
                   {member.specialty}
                 </p>
@@ -322,18 +344,17 @@ export default function About() {
               Ready to Experience Better Healthcare?
             </h2>
             <p className="text-[#fafafa] text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of satisfied patients who trust HealthCave for their healthcare needs. 
-              Schedule your appointment today and discover the difference quality care makes.
+              Join thousands of satisfied patients who trust HealthCave for
+              their healthcare needs. Schedule your appointment today and
+              discover the difference quality care makes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                className="bg-white text-[#515151] hover:bg-[#fafafa] px-8 py-3 rounded-lg font-semibold transition-colors"
-              >
+              <Button className="bg-white text-[#515151] hover:bg-[#fafafa] px-8 py-3 rounded-lg font-semibold transition-colors">
                 Schedule Appointment
               </Button>
               <Button
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-[#515151] px-8 py-3 rounded-lg font-semibold transition-colors"
+                className="border-white text-[#515151] dark:text-white hover:bg-white hover:text-[#515151] px-8 py-3 rounded-lg font-semibold transition-colors"
               >
                 Contact Us
               </Button>
@@ -342,5 +363,5 @@ export default function About() {
         </div>
       </section>
     </div>
-  )
+  );
 }

@@ -23,18 +23,16 @@ export default function Footer() {
               <Image
                 src="/images/logo_light.png"
                 alt="HealthCave"
-                width={132}
+                width={172}
                 height={36}
                 className="block dark:hidden object-contain"
-                style={{ width: 'auto' }}
               />
               <Image
                 src="/images/logo_dark.png"
                 alt="HealthCave"
-                width={132}
+                width={172}
                 height={36}
                 className="hidden dark:block object-contain"
-                style={{ width: 'auto' }}
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm">
