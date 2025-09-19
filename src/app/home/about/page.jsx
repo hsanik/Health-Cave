@@ -34,7 +34,7 @@ const page = () => {
                   Nutrition tracking and wellness tips for a balanced lifestyle.
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-3 h-3 bg-[#4c69c6] rounded-full mt-2"></span>
+                  <span className="w-3 h-3 bg-[#4c69c6] rounded-full mt-2 dark:text-white"></span>
                   Connect with health experts and join a supportive community.
                 </li>
               </ul>
