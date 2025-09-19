@@ -60,7 +60,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="w-full sticky top-0 z-50 border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
+    <header className="w-full sticky top-0 z-9999 border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
       <nav className="mx-auto w-11/12 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center py-3 gap-4">
         <div className="flex items-center">
           <Link href="/">
