@@ -30,7 +30,7 @@ const page = () => {
                   Personalized health and fitness insights tailored to your goals.
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="w-3 h-3 bg-[#4c69c6] rounded-full mt-2"></span>
+                  <span className="w-3 h-3 bg-[#4c69c6] rounded-full mt-2 dark:text-white"></span>
                   Nutrition tracking and wellness tips for a balanced lifestyle.
                 </li>
                 <li className="flex items-start gap-3">
