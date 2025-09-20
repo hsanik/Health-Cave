@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession, SessionProvider } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import RouteProtection from '@/components/authentication/route-protection'
 
 function DashboardContent() {
@@ -108,10 +108,6 @@ function DashboardContent() {
 }
 
 export default function Dashboard() {
-  return (
-    <SessionProvider>
-      <DashboardContent />
-    </SessionProvider>
-  )
+  return <DashboardContent />
 }
 

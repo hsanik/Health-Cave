@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { signIn, SessionProvider } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import AuthRedirect from "@/components/authentication/auth-redirect";
+import toast from "react-hot-toast";
 
 function LoginContent() {
   const [formData, setFormData] = useState({
@@ -67,8 +68,10 @@ function LoginContent() {
 
     if (res.error) {
       setErrors({ general: res.error });
+      toast.error(res.error);
     } else {
-      router.push("/dashboard"); // redirect after login
+      toast.success("Login successful! Welcome back!");
+      router.replace("/dashboard"); // redirect after login
     }
 
     setIsLoading(false);
@@ -272,9 +275,5 @@ function LoginContent() {
 }
 
 export default function Login() {
-  return (
-    <SessionProvider>
-      <LoginContent />
-    </SessionProvider>
-  );
+  return <LoginContent />;
 }

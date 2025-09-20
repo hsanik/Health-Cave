@@ -6,8 +6,9 @@ import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from "next/navigation";
-import { SessionProvider } from "next-auth/react";
 import AuthRedirect from "@/components/authentication/auth-redirect";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 function RegisterContent() {
   const router = useRouter();
@@ -98,13 +99,21 @@ function RegisterContent() {
 
       if (!res.ok) {
         setErrors({ general: data.error || "Registration failed" });
+        toast.error(data.error || "Registration failed");
       } else {
-        alert("Registration successful! Please login.");
-        router.push("/login");
+        await Swal.fire({
+          title: 'Success!',
+          text: 'Registration successful! Please login to continue.',
+          icon: 'success',
+          confirmButtonText: 'Go to Login',
+          confirmButtonColor: '#435ba1',
+        });
+        router.replace("/login");
       }
     } catch (err) {
       console.error(err);
       setErrors({ general: "Registration failed. Try again." });
+      toast.error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -397,9 +406,5 @@ function RegisterContent() {
 }
 
 export default function Register() {
-  return (
-    <SessionProvider>
-      <RegisterContent />
-    </SessionProvider>
-  )
+  return <RegisterContent />
 }
