@@ -1,0 +1,117 @@
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { LogOut, LayoutDashboard, ChevronDown } from 'lucide-react'
+import Image from 'next/image'
+
+export default function UserProfileDropdown() {
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    await signOut({ 
+      callbackUrl: '/' 
+    })
+    setIsOpen(false)
+  }
+
+  const handleDashboard = () => {
+    router.push('/dashboard')
+    setIsOpen(false)
+  }
+
+  if (!session?.user) return null
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      {/* User Avatar Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      >
+        <div className="relative w-8 h-8 rounded-full overflow-hidden">
+          <Image
+            src={session.user.image || "https://i.postimg.cc/yxzXkbkL/avatar.jpg"}
+            alt={session.user.name || "User"}
+            width={32}
+            height={32}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <span className="hidden md:block text-sm font-medium text-[#515151] dark:text-white">
+          {session.user.name || "User"}
+        </span>
+        <ChevronDown 
+          className={`h-4 w-4 text-gray-500 transition-transform ${
+            isOpen ? 'rotate-180' : ''
+          }`} 
+        />
+      </button>
+
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+          {/* User Info Header */}
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center space-x-3">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                <Image
+                  src={session.user.image || "https://i.postimg.cc/yxzXkbkL/avatar.jpg"}
+                  alt={session.user.name || "User"}
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#515151] dark:text-white truncate">
+                  {session.user.name || "User"}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {session.user.email}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Menu Items */}
+          <div className="py-1">
+            <button
+              onClick={handleDashboard}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <LayoutDashboard className="h-4 w-4 mr-3" />
+              Dashboard
+            </button>
+            
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <LogOut className="h-4 w-4 mr-3" />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
