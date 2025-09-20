@@ -3,6 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/nav/navbar";
 import Footer from "@/components/footer/footer";
 import BackToTop from "@/components/back-to-top/back-to-top";
+import { Toaster } from "react-hot-toast";
+import AuthSessionProvider from "@/components/providers/session-provider";
 
 
 const poppins = Poppins({
@@ -24,12 +26,38 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body className="antialiased">
-        <Navbar />
-        <main className="mx-auto w-11/12 py-6">
-          {children}
-        </main>
-        <Footer />
-        <BackToTop />
+        <AuthSessionProvider>
+          <Navbar />
+          <main className="mx-auto w-11/12 py-6">
+            {children}
+          </main>
+          <Footer />
+          <BackToTop />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: '#4ade80',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                duration: 5000,
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+        </AuthSessionProvider>
       </body>
     </html>
   );

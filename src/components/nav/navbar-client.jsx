@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useSession, SessionProvider } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import UserProfileDropdown from '@/components/authentication/user-profile-dropdown'
+import { useAuth } from '@/hooks/useAuth'
 
 const mainLinks = [
   { href: "/", label: "Home" },
@@ -24,8 +24,14 @@ const authLinks = [
 function NavbarContent() {
   const [isDark, setIsDark] = useState(false)
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const { session, status, isLoading, isAuthenticated } = useAuth()
+
+  // Prevent hydration mismatch by only rendering after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     try {
@@ -84,27 +90,42 @@ function NavbarContent() {
         </div>
 
         <div className="flex items-center justify-end gap-2 md:gap-3 justify-self-end">
-          {/* Show auth links only when user is not logged in */}
-          {!session && (
-            <div className="hidden md:flex items-center gap-3">
-              {authLinks.map(link => (
-                <Link 
-                  key={link.href} 
-                  href={link.href} 
-                  className={`text-sm transition-colors ${
-                    isActiveLink(link.href) 
-                      ? 'text-primary font-medium underline' 
-                      : 'text-foreground hover:underline'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+          {/* Only render session-dependent content after mount to prevent hydration mismatch */}
+          {mounted && (
+            <>
+              {/* Show loading state while session is loading */}
+              {isLoading && (
+                <div className="hidden md:flex items-center gap-3">
+                  <div className="animate-pulse flex items-center gap-3">
+                    <div className="h-4 w-12 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                    <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Show auth links only when user is not logged in and session is loaded */}
+              {!isLoading && !isAuthenticated && (
+                <div className="hidden md:flex items-center gap-3">
+                  {authLinks.map(link => (
+                    <Link 
+                      key={link.href} 
+                      href={link.href} 
+                      className={`text-sm transition-colors ${
+                        isActiveLink(link.href) 
+                          ? 'text-primary font-medium underline' 
+                          : 'text-foreground hover:underline'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              
+              {/* Show user dropdown when user is logged in */}
+              {!isLoading && isAuthenticated && <UserProfileDropdown />}
+            </>
           )}
-          
-          {/* Show user dropdown when user is logged in */}
-          {session && <UserProfileDropdown />}
           <Button variant="outline" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             <Sun className={`transition-all ${isDark ? 'scale-0 opacity-0 absolute' : 'scale-100 opacity-100'}`} />
             <Moon className={`transition-all ${isDark ? 'scale-100 opacity-100' : 'scale-0 opacity-0 absolute'}`} />
@@ -141,21 +162,33 @@ function NavbarContent() {
                   </Link>
                 ))}
                 <div className="h-px bg-border my-1" />
-                {/* Show auth links in mobile menu only when user is not logged in */}
-                {!session && authLinks.map(link => (
-                  <Link 
-                    key={link.href} 
-                    href={link.href} 
-                    className={`transition-colors ${
-                      isActiveLink(link.href) 
-                        ? 'text-primary font-medium underline' 
-                        : 'text-foreground hover:underline'
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {/* Only render session-dependent content after mount to prevent hydration mismatch */}
+                {mounted && (
+                  <>
+                    {/* Show loading state in mobile menu while session is loading */}
+                    {isLoading && (
+                      <div className="animate-pulse flex flex-col gap-2">
+                        <div className="h-4 w-12 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                        <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                      </div>
+                    )}
+                    {/* Show auth links in mobile menu only when user is not logged in and session is loaded */}
+                    {!isLoading && !isAuthenticated && authLinks.map(link => (
+                      <Link 
+                        key={link.href} 
+                        href={link.href} 
+                        className={`transition-colors ${
+                          isActiveLink(link.href) 
+                            ? 'text-primary font-medium underline' 
+                            : 'text-foreground hover:underline'
+                        }`}
+                        onClick={() => setOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -166,9 +199,5 @@ function NavbarContent() {
 }
 
 export default function NavbarClient() {
-  return (
-    <SessionProvider>
-      <NavbarContent />
-    </SessionProvider>
-  )
+  return <NavbarContent />
 }

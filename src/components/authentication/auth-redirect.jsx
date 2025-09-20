@@ -1,21 +1,22 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function AuthRedirect({ children }) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (status === 'loading') return // Still loading
 
-    if (session) {
-      // User is already authenticated, redirect to dashboard
-      router.push('/dashboard')
+    // Only redirect if user is authenticated and on auth pages
+    if (session && (pathname === '/login' || pathname === '/register')) {
+      router.replace('/dashboard')
     }
-  }, [session, status, router])
+  }, [session, status, router, pathname])
 
   // Show loading state while checking authentication
   if (status === 'loading') {
@@ -29,11 +30,18 @@ export default function AuthRedirect({ children }) {
     )
   }
 
-  // If user is authenticated, don't render children (will redirect)
-  if (session) {
-    return null
+  // If user is authenticated and on auth pages, show loading while redirecting
+  if (session && (pathname === '/login' || pathname === '/register')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#435ba1] mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Redirecting...</p>
+        </div>
+      </div>
+    )
   }
 
-  // User is not authenticated, render children
+  // User is not authenticated or not on auth pages, render children
   return children
 }

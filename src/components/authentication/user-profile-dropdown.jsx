@@ -5,9 +5,10 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { LogOut, LayoutDashboard, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
+import Swal from 'sweetalert2'
 
 export default function UserProfileDropdown() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
@@ -27,10 +28,31 @@ export default function UserProfileDropdown() {
   }, [])
 
   const handleLogout = async () => {
-    await signOut({ 
-      callbackUrl: '/' 
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be signed out of your account.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, sign out!',
+      cancelButtonText: 'Cancel'
     })
-    setIsOpen(false)
+
+    if (result.isConfirmed) {
+      await signOut({ 
+        callbackUrl: '/' 
+      })
+      setIsOpen(false)
+      Swal.fire({
+        title: 'Signed out!',
+        text: 'You have been successfully signed out.',
+        icon: 'success',
+        confirmButtonColor: '#435ba1',
+        timer: 2000,
+        showConfirmButton: false
+      })
+    }
   }
 
   const handleDashboard = () => {
@@ -38,7 +60,8 @@ export default function UserProfileDropdown() {
     setIsOpen(false)
   }
 
-  if (!session?.user) return null
+  // Don't render if session is loading or user is not authenticated
+  if (status === 'loading' || !session?.user) return null
 
   return (
     <div className="relative" ref={dropdownRef}>
