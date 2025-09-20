@@ -1,7 +1,6 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav/navbar";
-import ThemeProvider from "@/components/theme-provider";
 import Footer from "@/components/footer/footer";
 import BackToTop from "@/components/back-to-top/back-to-top";
 
@@ -25,14 +24,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body className="antialiased">
-        <ThemeProvider>
-          <Navbar />
-          <main className="mx-auto w-11/12 py-6">
-            {children}
-          </main>
-          <Footer />
-          <BackToTop />
-        </ThemeProvider>
+        <Navbar />
+        <main className="mx-auto w-11/12 py-6">
+          {children}
+        </main>
+        <Footer />
+        <BackToTop />
       </body>
     </html>
   );
