@@ -1,5 +1,6 @@
 import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcrypt";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req) {
   try {
@@ -35,6 +36,14 @@ export async function POST(req) {
     };
 
     await usersCollection.insertOne(newUser);
+
+    // Send welcome email
+    try {
+      await sendWelcomeEmail(email, newUser.name);
+    } catch (emailError) {
+      console.error('Welcome email failed:', emailError);
+      // Don't fail registration if email fails
+    }
 
     return new Response(JSON.stringify({ success: true }), { status: 201 });
   } catch (err) {
