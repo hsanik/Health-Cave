@@ -217,7 +217,7 @@ function LoginContent() {
 
               <div className="text-sm">
                 <Link
-                  href="#"
+                  href="/forgot-password"
                   className="font-medium text-[#435ba1] hover:text-[#4c69c6] transition-colors"
                 >
                   Forgot your password?
