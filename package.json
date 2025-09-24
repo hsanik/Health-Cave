@@ -24,6 +24,7 @@
     "next": "15.5.3",
     "next-auth": "^4.24.11",
     "react": "19.1.0",
+    "react-chatbot-kit": "^2.2.2",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
     "resend": "^6.1.0",
