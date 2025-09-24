@@ -61,7 +61,7 @@ export default function Contact() {
       {/* Hero Section */}
       <section className="relative py-20 w-full flex items-center justify-center rounded-2xl overflow-hidden mb-16">
         <div className="absolute inset-0 bg-gradient-to-r from-[#435ba1] via-[#4c69c6] to-[#43d5cb]"></div>
-        
+
         <div className="relative z-10 max-w-4xl px-6 lg:px-16 text-center">
           <header>
             <h1 className="text-[#43d5cb] text-xl pb-3 tracking-widest font-medium">
@@ -72,9 +72,9 @@ export default function Contact() {
               <span className="font-semibold">Help You</span>
             </h1>
           </header>
-          
+
           <p className="text-base lg:text-lg text-[#fafafa] max-w-2xl mx-auto leading-relaxed">
-            Have questions about our services? Need to schedule an appointment? 
+            Have questions about our services? Need to schedule an appointment?
             Our team is ready to assist you with all your healthcare needs.
           </p>
         </div>
@@ -82,15 +82,19 @@ export default function Contact() {
 
       {/* Contact Information Cards */}
       <section className="mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-9xl mx-auto px-6">
           <article className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
             <div className="flex items-center mb-4">
               <div className="p-3 rounded-full bg-[#43d5cb] bg-opacity-10 mr-4">
                 <Phone className="h-6 w-6 text-[#435ba1]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">Phone</h3>
+              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">
+                Phone
+              </h3>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">Call us anytime</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-2">
+              Call us anytime
+            </p>
             <p className="text-[#435ba1] font-medium">+1 (555) 123-4567</p>
             <p className="text-[#435ba1] font-medium">+1 (555) 987-6543</p>
           </article>
@@ -100,9 +104,13 @@ export default function Contact() {
               <div className="p-3 rounded-full bg-[#43d5cb] bg-opacity-10 mr-4">
                 <Mail className="h-6 w-6 text-[#435ba1]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">Email</h3>
+              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">
+                Email
+              </h3>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">Send us an email</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-2">
+              Send us an email
+            </p>
             <p className="text-[#435ba1] font-medium">info@healthcave.com</p>
             <p className="text-[#435ba1] font-medium">support@healthcave.com</p>
           </article>
@@ -112,18 +120,26 @@ export default function Contact() {
               <div className="p-3 rounded-full bg-[#43d5cb] bg-opacity-10 mr-4">
                 <Clock className="h-6 w-6 text-[#435ba1]" />
               </div>
-              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">Hours</h3>
+              <h3 className="text-xl font-semibold text-[#515151] dark:text-white">
+                Hours
+              </h3>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mb-2">We're available</p>
-            <p className="text-[#515151] dark:text-white">Mon - Fri: 8:00 AM - 8:00 PM</p>
-            <p className="text-[#515151] dark:text-white">Sat - Sun: 9:00 AM - 6:00 PM</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-2">
+              We're available
+            </p>
+            <p className="text-[#515151] dark:text-white">
+              Mon - Fri: 8:00 AM - 8:00 PM
+            </p>
+            <p className="text-[#515151] dark:text-white">
+              Sat - Sun: 9:00 AM - 6:00 PM
+            </p>
           </article>
         </div>
       </section>
 
       {/* Contact Form and Map Section */}
       <section className="mb-16">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-9xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <article className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
@@ -132,7 +148,8 @@ export default function Contact() {
                   Send us a Message
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Fill out the form below and we'll get back to you within 24 hours.
+                  Fill out the form below and we'll get back to you within 24
+                  hours.
                 </p>
               </header>
 
@@ -150,7 +167,10 @@ export default function Contact() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                      >
                         Full Name *
                       </label>
                       <input
@@ -165,7 +185,10 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                      >
                         Email Address *
                       </label>
                       <input
@@ -183,7 +206,10 @@ export default function Contact() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                      >
                         Phone Number
                       </label>
                       <input
@@ -197,7 +223,10 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="service" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                      <label
+                        htmlFor="service"
+                        className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                      >
                         Service Needed
                       </label>
                       <select
@@ -208,7 +237,9 @@ export default function Contact() {
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#43d5cb] focus:border-transparent bg-white dark:bg-gray-700 text-[#515151] dark:text-white"
                       >
                         <option value="">Select a service</option>
-                        <option value="consultation">Online Consultation</option>
+                        <option value="consultation">
+                          Online Consultation
+                        </option>
                         <option value="appointment">Book Appointment</option>
                         <option value="emergency">Emergency Care</option>
                         <option value="general">General Inquiry</option>
@@ -218,7 +249,10 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                    <label
+                      htmlFor="subject"
+                      className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                    >
                       Subject *
                     </label>
                     <input
@@ -234,7 +268,10 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-[#515151] dark:text-white mb-2"
+                    >
                       Message *
                     </label>
                     <textarea
@@ -277,11 +314,15 @@ export default function Contact() {
                     <MapPin className="h-6 w-6 text-[#435ba1]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#515151] dark:text-white mb-2">Main Office</h3>
+                    <h3 className="font-semibold text-[#515151] dark:text-white mb-2">
+                      Main Office
+                    </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      123 Healthcare Avenue<br />
-                      Medical District, MD 12345<br />
-                      United States
+                      71/A Satmasjid Road
+                      <br />
+                      Dhanmondi, Dhaka 1209
+                      <br />
+                      Bangladesh
                     </p>
                   </div>
                 </div>
@@ -299,7 +340,8 @@ export default function Contact() {
                   <h3 className="text-xl font-semibold">Emergency Contact</h3>
                 </div>
                 <p className="mb-4 text-[#fafafa]">
-                  For urgent medical situations, please call our emergency line immediately.
+                  For urgent medical situations, please call our emergency line
+                  immediately.
                 </p>
                 <p className="text-2xl font-bold">+1 (555) 911-HELP</p>
                 <p className="text-sm text-[#fafafa] mt-2">Available 24/7</p>
@@ -311,7 +353,7 @@ export default function Contact() {
 
       {/* FAQ Section */}
       <section className="mb-16">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-9xl mx-auto px-6">
           <header className="text-center mb-12">
             <h2 className="text-3xl font-bold text-[#515151] dark:text-white mb-4">
               Frequently Asked Questions
@@ -325,22 +367,29 @@ export default function Contact() {
             {[
               {
                 question: "How quickly can I get an appointment?",
-                answer: "Most appointments are available within 24-48 hours. Emergency consultations can be scheduled immediately."
+                answer:
+                  "Most appointments are available within 24-48 hours. Emergency consultations can be scheduled immediately.",
               },
               {
                 question: "Do you accept insurance?",
-                answer: "Yes, we accept most major insurance plans. Please contact us to verify your specific coverage."
+                answer:
+                  "Yes, we accept most major insurance plans. Please contact us to verify your specific coverage.",
               },
               {
                 question: "Can I have a virtual consultation?",
-                answer: "Absolutely! We offer secure video consultations for your convenience and safety."
+                answer:
+                  "Absolutely! We offer secure video consultations for your convenience and safety.",
               },
               {
                 question: "What should I bring to my first appointment?",
-                answer: "Please bring your ID, insurance card, list of current medications, and any relevant medical records."
-              }
+                answer:
+                  "Please bring your ID, insurance card, list of current medications, and any relevant medical records.",
+              },
             ].map((faq, index) => (
-              <details key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <details
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              >
                 <summary className="p-6 cursor-pointer font-semibold text-[#515151] dark:text-white hover:text-[#435ba1] transition-colors">
                   {faq.question}
                 </summary>
@@ -353,5 +402,5 @@ export default function Contact() {
         </div>
       </section>
     </div>
-  )
+  );
 }

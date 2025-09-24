@@ -5,8 +5,14 @@ import { Button } from '@/components/ui/button'
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from "next/navigation";
+import AuthRedirect from "@/components/authentication/auth-redirect";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
-export default function Register() {
+function RegisterContent() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -77,32 +83,46 @@ export default function Register() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
-      // Here you would typically make an API call to register the user
-      console.log('Registration attempt:', formData)
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Redirect to login page or dashboard after successful registration
-      // router.push('/login')
-      
-    } catch (error) {
-      console.error('Registration error:', error)
-      setErrors({ general: 'Registration failed. Please try again.' })
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrors({ general: data.error || "Registration failed" });
+        toast.error(data.error || "Registration failed");
+      } else {
+        await Swal.fire({
+          title: 'Success!',
+          text: 'Registration successful! Please login to continue.',
+          icon: 'success',
+          confirmButtonText: 'Go to Login',
+          confirmButtonColor: '#435ba1',
+        });
+        router.replace("/login");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrors({ general: "Registration failed. Try again." });
+      toast.error("Registration failed. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fafafa] to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <AuthRedirect>
+      <div className="min-h-screen bg-gradient-to-br from-[#fafafa] to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl w-full space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -381,5 +401,10 @@ export default function Register() {
         </div>
       </div>
     </div>
+    </AuthRedirect>
   )
+}
+
+export default function Register() {
+  return <RegisterContent />
 }
