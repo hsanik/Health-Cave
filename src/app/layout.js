@@ -5,6 +5,7 @@ import Footer from "@/components/footer/footer";
 import BackToTop from "@/components/back-to-top/back-to-top";
 import { Toaster } from "react-hot-toast";
 import AuthSessionProvider from "@/components/providers/session-provider";
+import ChatbotComponent from "./chatbot/ChatbotComponent";
 
 
 const poppins = Poppins({
@@ -31,6 +32,9 @@ export default function RootLayout({ children }) {
           <main className="mx-auto w-11/12 py-6">
             {children}
           </main>
+          <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
+            <ChatbotComponent />
+          </div>
           <Footer />
           <BackToTop />
           <Toaster 
