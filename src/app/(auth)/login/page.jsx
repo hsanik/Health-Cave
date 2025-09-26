@@ -18,6 +18,7 @@ function LoginContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isOauthLoading, setIsOauthLoading] = useState(null);
   const router = useRouter();
 
   const handleInputChange = (e) => {
@@ -26,7 +27,6 @@ function LoginContent() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -71,10 +71,19 @@ function LoginContent() {
       toast.error(res.error);
     } else {
       toast.success("Login successful! Welcome back!");
-      router.replace("/dashboard"); // redirect after login
+      router.replace("/dashboard");
     }
 
     setIsLoading(false);
+  };
+
+  const handleOAuth = async (provider) => {
+    try {
+      setIsOauthLoading(provider);
+      await signIn(provider, { callbackUrl: "/dashboard" });
+    } finally {
+      setIsOauthLoading(null);
+    }
   };
 
   return (
@@ -234,6 +243,36 @@ function LoginContent() {
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          {/* OAuth Providers */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-200 dark:border-gray-700" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500">or</span>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleOAuth('google')}
+                disabled={isOauthLoading === 'google'}
+              >
+                {isOauthLoading === 'google' ? 'Connecting…' : 'Sign in with Google'}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleOAuth('github')}
+                disabled={isOauthLoading === 'github'}
+              >
+                {isOauthLoading === 'github' ? 'Connecting…' : 'Sign in with GitHub'}
+              </Button>
+            </div>
+          </div>
 
           {/* Register Link */}
           <div className="mt-6 text-center">
