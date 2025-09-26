@@ -13,6 +13,7 @@ const mainLinks = [
   { href: "/", label: "Home" },
   { href: "/doctors", label: "Doctors" },
   { href: "/about", label: "About" },
+  { href: "/music", label: "Music Therapy" },
   { href: "/contact", label: "Contact" },
 ];
 

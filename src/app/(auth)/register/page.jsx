@@ -1,22 +1,25 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Phone, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthRedirect from "@/components/authentication/auth-redirect";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
 function RegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const verifiedEmail = searchParams.get('email');
+  const isVerified = searchParams.get('verified') === 'true';
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    email: verifiedEmail || '',
     phone: '',
     password: '',
     confirmPassword: ''
@@ -25,6 +28,8 @@ function RegisterContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+  const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [emailVerified, setEmailVerified] = useState(isVerified)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -38,6 +43,46 @@ function RegisterContent() {
         ...prev,
         [name]: ''
       }))
+    }
+    // Reset email verification if email changes
+    if (name === 'email' && emailVerified) {
+      setEmailVerified(false)
+    }
+  }
+
+  const handleSendOTP = async () => {
+    if (!formData.email) {
+      toast.error('Please enter your email address first')
+      return
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    setIsSendingOtp(true)
+
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to send verification code')
+      } else {
+        toast.success('Verification code sent!')
+        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setIsSendingOtp(false)
     }
   }
 
@@ -56,6 +101,8 @@ function RegisterContent() {
       newErrors.email = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address'
+    } else if (!emailVerified) {
+      newErrors.email = 'Please verify your email address first'
     }
 
     if (!formData.phone) {
@@ -99,11 +146,10 @@ function RegisterContent() {
 
       if (!res.ok) {
         setErrors({ general: data.error || "Registration failed" });
-        toast.error(data.error || "Registration failed");
       } else {
         await Swal.fire({
-          title: 'Success!',
-          text: 'Registration successful! Please login to continue.',
+          title: 'Registration successful!',
+          text: 'Please login to continue.',
           icon: 'success',
           confirmButtonText: 'Go to Login',
           confirmButtonColor: '#435ba1',
@@ -118,7 +164,6 @@ function RegisterContent() {
       setIsLoading(false);
     }
   };
-
 
   return (
     <AuthRedirect>
@@ -224,6 +269,12 @@ function RegisterContent() {
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-[#515151] dark:text-white mb-2">
                 Email Address
+                {emailVerified && (
+                  <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verified
+                  </span>
+                )}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -236,16 +287,36 @@ function RegisterContent() {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#43d5cb] focus:border-transparent bg-white dark:bg-gray-700 text-[#515151] dark:text-white placeholder-gray-400 ${
+                  className={`block w-full pl-10 pr-24 py-3 border rounded-lg focus:ring-2 focus:ring-[#43d5cb] focus:border-transparent bg-white dark:bg-gray-700 text-[#515151] dark:text-white placeholder-gray-400 ${
                     errors.email 
                       ? 'border-red-300 dark:border-red-600' 
                       : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder="Enter your email"
                 />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2">
+                  {!emailVerified ? (
+                    <Button
+                      type="button"
+                      onClick={handleSendOTP}
+                      disabled={isSendingOtp || !formData.email}
+                      size="sm"
+                      className="text-xs px-3 py-1 h-8"
+                    >
+                      {isSendingOtp ? 'Sending...' : 'Verify'}
+                    </Button>
+                  ) : (
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                  )}
+                </div>
               </div>
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
+              )}
+              {!emailVerified && formData.email && (
+                <p className="mt-1 text-sm text-amber-600 dark:text-amber-400">
+                  Please verify your email address to continue
+                </p>
               )}
             </div>
 
@@ -405,6 +476,21 @@ function RegisterContent() {
   )
 }
 
+function RegisterFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#435ba1] mx-auto mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-300">Loading...</p>
+      </div>
+    </div>
+  )
+}
+
 export default function Register() {
-  return <RegisterContent />
+  return (
+    <Suspense fallback={<RegisterFallback />}>
+      <RegisterContent />
+    </Suspense>
+  )
 }
