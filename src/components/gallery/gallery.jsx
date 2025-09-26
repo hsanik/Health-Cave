@@ -11,11 +11,11 @@ import {
 
 const Gallery = () => {
     return (
-        <section className="py-12 bg-gray-50 sm:py-16 lg:py-20">
+        <section className="py-12 sm:py-16 lg:py-20">
             <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl xl:text-5xl">Meet Our Team</h2>
-                    <p className="max-w-3xl mx-auto mt-4 text-lg font-normal text-gray-600 sm:mt-5">
+                    <h2 className="text-3xl font-bold sm:text-4xl xl:text-5xl">Meet Our Team</h2>
+                    <p className="max-w-3xl mx-auto mt-4 text-lg font-normal sm:mt-5">
                         Our team of dedicated and experienced doctors is here to provide you with the best possible care. We are committed to your health and well-being.
                     </p>
                 </div>
@@ -36,8 +36,8 @@ const Gallery = () => {
                                         </CardHeader>
                                         <CardContent className="flex flex-col items-center justify-start flex-grow">
                                             <CardTitle>{doctor.name}</CardTitle>
-                                            <p className="mt-2 text-base font-normal text-gray-600">{doctor.specialty}</p>
-                                            <p className="max-w-xs mx-auto mt-4 text-sm font-normal text-gray-500">
+                                            <p className="mt-2 text-base font-normal">{doctor.specialty}</p>
+                                            <p className="max-w-xs mx-auto mt-4 text-sm font-normal">
                                                 {doctor.description}
                                             </p>
                                         </CardContent>
