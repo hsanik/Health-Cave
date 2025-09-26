@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
           <main className="mx-auto w-11/12 py-6">
             {children}
           </main>
-          <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
+          <div className="chatbot-container">
             <ChatbotComponent />
           </div>
           <Footer />
