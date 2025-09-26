@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Chatbot from 'react-chatbot-kit';
 import 'react-chatbot-kit/build/main.css';
 
@@ -8,13 +8,23 @@ import MessageParser from './MessageParser.js';
 import ActionProvider from './ActionProvider.js';
 
 const ChatbotComponent = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div>
-      <Chatbot
-        config={config}
-        messageParser={MessageParser}
-        actionProvider={ActionProvider}
-      />
+      {isOpen && (
+        <Chatbot
+          config={config}
+          messageParser={MessageParser}
+          actionProvider={ActionProvider}
+        />
+      )}
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="chatbot-toggle-button"
+      >
+        {isOpen ? 'X' : '💬'}
+      </button>
     </div>
   );
 };
