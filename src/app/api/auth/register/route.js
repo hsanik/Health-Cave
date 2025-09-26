@@ -18,10 +18,19 @@ export async function POST(req) {
     // specific database name
     const db = client.db("healthCave");
     const usersCollection = db.collection("users");
+    const otpCollection = db.collection("otps");
 
     const existingUser = await usersCollection.findOne({ email });
     if (existingUser) {
       return new Response(JSON.stringify({ error: "User already exists" }), {
+        status: 400,
+      });
+    }
+
+    // Check if email is verified
+    const otpRecord = await otpCollection.findOne({ email, verified: true });
+    if (!otpRecord) {
+      return new Response(JSON.stringify({ error: "Email not verified. Please verify your email first." }), {
         status: 400,
       });
     }
@@ -36,6 +45,9 @@ export async function POST(req) {
     };
 
     await usersCollection.insertOne(newUser);
+
+    // Clean up OTP record after successful registration
+    await otpCollection.deleteOne({ email });
 
     // Send welcome email
     try {
