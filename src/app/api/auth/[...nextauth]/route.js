@@ -8,13 +8,15 @@ import bcrypt from "bcrypt";
 
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
+  allowDangerousEmailAccountLinking: true,
+  debug: true,
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
   jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -26,28 +28,17 @@ export const authOptions = {
       async authorize(credentials) {
         const client = await clientPromise;
         const usersCollection = client.db().collection("users");
-
-        const user = await usersCollection.findOne({
-          email: credentials.email,
-        });
-
+        const user = await usersCollection.findOne({ email: credentials.email });
         if (!user) throw new Error("User not found");
-
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid password");
-
         return { id: user._id.toString(), email: user.email, name: user.name };
       },
     }),
-
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
@@ -72,6 +63,15 @@ export const authOptions = {
         session.user.email = token.email;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      try {
+        const target = new URL(url, baseUrl);
+        if (target.origin === baseUrl) return target.href;
+      } catch {}
+      if (url?.startsWith("/")) return `${baseUrl}${url}`;
+      // Default to dashboard if external or invalid
+      return `${baseUrl}/dashboard`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
