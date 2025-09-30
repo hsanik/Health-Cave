@@ -29,7 +29,8 @@ function NavbarContent() {
   const pathname = usePathname()
   const { session, status, isLoading, isAuthenticated } = useAuth()
 
-  // Prevent hydration mismatch by only rendering after mount
+  const onDashboard = pathname?.startsWith('/dashboard')
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -40,9 +41,7 @@ function NavbarContent() {
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       const dark = stored ? stored === 'dark' : prefersDark
       setIsDark(dark)
-    } catch (_) {
-      
-    }
+    } catch (_) {}
   }, [])
 
   function toggleTheme() {
@@ -51,50 +50,37 @@ function NavbarContent() {
     try {
       localStorage.setItem('theme', next ? 'dark' : 'light')
       document.documentElement.classList.toggle('dark', next)
-    } catch (_) {
-      
-    }
+    } catch (_) {}
   }
 
-  // Helper function to check if a link is active
   const isActiveLink = (href) => {
-    if (href === '/') {
-      return pathname === '/'
-    }
+    if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
   }
 
   return (
     <header className="w-full sticky top-0 z-9999 border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
-      <nav className="w-11/12 mx-auto grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center py-3 gap-4">
-        <div className="flex items-center">
-          <Link href="/">
-            <Image src="/images/logo_light.png" alt="HealthCave" width={172} height={36} className="block dark:hidden object-contain" />
-            <Image src="/images/logo_dark.png" alt="HealthCave" width={172} height={36} className="hidden dark:block object-contain" />
-          </Link>
-        </div>
-
-        <div className="hidden md:flex items-center justify-center gap-4 text-sm">
-          {mainLinks.map(link => (
-            <Link 
-              key={link.href} 
-              href={link.href} 
-              className={`transition-colors ${
-                isActiveLink(link.href) 
-                  ? 'text-primary font-medium underline' 
-                  : 'text-foreground hover:underline'
-              }`}
-            >
-              {link.label}
+      <nav className={`w-11/12 mx-auto grid ${onDashboard ? 'grid-cols-[1fr]' : 'grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr]'} items-center py-3 gap-4`}>
+        {!onDashboard && (
+          <div className="flex items-center">
+            <Link href="/">
+              <Image src="/images/logo_light.png" alt="HealthCave" width={172} height={36} className="block dark:hidden object-contain" />
+              <Image src="/images/logo_dark.png" alt="HealthCave" width={172} height={36} className="hidden dark:block object-contain" />
             </Link>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {!onDashboard && (
+          <div className="hidden md:flex items-center justify-center gap-4 text-sm">
+            {mainLinks.map(link => (
+              <Link key={link.href} href={link.href} className={`transition-colors ${isActiveLink(link.href) ? 'text-primary font-medium underline' : 'text-foreground hover:underline'}`}>{link.label}</Link>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center justify-end gap-2 md:gap-3 justify-self-end">
-          {/* Only render session-dependent content after mount to prevent hydration mismatch */}
           {mounted && (
             <>
-              {/* Show loading state while session is loading */}
               {isLoading && (
                 <div className="hidden md:flex items-center gap-3">
                   <div className="animate-pulse flex items-center gap-3">
@@ -103,27 +89,13 @@ function NavbarContent() {
                   </div>
                 </div>
               )}
-              
-              {/* Show auth links only when user is not logged in and session is loaded */}
               {!isLoading && !isAuthenticated && (
                 <div className="hidden md:flex items-center gap-3">
                   {authLinks.map(link => (
-                    <Link 
-                      key={link.href} 
-                      href={link.href} 
-                      className={`text-sm transition-colors ${
-                        isActiveLink(link.href) 
-                          ? 'text-primary font-medium underline' 
-                          : 'text-foreground hover:underline'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
+                    <Link key={link.href} href={link.href} className={`text-sm transition-colors ${isActiveLink(link.href) ? 'text-primary font-medium underline' : 'text-foreground hover:underline'}`}>{link.label}</Link>
                   ))}
                 </div>
               )}
-              
-              {/* Show user dropdown when user is logged in */}
               {!isLoading && isAuthenticated && <UserProfileDropdown />}
             </>
           )}
@@ -131,60 +103,34 @@ function NavbarContent() {
             <Sun className={`transition-all ${isDark ? 'scale-0 opacity-0 absolute' : 'scale-100 opacity-100'}`} />
             <Moon className={`transition-all ${isDark ? 'scale-100 opacity-100' : 'scale-0 opacity-0 absolute'}`} />
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="md:hidden"
-            aria-label="Toggle menu"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <X className="transition-transform" /> : <Menu className="transition-transform" />}
-          </Button>
+          {!onDashboard && (
+            <Button variant="outline" size="icon" className="md:hidden" aria-label="Toggle menu" onClick={() => setOpen(!open)}>
+              {open ? <X className="transition-transform" /> : <Menu className="transition-transform" />}
+            </Button>
+          )}
         </div>
       </nav>
-      {/* Mobile menu */}
-      {open && (
+      {!onDashboard && open && (
         <div className="md:hidden">
           <div className="mx-auto w-11/12 pb-3">
             <div className="rounded-xl border bg-background/70 dark:bg-background/30 backdrop-blur-md p-4">
               <div className="flex flex-col gap-3 text-sm">
                 {mainLinks.map(link => (
-                  <Link 
-                    key={link.href} 
-                    href={link.href} 
-                    className={`transition-colors ${
-                      isActiveLink(link.href) 
-                        ? 'text-primary font-medium underline' 
-                        : 'text-foreground hover:underline'
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
+                  <Link key={link.href} href={link.href} className={`transition-colors ${isActiveLink(link.href) ? 'text-primary font-medium underline' : 'text-foreground hover:underline'}`} onClick={() => setOpen(false)}>
                     {link.label}
                   </Link>
                 ))}
                 <div className="h-px bg-border my-1" />
-                {/* Only render session-dependent content after mount to prevent hydration mismatch */}
                 {mounted && (
                   <>
-                    {/* Show loading state in mobile menu while session is loading */}
                     {isLoading && (
                       <div className="animate-pulse flex flex-col gap-2">
                         <div className="h-4 w-12 bg-gray-300 dark:bg-gray-600 rounded"></div>
                         <div className="h-4 w-16 bg-gray-300 dark:bg-gray-600 rounded"></div>
                       </div>
                     )}
-                    {/* Show auth links in mobile menu only when user is not logged in and session is loaded */}
                     {!isLoading && !isAuthenticated && authLinks.map(link => (
-                      <Link 
-                        key={link.href} 
-                        href={link.href} 
-                        className={`transition-colors ${
-                          isActiveLink(link.href) 
-                            ? 'text-primary font-medium underline' 
-                            : 'text-foreground hover:underline'
-                        }`}
-                        onClick={() => setOpen(false)}
-                      >
+                      <Link key={link.href} href={link.href} className={`transition-colors ${isActiveLink(link.href) ? 'text-primary font-medium underline' : 'text-foreground hover:underline'}`} onClick={() => setOpen(false)}>
                         {link.label}
                       </Link>
                     ))}
