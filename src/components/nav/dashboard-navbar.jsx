@@ -6,14 +6,16 @@ import { Moon, Sun, Search } from 'lucide-react'
 import UserProfileDropdown from '@/components/authentication/user-profile-dropdown'
 
 export default function DashboardNavbar() {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(false) // Start with false to match SSR
 
   useEffect(() => {
+    // Sync with current theme on mount
     try {
       const stored = localStorage.getItem('theme')
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       const dark = stored ? stored === 'dark' : prefersDark
       setIsDark(dark)
+      document.documentElement.classList.toggle('dark', dark)
     } catch (_) {}
   }, [])
 

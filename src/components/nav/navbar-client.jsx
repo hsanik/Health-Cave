@@ -23,7 +23,7 @@ const authLinks = [
 ]
 
 function NavbarContent() {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(false) // Start with false to match SSR
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
@@ -33,14 +33,14 @@ function NavbarContent() {
 
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  useEffect(() => {
+    
+    // Sync with current theme on mount
     try {
       const stored = localStorage.getItem('theme')
       const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       const dark = stored ? stored === 'dark' : prefersDark
       setIsDark(dark)
+      document.documentElement.classList.toggle('dark', dark)
     } catch (_) {}
   }, [])
 
