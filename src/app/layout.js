@@ -1,11 +1,8 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/nav/navbar";
-import Footer from "@/components/footer/footer";
-import BackToTop from "@/components/back-to-top/back-to-top";
 import { Toaster } from "react-hot-toast";
 import AuthSessionProvider from "@/components/providers/session-provider";
-import ChatbotComponent from "./chatbot/ChatbotComponent";
+import ConditionalLayout from "@/components/layout/conditional-layout";
 
 
 const poppins = Poppins({
@@ -28,15 +25,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body className="antialiased">
         <AuthSessionProvider>
-          <Navbar />
-          <main className="mx-auto w-11/12 py-6">
+          <ConditionalLayout>
             {children}
-          </main>
-          <div className="chatbot-container">
-            <ChatbotComponent />
-          </div>
-          <Footer />
-          <BackToTop />
+          </ConditionalLayout>
           <Toaster 
             position="top-right"
             toastOptions={{
