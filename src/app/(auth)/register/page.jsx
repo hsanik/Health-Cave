@@ -2,24 +2,22 @@
 
 import React, { useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, Mail, Lock, User, Phone, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Phone, CheckCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import AuthRedirect from "@/components/authentication/auth-redirect";
+import OtpVerificationModal from '@/components/auth-protection/otp-modal';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
 function RegisterContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const verifiedEmail = searchParams.get('email');
-  const isVerified = searchParams.get('verified') === 'true';
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: verifiedEmail || '',
+    email: '',
     phone: '',
     password: '',
     confirmPassword: ''
@@ -29,7 +27,8 @@ function RegisterContent() {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [isSendingOtp, setIsSendingOtp] = useState(false)
-  const [emailVerified, setEmailVerified] = useState(isVerified)
+  const [emailVerified, setEmailVerified] = useState(false) // Email verification managed by modal
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -76,7 +75,7 @@ function RegisterContent() {
         toast.error(data.error || 'Failed to send verification code')
       } else {
         toast.success('Verification code sent!')
-        router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
+        setIsOtpModalOpen(true) // Open the modal instead of redirecting
       }
     } catch (err) {
       console.error(err)
@@ -101,7 +100,7 @@ function RegisterContent() {
       newErrors.email = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address'
-    } else if (!emailVerified) {
+    } else if (!emailVerified) { // Check if email is verified
       newErrors.email = 'Please verify your email address first'
     }
 
@@ -303,7 +302,13 @@ function RegisterContent() {
                       size="sm"
                       className="text-xs px-3 py-1 h-8"
                     >
-                      {isSendingOtp ? 'Sending...' : 'Verify'}
+                      {isSendingOtp ? (
+                        <span className="flex items-center justify-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
+                        </span>
+                      ) : (
+                        'Verify'
+                      )}
                     </Button>
                   ) : (
                     <CheckCircle className="h-5 w-5 text-green-500" />
@@ -329,25 +334,25 @@ function RegisterContent() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Phone className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#43d5cb] focus:border-transparent bg-white dark:bg-gray-700 text-[#515151] dark:text-white placeholder-gray-400 ${
-                    errors.phone 
-                      ? 'border-red-300 dark:border-red-600' 
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder="+1 (555) 123-4567"
-                />
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-[#43d5cb] focus:border-transparent bg-white dark:bg-gray-700 text-[#515151] dark:text-white placeholder-gray-400 ${
+                      errors.phone 
+                        ? 'border-red-300 dark:border-red-600' 
+                        : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+                {errors.phone && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone}</p>
+                )}
               </div>
-              {errors.phone && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.phone}</p>
-              )}
-            </div>
 
             {/* Password Field */}
             <div>
@@ -472,6 +477,15 @@ function RegisterContent() {
         </div>
       </div>
     </div>
+    <OtpVerificationModal 
+      email={formData.email}
+      isOpen={isOtpModalOpen}
+      onClose={() => setIsOtpModalOpen(false)}
+      onVerified={() => {
+        setEmailVerified(true)
+        setIsOtpModalOpen(false)
+      }}
+    />
     </AuthRedirect>
   )
 }
