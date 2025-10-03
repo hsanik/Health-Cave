@@ -56,6 +56,12 @@ export const authOptions = {
 
       if (user) {
         token.id = user.id;
+        // Ensure emailVerified is set for OAuth users if it's null
+        if (user.emailVerified === null || user.emailVerified === undefined) {
+          token.emailVerified = new Date();
+        } else {
+          token.emailVerified = user.emailVerified;
+        }
       }
 
       // Fetch the latest user data from the database
