@@ -48,9 +48,9 @@ export default function Footer() {
   return (
     <footer className="border-t bg-background">
       {/* Emergency Banner */}
-      <div className="bg-red-50 dark:bg-red-950/20 border-b border-red-200 dark:border-red-900">
+      <div className="bg-blue-50 dark:bg-blue-950/20 border-b border-blue-200 dark:border-blue-900">
         <div className="mx-auto w-11/12 py-3">
-          <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400">
+          <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
             <AlertCircle className="size-4" />
             <p className="font-medium">
               Medical Emergency? Call 911 immediately. This platform is not for emergency services.
