@@ -42,6 +42,8 @@ export async function POST(req) {
       name: firstName + " " + lastName,
       password: hashedPassword,
       createdAt: new Date(),
+      emailVerified: new Date(),
+      accounts: [],
     };
 
     await usersCollection.insertOne(newUser);
