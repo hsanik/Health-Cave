@@ -5,6 +5,7 @@ import GitHubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import bcrypt from "bcrypt";
+import { ObjectId } from 'mongodb';
 
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
@@ -48,12 +49,29 @@ export const authOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      const client = await clientPromise;
+      const db = client.db("healthCave");
+      const usersCollection = db.collection("users");
+
       if (user) {
-        token.id = user.id || token.id;
-        token.name = user.name;
-        token.email = user.email;
+        token.id = user.id;
       }
+
+      // Fetch the latest user data from the database
+      const dbUser = await usersCollection.findOne({ _id: new ObjectId(token.id) });
+
+      if (dbUser) {
+        token.name = dbUser.name;
+        token.email = dbUser.email;
+        token.phone = dbUser.phone || null;
+        token.address = dbUser.address || null;
+        token.specialization = dbUser.specialization || null;
+        token.bio = dbUser.bio || null;
+        token.experience = dbUser.experience || null;
+        token.education = dbUser.education || null;
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -61,6 +79,12 @@ export const authOptions = {
         session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
+        session.user.phone = token.phone;
+        session.user.address = token.address;
+        session.user.specialization = token.specialization;
+        session.user.bio = token.bio;
+        session.user.experience = token.experience;
+        session.user.education = token.education;
       }
       return session;
     },

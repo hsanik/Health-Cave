@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useSession, signOut } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Swal from 'sweetalert2'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,7 @@ export default function Dashboard() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const { data: session, status } = useSession()
   const dropdownRef = useRef(null)
+  const pathname = usePathname()
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -104,13 +106,13 @@ export default function Dashboard() {
   }
 
   const sidebarItems = [
-    { icon: Home, label: 'Dashboard', active: true },
-    { icon: Users, label: 'Patients', active: false },
-    { icon: Calendar, label: 'Appointments', active: false },
-    { icon: FileText, label: 'Medical Records', active: false },
-    { icon: MessageSquare, label: 'Messages', active: false },
-    { icon: BarChart3, label: 'Analytics', active: false },
-    { icon: Settings, label: 'Settings', active: false },
+    { icon: Home, label: 'Dashboard', href: '/dashboard' },
+    { icon: Users, label: 'Patients', href: '/dashboard/patients' }, // Assuming patients page
+    { icon: Calendar, label: 'Appointments', href: '/dashboard/appointments' }, // Assuming appointments page
+    { icon: FileText, label: 'Medical Records', href: '/dashboard/records' }, // Assuming records page
+    { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' }, // Assuming messages page
+    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' }, // Assuming analytics page
+    { icon: Settings, label: 'Profile', href: '/dashboard/profile' }, // Profile link moved to sidebar
   ]
 
   const stats = [
@@ -166,17 +168,19 @@ export default function Dashboard() {
           <ul className="space-y-2">
             {sidebarItems.map((item, index) => (
               <li key={index}>
-                <Button
-                  variant={item.active ? "default" : "ghost"}
-                  className={`w-full justify-start ${
-                    item.active 
-                      ? 'bg-primary text-white hover:bg-primary/90' 
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.label}
-                </Button>
+                <Link href={item.href || '#'}>
+                  <Button
+                    variant={pathname === item.href ? "default" : "ghost"}
+                    className={`w-full justify-start ${
+                      pathname === item.href
+                        ? 'bg-primary text-white hover:bg-primary/90'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 mr-3" />
+                    {item.label}
+                  </Button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -271,16 +275,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="p-2">
-                      <Link href="/profile">
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                          onClick={() => setUserDropdownOpen(false)}
-                        >
-                          <User className="w-4 h-4 mr-3" />
-                          Profile Settings
-                        </Button>
-                      </Link>
                       <Button
                         variant="ghost"
                         className="w-full justify-start text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
