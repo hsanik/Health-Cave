@@ -103,6 +103,45 @@ export const authOptions = {
       // Default to dashboard if external or invalid
       return `${baseUrl}/dashboard`;
     },
+    async signIn({ user, account, profile }) {
+      if (account && profile && user?.email) {
+        const client = await clientPromise;
+        const db = client.db("healthCave");
+        const usersCollection = db.collection("users");
+
+        // Check if an account with this provider and providerAccountId already exists
+        const existingAccount = await db.collection("accounts").findOne({
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+        });
+
+        if (existingAccount) {
+          // Account already linked, allow sign-in
+          return true;
+        }
+
+        // Check if a user with this email already exists
+        const existingUser = await usersCollection.findOne({ email: user.email });
+
+        if (existingUser) {
+          // User exists, link the new OAuth account to the existing user
+          await db.collection("accounts").insertOne({
+            userId: existingUser._id,
+            type: account.type,
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            access_token: account.access_token,
+            expires_at: account.expires_at,
+            refresh_token: account.refresh_token,
+            id_token: account.id_token,
+            scope: account.scope,
+            token_type: account.token_type,
+          });
+          return true; // Allow sign-in after linking
+        }
+      }
+      return true; // Allow sign-in for other cases (new user, credentials, etc.)
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
