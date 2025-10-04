@@ -15,6 +15,7 @@ const mainLinks = [
   { href: "/about", label: "About" },
   { href: "/music", label: "Music Therapy" },
   { href: "/contact", label: "Contact" },
+  { href: "/doctorApply", label: "Become A Doctor" },
 ];
 
 const authLinks = [
