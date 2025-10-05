@@ -32,6 +32,7 @@ import {
   LogOut,
   ArrowLeft,
   User,
+  BookText
 } from 'lucide-react'
 
 export default function Dashboard() {
@@ -107,6 +108,7 @@ export default function Dashboard() {
 
   const sidebarItems = [
     { icon: Home, label: 'Dashboard', href: '/dashboard' },
+    { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
     { icon: Users, label: 'Patients', href: '/dashboard/patients' }, // Assuming patients page
     { icon: Calendar, label: 'Appointments', href: '/dashboard/appointments' }, // Assuming appointments page
     { icon: FileText, label: 'Medical Records', href: '/dashboard/records' }, // Assuming records page
