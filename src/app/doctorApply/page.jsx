@@ -116,7 +116,7 @@ const Page = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-md space-y-4"
+        className="max-w-3xl mx-auto p-8 rounded-2xl border space-y-4"
       >
         {/* Full Name */}
         <div>
