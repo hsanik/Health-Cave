@@ -4,24 +4,22 @@ import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Home, Search, ArrowLeft, HeartPulse } from 'lucide-react'
+import logo from "../../public/images/logo01.png"
+import Image from 'next/image'
 
 export default function NotFound() {
   return (
     <div data-not-found-page className="min-h-screen flex items-center justify-center px-6 py-16">
       <div className="max-w-4xl w-full text-center">
         {/* Animated Medical Icon */}
-        <div className="mb-8 flex justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#435ba1] to-[#43d5cb] rounded-full blur-2xl opacity-20 animate-pulse"></div>
-            <div className="relative bg-gradient-to-r from-[#435ba1] to-[#43d5cb] rounded-full p-8">
-              <HeartPulse className="h-24 w-24 text-white" strokeWidth={1.5} />
-            </div>
-          </div>
-        </div>
+        <Image
+        className='w-[150px] mx-auto mb-4'
+        src={logo}
+        />
 
         {/* 404 Text */}
         <div className="mb-8">
-          <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-[#435ba1] via-[#4c69c6] to-[#43d5cb] bg-clip-text text-transparent mb-4">
+          <h1 className="text-8xl md:text-9xl font-bold text-[#136afb] mb-4">
             404
           </h1>
           <h2 className="text-3xl md:text-4xl font-bold text-[#515151] dark:text-white mb-4">
@@ -31,47 +29,6 @@ export default function NotFound() {
             Oops! It seems the page you're looking for has taken a coffee break. 
             Don't worry, our medical team is here to help you get back on track.
           </p>
-        </div>
-
-        {/* Helpful Info Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700 mb-8 max-w-2xl mx-auto">
-          <h3 className="text-xl font-semibold text-[#515151] dark:text-white mb-4">
-            What can you do?
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-6 h-6 bg-[#43d5cb] bg-opacity-10 rounded-full flex items-center justify-center mr-3 mt-1">
-                <div className="w-2 h-2 bg-[#43d5cb] rounded-full"></div>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300">
-                Check the URL for typos
-              </p>
-            </div>
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-6 h-6 bg-[#43d5cb] bg-opacity-10 rounded-full flex items-center justify-center mr-3 mt-1">
-                <div className="w-2 h-2 bg-[#43d5cb] rounded-full"></div>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300">
-                Return to our homepage
-              </p>
-            </div>
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-6 h-6 bg-[#43d5cb] bg-opacity-10 rounded-full flex items-center justify-center mr-3 mt-1">
-                <div className="w-2 h-2 bg-[#43d5cb] rounded-full"></div>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300">
-                Browse our doctors
-              </p>
-            </div>
-            <div className="flex items-start">
-              <div className="flex-shrink-0 w-6 h-6 bg-[#43d5cb] bg-opacity-10 rounded-full flex items-center justify-center mr-3 mt-1">
-                <div className="w-2 h-2 bg-[#43d5cb] rounded-full"></div>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300">
-                Contact our support team
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Action Buttons */}
