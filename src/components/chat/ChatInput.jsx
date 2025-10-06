@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { IoSend } from 'react-icons/io5';
@@ -9,10 +9,12 @@ import { IoSend } from 'react-icons/io5';
  * ChatInput component for sending messages
  * @param {Object} props - Component props
  * @param {Function} props.onSendMessage - Function to handle sending messages
+ * @param {Function} props.onTyping - Function to notify when user is typing
  */
-const ChatInput = ({ onSendMessage }) => {
+const ChatInput = ({ onSendMessage, onTyping }) => {
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,14 +28,45 @@ const ChatInput = ({ onSendMessage }) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
+    } else {
+      handleTypingNotification();
     }
   };
+  
+  // Notify typing status when user is typing
+  const handleTypingNotification = () => {
+    if (onTyping && typeof onTyping === 'function' && !isTyping) {
+      setIsTyping(true);
+      onTyping();
+      
+      // Reset typing status after 3 seconds
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+      }, 3000);
+    }
+  };
+  
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="flex items-end gap-2 border-t p-3 bg-white">
       <Textarea
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e) => {
+          setMessage(e.target.value);
+          handleTypingNotification();
+        }}
         onKeyDown={handleKeyDown}
         placeholder="Type your message..."
         className="flex-1 min-h-[60px] max-h-[120px] resize-none"

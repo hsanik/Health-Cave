@@ -118,15 +118,69 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
     }
   };
 
+  // Track user typing status
+  const [isTyping, setIsTyping] = useState(false);
+  const [recipientIsTyping, setRecipientIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+
+  // Handle typing indicator
+  useEffect(() => {
+    if (!channel) return;
+
+    // Set up typing indicator listener
+    channel.on('ChannelMessage', (message, senderId) => {
+      if (senderId !== userId && message.text === '__TYPING__') {
+        setRecipientIsTyping(true);
+        
+        // Clear previous timeout if exists
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+        
+        // Set timeout to clear typing indicator after 3 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          setRecipientIsTyping(false);
+        }, 3000);
+      }
+    });
+
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, [channel, userId]);
+
+  // Send typing indicator
+  const handleTyping = async () => {
+    if (!channel || !isConnected || isTyping) return;
+    
+    try {
+      setIsTyping(true);
+      await sendChannelMessage(channel, '__TYPING__');
+      
+      // Reset typing flag after 3 seconds
+      setTimeout(() => {
+        setIsTyping(false);
+      }, 3000);
+    } catch (err) {
+      console.error('Failed to send typing indicator:', err);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden">
       {/* Chat header */}
       <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold">{recipientName}</h2>
-          <p className="text-sm text-blue-100">
-            {isConnected ? 'Connected' : 'Connecting...'}
-          </p>
+          <div className="text-sm text-blue-100">
+            {isConnected ? (
+              recipientIsTyping ? 
+                `${recipientName} is typing...` : 
+                'Online'
+            ) : 'Connecting...'}
+          </div>
         </div>
       </div>
       
@@ -158,7 +212,10 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
       </div>
       
       {/* Chat input */}
-      <ChatInput onSendMessage={handleSendMessage} />
+      <ChatInput 
+        onSendMessage={handleSendMessage} 
+        onTyping={handleTyping}
+      />
     </div>
   );
 };
