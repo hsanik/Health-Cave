@@ -26,7 +26,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
     { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
     { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
     { icon: Settings, label: "Profile", href: "/dashboard/profile" },
-  ]
+  ];
 
   return (
     <>
