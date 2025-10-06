@@ -5,6 +5,8 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { getAgoraRTMClient, loginToAgoraRTM, joinChannel, sendChannelMessage, logoutFromAgoraRTM } from '@/lib/agoraClient';
 import { saveMessage, getMessages } from '@/lib/chatStorage';
+import ChatNotification from './ChatNotification';
+import { useRouter } from 'next/navigation';
 
 /**
  * ChatContainer component for managing the chat interface
@@ -21,7 +23,9 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
   const [channel, setChannel] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
+  const [lastNotification, setLastNotification] = useState(null);
   const messagesEndRef = useRef(null);
+  const router = useRouter();
 
   // Initialize Agora RTM client and join channel
   useEffect(() => {
@@ -123,11 +127,11 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
   const [recipientIsTyping, setRecipientIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
 
-  // Handle typing indicator
+  // Handle typing indicator and message notifications
   useEffect(() => {
     if (!channel) return;
 
-    // Set up typing indicator listener
+    // Set up typing indicator listener and message handler
     channel.on('ChannelMessage', (message, senderId) => {
       if (senderId !== userId && message.text === '__TYPING__') {
         setRecipientIsTyping(true);
@@ -141,6 +145,13 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
         typingTimeoutRef.current = setTimeout(() => {
           setRecipientIsTyping(false);
         }, 3000);
+      } else if (senderId !== userId && message.text !== '__TYPING__') {
+        // Set last notification for the new message if it's from another user
+        setLastNotification({
+          content: message.text,
+          sender: senderId,
+          timestamp: new Date().toISOString()
+        });
       }
     });
 
@@ -210,6 +221,13 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
         ))}
         <div ref={messagesEndRef} />
       </div>
+      
+      {/* Notification component */}
+      <ChatNotification 
+        message={lastNotification}
+        currentUserId={userId}
+        onNotificationClick={() => router.push(`/chat?recipient=${recipientId}`)}
+      />
       
       {/* Chat input */}
       <ChatInput 
