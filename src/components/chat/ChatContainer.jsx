@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { getAgoraRTMClient, loginToAgoraRTM, joinChannel, sendChannelMessage, logoutFromAgoraRTM } from '@/lib/agoraClient';
+import { saveMessage, getMessages } from '@/lib/chatStorage';
 
 /**
  * ChatContainer component for managing the chat interface
@@ -26,6 +27,9 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
   useEffect(() => {
     const initializeChat = async () => {
       try {
+        // Load chat history from storage
+        const chatHistory = getMessages(channelName);
+        
         // Initialize and login to Agora RTM
         const rtmClient = await loginToAgoraRTM(userId);
         setClient(rtmClient);
@@ -44,19 +48,27 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
               timestamp: new Date().toISOString(),
               id: `${senderId}-${Date.now()}`
             };
+            
+            // Save message to storage
+            saveMessage(channelName, newMessage);
+            
             setMessages(prev => [...prev, newMessage]);
           }
         });
         
-        // Add welcome message
-        setMessages([
-          {
+        // Set initial messages from history or add welcome message if empty
+        if (chatHistory.length > 0) {
+          setMessages(chatHistory);
+        } else {
+          const welcomeMessage = {
             content: `Connected to chat with ${recipientName}`,
             sender: 'system',
             timestamp: new Date().toISOString(),
             id: `system-${Date.now()}`
-          }
-        ]);
+          };
+          setMessages([welcomeMessage]);
+          saveMessage(channelName, welcomeMessage);
+        }
       } catch (err) {
         console.error('Failed to initialize chat:', err);
         setError('Failed to connect to chat. Please try again later.');
@@ -92,6 +104,10 @@ const ChatContainer = ({ userId, recipientId, channelName, userName, recipientNa
         timestamp: new Date().toISOString(),
         id: `${userId}-${Date.now()}`
       };
+      
+      // Save message to storage
+      saveMessage(channelName, newMessage);
+      
       setMessages(prev => [...prev, newMessage]);
       
       // Send message through Agora RTM
