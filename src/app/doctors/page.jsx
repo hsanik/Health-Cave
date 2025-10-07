@@ -8,9 +8,7 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch(
-          "https://health-cave-server.vercel.app/doctors"
-        );
+        const res = await fetch("http://localhost:5000/doctors");
         const data = await res.json();
         setDoctors(data);
       } catch (error) {
@@ -23,7 +21,9 @@ const DoctorsPage = () => {
   return (
     <div className="w-11/12 mx-auto py-20">
       <div className="px-6 py-10">
-        <h1 className="text-3xl font-bold text-center mb-8">Our Expert Doctors</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">
+          Our Expert Doctors
+        </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {doctors.map((doctor) => (
@@ -40,7 +40,9 @@ const DoctorsPage = () => {
               <div className="p-4">
                 <h2 className="text-2xl font-semibold">{doctor.name}</h2>
                 <p className="text-gray-600">{doctor.specialization}</p>
-                <p className="text-yellow-500 font-medium">⭐ {doctor.rating}</p>
+                <p className="text-yellow-500 font-medium">
+                  ⭐ {doctor.rating}
+                </p>
 
                 <div className="mt-4">
                   <Link
