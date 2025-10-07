@@ -127,10 +127,18 @@ const Page = () => {
               <h2 className="text-lg font-semibold text-[#435ba1] mb-2">
                 {app.name}
               </h2>
-              <p><strong>Specialization:</strong> {app.specialization}</p>
-              <p><strong>Hospital:</strong> {app.hospital}</p>
-              <p><strong>Email:</strong> {app.email}</p>
-              <p><strong>Phone:</strong> {app.phone}</p>
+              <p>
+                <strong>Specialization:</strong> {app.specialization}
+              </p>
+              <p>
+                <strong>Hospital:</strong> {app.hospital}
+              </p>
+              <p>
+                <strong>Email:</strong> {app.email}
+              </p>
+              <p>
+                <strong>Phone:</strong> {app.phone}
+              </p>
 
               <div className="mt-3 flex gap-2">
                 <button
@@ -149,9 +157,7 @@ const Page = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-[#515151]">
-            No pending applications
-          </p>
+          <p className="text-center text-[#515151]">No pending applications</p>
         )}
       </div>
     </div>
