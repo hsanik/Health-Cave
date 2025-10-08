@@ -9,7 +9,6 @@ const DoctorsPage = () => {
     const fetchDoctors = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`);
-        console.log(res);
         const data = await res.json();
         setDoctors(data);
       } catch (error) {
