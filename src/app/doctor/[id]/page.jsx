@@ -13,7 +13,7 @@ const DoctorDetails = () => {
     const fetchDoctor = async () => {
       try {
         const res = await fetch(
-          `https://health-cave-server.vercel.app/doctors/${id}`
+          `http://localhost:5000/doctors/${id}`
         ); // your backend API
         if (!res.ok) throw new Error("Doctor not found");
         const data = await res.json();

@@ -9,7 +9,7 @@ const DoctorsPage = () => {
     const fetchDoctors = async () => {
       try {
         const res = await fetch(
-          "https://health-cave-server.vercel.app/doctors"
+          "http://localhost:5000/doctors"
         );
         const data = await res.json();
         setDoctors(data);
