@@ -14,6 +14,7 @@ import {
   MessageSquare,
   BarChart3,
   BookText,
+  SquareUserRound
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -22,6 +23,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
   const sidebarItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
     { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
+    { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
     { icon: Users, label: "Patients", href: "/dashboard/patients" },
     { icon: Calendar, label: "Appointments", href: "/dashboard/appointments" },
     { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
