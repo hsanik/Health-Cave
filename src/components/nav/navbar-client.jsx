@@ -67,15 +67,15 @@ export default function NavbarClient() {
               <Image
                 src="/images/logo_light.png"
                 alt="HealthCave"
-                width={172}
-                height={36}
+                width={200}
+                height={50}
                 className="block dark:hidden object-contain"
               />
               <Image
                 src="/images/logo_dark.png"
                 alt="HealthCave"
-                width={172}
-                height={36}
+                width={200}
+                height={50}
                 className="hidden dark:block object-contain"
               />
             </Link>
