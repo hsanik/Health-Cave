@@ -1,10 +1,125 @@
 'use client'
 
+import React, { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Plus } from 'lucide-react'
+import { Calendar, Plus, Clock, User, Phone, Mail, MapPin, FileText, CreditCard, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import Image from 'next/image'
+import Swal from 'sweetalert2'
 
 export default function AppointmentsPage() {
+  const { data: session } = useSession()
+  const [appointments, setAppointments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled, completed
+
+  useEffect(() => {
+    fetchAppointments()
+  }, [session])
+
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('http://localhost:5000/appointments')
+      if (response.ok) {
+        const data = await response.json()
+        setAppointments(data)
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateAppointmentStatus = async (appointmentId, newStatus) => {
+    try {
+      const response = await fetch(`http://localhost:5000/appointments/${appointmentId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (response.ok) {
+        await fetchAppointments() // Refresh the list
+        Swal.fire({
+          title: 'Success!',
+          text: `Appointment ${newStatus} successfully.`,
+          icon: 'success',
+          confirmButtonColor: '#435ba1'
+        })
+      } else {
+        throw new Error('Failed to update appointment')
+      }
+    } catch (error) {
+      console.error('Error updating appointment:', error)
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to update appointment status.',
+        icon: 'error',
+        confirmButtonColor: '#435ba1'
+      })
+    }
+  }
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'confirmed':
+        return <CheckCircle className="w-5 h-5 text-green-500" />
+      case 'cancelled':
+        return <XCircle className="w-5 h-5 text-red-500" />
+      case 'completed':
+        return <CheckCircle className="w-5 h-5 text-blue-500" />
+      default:
+        return <AlertCircle className="w-5 h-5 text-yellow-500" />
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+      case 'completed':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+      default:
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+    }
+  }
+
+  const filteredAppointments = appointments.filter(appointment => {
+    if (filter === 'all') return true
+    return appointment.status === filter
+  })
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Not set'
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  const formatTime = (timeString) => {
+    if (!timeString) return 'Not set'
+    return timeString
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="text-center py-20">
+          <p className="text-lg font-semibold">Loading appointments...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-8">
@@ -13,28 +128,173 @@ export default function AppointmentsPage() {
             Appointments
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Schedule and manage patient appointments.
+            Manage patient appointments and schedules.
           </p>
         </div>
-        <Button>
+        <Button onClick={() => window.location.href = '/doctors'}>
           <Plus className="w-4 h-4 mr-2" />
-          New Appointment
+          Book New Appointment
         </Button>
       </div>
 
-      <Card className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-              Appointment Scheduling
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Appointment management functionality will be implemented here.
-            </p>
-          </div>
+      {/* Filter Tabs */}
+      <div className="mb-6">
+        <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-fit">
+          {['all', 'pending', 'confirmed', 'cancelled', 'completed'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status)}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                filter === status
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ))}
         </div>
-      </Card>
+      </div>
+
+      {/* Appointments List */}
+      {filteredAppointments.length === 0 ? (
+        <Card className="p-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
+                No Appointments Found
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                {filter === 'all' 
+                  ? 'No appointments have been scheduled yet.' 
+                  : `No ${filter} appointments found.`}
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredAppointments.map((appointment) => (
+            <Card key={appointment._id} className="p-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                {/* Left Section - Patient & Doctor Info */}
+                <div className="flex items-start space-x-4">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-200">
+                    {appointment.doctorImage ? (
+                      <Image
+                        src={appointment.doctorImage}
+                        alt={appointment.doctorName}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                        Dr. {appointment.doctorName}
+                      </h3>
+                      {getStatusIcon(appointment.status)}
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                      {appointment.doctorSpecialization}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Patient: {appointment.patientName}
+                    </p>
+                    
+                    {/* Appointment Details */}
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        <span>{formatDate(appointment.appointmentDate)}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                        <span>{formatTime(appointment.appointmentTime)}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Phone className="w-4 h-4 text-gray-400" />
+                        <span>{appointment.patientPhone}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Mail className="w-4 h-4 text-gray-400" />
+                        <span>{appointment.patientEmail}</span>
+                      </div>
+                    </div>
+
+                    {appointment.symptoms && (
+                      <div className="mt-2 flex items-start space-x-2">
+                        <FileText className="w-4 h-4 text-gray-400 mt-0.5" />
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-medium">Symptoms:</span> {appointment.symptoms}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Section - Status & Actions */}
+                <div className="flex flex-col items-end space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
+                      {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                    </span>
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                      appointment.paymentStatus === 'paid' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                    }`}>
+                      Payment: {appointment.paymentStatus}
+                    </span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-2">
+                    {appointment.status === 'pending' && (
+                      <>
+                        <Button
+                          size="sm"
+                          onClick={() => updateAppointmentStatus(appointment._id, 'confirmed')}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Confirm
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateAppointmentStatus(appointment._id, 'cancelled')}
+                          className="border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    )}
+                    {appointment.status === 'confirmed' && (
+                      <Button
+                        size="sm"
+                        onClick={() => updateAppointmentStatus(appointment._id, 'completed')}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Mark Complete
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

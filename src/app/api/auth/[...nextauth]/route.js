@@ -76,6 +76,7 @@ export const authOptions = {
         token.bio = dbUser.bio || null;
         token.experience = dbUser.experience || null;
         token.education = dbUser.education || null;
+        token.role = dbUser.role || "user";
       }
 
       return token;
@@ -91,6 +92,7 @@ export const authOptions = {
         session.user.bio = token.bio;
         session.user.experience = token.experience;
         session.user.education = token.education;
+        session.user.role = token.role;
       }
       return session;
     },
