@@ -17,6 +17,31 @@ const CheckoutForm = ({ appointmentId, amount, doctorName, patientName, onSucces
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  const updatePaymentStatus = async (paymentIntentId) => {
+    try {
+      console.log('Manually updating payment status for appointment:', appointmentId);
+      const response = await fetch(`/api/appointments/${appointmentId}/payment`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentStatus: 'paid',
+          paymentId: paymentIntentId,
+          amount: amount,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Payment status updated successfully');
+      } else {
+        console.error('Failed to update payment status');
+      }
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -27,7 +52,7 @@ const CheckoutForm = ({ appointmentId, amount, doctorName, patientName, onSucces
     setIsLoading(true);
     setMessage(null);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/payment-success?appointment_id=${appointmentId}`,
@@ -46,7 +71,11 @@ const CheckoutForm = ({ appointmentId, amount, doctorName, patientName, onSucces
         onError(error);
       }
     } else {
-      // Payment succeeded
+      // Payment succeeded - manually update the payment status
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        await updatePaymentStatus(paymentIntent.id);
+      }
+      
       if (onSuccess) {
         onSuccess();
       }

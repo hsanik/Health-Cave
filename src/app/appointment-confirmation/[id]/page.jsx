@@ -166,175 +166,216 @@ const AppointmentConfirmation = () => {
   }
 
   return (
-    <div className="w-11/12 mx-auto py-10">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Header */}
         <div className="text-center mb-8">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Appointment Booked Successfully!</h1>
-          <p className="text-gray-600">Your appointment has been scheduled. Please complete the payment to confirm.</p>
+          <p className="text-gray-600">Complete your payment to confirm the appointment</p>
         </div>
 
-        {/* Appointment Details Card */}
-        <div className="bg-white shadow-lg rounded-lg p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Appointment Details</h2>
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* Doctor Info */}
-          <div className="flex items-center space-x-6 mb-8 p-4 bg-gray-50 rounded-lg">
-            <div className="relative w-20 h-20 rounded-full overflow-hidden">
-              <Image
-                src={doctor.image}
-                alt={doctor.name}
-                width={80}
-                height={80}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
-              <p className="text-[#435ba1] font-medium">{doctor.specialization}</p>
-              <p className="text-gray-600">{doctor.hospital}</p>
-              <p className="text-yellow-500 font-medium">⭐ {doctor.rating}</p>
-            </div>
-          </div>
-
-          {/* Appointment Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 text-[#435ba1]" />
-              <div>
-                <p className="text-sm text-gray-600">Patient</p>
-                <p className="font-semibold">{session?.user?.name}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Calendar className="w-5 h-5 text-[#435ba1]" />
-              <div>
-                <p className="text-sm text-gray-600">Date</p>
-                <p className="font-semibold">
-                  {appointment?.appointmentDate 
-                    ? new Date(appointment.appointmentDate).toLocaleDateString()
-                    : 'To be confirmed'
-                  }
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <Clock className="w-5 h-5 text-[#435ba1]" />
-              <div>
-                <p className="text-sm text-gray-600">Time</p>
-                <p className="font-semibold">
-                  {appointment?.appointmentTime || 'To be confirmed'}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <CreditCard className="w-5 h-5 text-[#435ba1]" />
-              <div>
-                <p className="text-sm text-gray-600">Status</p>
-                <p className={`font-semibold ${
-                  appointment?.paymentStatus === 'paid' 
-                    ? 'text-green-600' 
-                    : 'text-yellow-600'
-                }`}>
-                  {appointment?.paymentStatus === 'paid' ? 'Payment Complete' : 'Payment Pending'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Section */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Payment Information</h3>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-700">Consultation Fee:</span>
-                <span className="font-semibold">$150.00</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-700">Platform Fee:</span>
-                <span className="font-semibold">$10.00</span>
-              </div>
-              <div className="border-t border-blue-300 pt-2 mt-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-800">Total Amount:</span>
-                  <span className="text-lg font-bold text-[#435ba1]">${appointmentAmount}</span>
+          {/* Left Section - Appointment Details */}
+          <div className="space-y-6">
+            
+            {/* Doctor Information Card */}
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Doctor Information</h2>
+              <div className="flex items-center space-x-4">
+                <div className="relative w-20 h-20 rounded-full overflow-hidden">
+                  <Image
+                    src={doctor.image}
+                    alt={doctor.name}
+                    width={80}
+                    height={80}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800">Dr. {doctor.name}</h3>
+                  <p className="text-[#435ba1] font-medium">{doctor.specialization}</p>
+                  <p className="text-gray-600">{doctor.hospital}</p>
+                  <p className="text-yellow-500 font-medium">⭐ {doctor.rating}</p>
                 </div>
               </div>
             </div>
 
-            {appointment?.paymentStatus === 'paid' ? (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                <p className="text-green-800 font-semibold">Payment Completed Successfully!</p>
-                <p className="text-green-600 text-sm">Your appointment is confirmed.</p>
-              </div>
-            ) : showPaymentForm ? (
+            {/* Appointment Details Card */}
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Appointment Details</h2>
               <div className="space-y-4">
-                <StripePaymentForm
-                  clientSecret={clientSecret}
-                  stripePromise={stripePromise}
-                  appointmentId={appointment?._id}
-                  amount={appointmentAmount}
-                  doctorName={doctor?.name}
-                  patientName={session?.user?.name}
-                  onSuccess={handlePaymentSuccess}
-                  onError={handlePaymentError}
-                />
-              </div>
-            ) : (
-              <button
-                onClick={handlePayment}
-                disabled={paymentLoading || !appointment}
-                className="w-full bg-[#435ba1] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#4c69c6] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {paymentLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Initializing Payment...</span>
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="w-5 h-5" />
-                    <span>Proceed to Payment</span>
-                  </>
+                <div className="flex items-center space-x-3">
+                  <User className="w-5 h-5 text-[#435ba1]" />
+                  <div>
+                    <p className="text-sm text-gray-600">Patient Name</p>
+                    <p className="font-semibold">{session?.user?.name}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Calendar className="w-5 h-5 text-[#435ba1]" />
+                  <div>
+                    <p className="text-sm text-gray-600">Appointment Date</p>
+                    <p className="font-semibold">
+                      {appointment?.appointmentDate 
+                        ? new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'To be confirmed'
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <Clock className="w-5 h-5 text-[#435ba1]" />
+                  <div>
+                    <p className="text-sm text-gray-600">Appointment Time</p>
+                    <p className="font-semibold">
+                      {appointment?.appointmentTime || 'To be confirmed'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="w-5 h-5 text-[#435ba1]" />
+                  <div>
+                    <p className="text-sm text-gray-600">Payment Status</p>
+                    <p className={`font-semibold ${
+                      appointment?.paymentStatus === 'paid' 
+                        ? 'text-green-600' 
+                        : 'text-yellow-600'
+                    }`}>
+                      {appointment?.paymentStatus === 'paid' ? 'Payment Complete' : 'Payment Pending'}
+                    </p>
+                  </div>
+                </div>
+
+                {appointment?.appointmentType && (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-5 h-5 bg-[#435ba1] rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">T</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Appointment Type</p>
+                      <p className="font-semibold capitalize">{appointment.appointmentType}</p>
+                    </div>
+                  </div>
                 )}
+
+                {appointment?.symptoms && (
+                  <div className="border-t pt-4">
+                    <p className="text-sm text-gray-600 mb-1">Symptoms</p>
+                    <p className="text-gray-800">{appointment.symptoms}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Important Notes */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">Important Notes</h3>
+              <ul className="space-y-2 text-gray-700 text-sm">
+                <li>• Your appointment is not confirmed until payment is completed</li>
+                <li>• You will receive a confirmation email once payment is processed</li>
+                <li>• Please arrive 15 minutes before your scheduled appointment</li>
+                <li>• Bring a valid ID and insurance card if applicable</li>
+                <li>• Cancellations must be made at least 24 hours in advance</li>
+              </ul>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                onClick={handleBackToDoctors}
+                className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back to Doctors</span>
               </button>
-            )}
+              
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex-1 bg-gray-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
+              >
+                Go to Dashboard
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Important Notes */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">Important Notes:</h3>
-          <ul className="space-y-2 text-gray-700">
-            <li>• Your appointment is not confirmed until payment is completed</li>
-            <li>• You will receive a confirmation email once payment is processed</li>
-            <li>• Please arrive 15 minutes before your scheduled appointment</li>
-            <li>• Bring a valid ID and insurance card if applicable</li>
-            <li>• Cancellations must be made at least 24 hours in advance</li>
-          </ul>
-        </div>
+          {/* Right Section - Payment */}
+          <div className="lg:sticky lg:top-8 lg:h-fit">
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">Complete Payment</h2>
+              
+              {/* Payment Summary */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-blue-900 mb-3">Payment Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Consultation Fee</span>
+                    <span className="font-semibold">$150.00</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-700">Platform Fee</span>
+                    <span className="font-semibold">$10.00</span>
+                  </div>
+                  <div className="border-t border-blue-300 pt-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-gray-800">Total Amount</span>
+                      <span className="text-lg font-bold text-[#435ba1]">${appointmentAmount}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleBackToDoctors}
-            className="flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Doctors</span>
-          </button>
-          
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="flex-1 bg-gray-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-900 transition-colors"
-          >
-            Go to Dashboard
-          </button>
+              {/* Payment Status or Form */}
+              {appointment?.paymentStatus === 'paid' ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                  <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                  <p className="text-green-800 font-semibold text-lg mb-1">Payment Completed!</p>
+                  <p className="text-green-600 text-sm">Your appointment is confirmed</p>
+                </div>
+              ) : showPaymentForm && clientSecret ? (
+                <div className="space-y-4">
+                  <StripePaymentForm
+                    clientSecret={clientSecret}
+                    stripePromise={stripePromise}
+                    appointmentId={appointment?._id}
+                    amount={appointmentAmount}
+                    doctorName={doctor?.name}
+                    patientName={session?.user?.name}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                  />
+                </div>
+              ) : (
+                <button
+                  onClick={handlePayment}
+                  disabled={paymentLoading || !appointment}
+                  className="w-full bg-[#435ba1] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#4c69c6] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                >
+                  {paymentLoading ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span>Initializing Payment...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-6 h-6" />
+                      <span>Pay ${appointmentAmount} Securely</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
