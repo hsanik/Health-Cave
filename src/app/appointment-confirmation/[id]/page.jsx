@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { CheckCircle, Calendar, Clock, User, CreditCard, ArrowLeft, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
-import PaymentForm from "@/components/stripe/CheckoutForm";
+import StripePaymentForm from "@/components/stripe/CheckoutForm";
+import getStripe from "@/lib/stripe";
 
 const AppointmentConfirmation = () => {
   const params = useParams();
@@ -18,6 +19,9 @@ const AppointmentConfirmation = () => {
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [stripePromise] = useState(() => getStripe());
 
   const appointmentAmount = 160.00; // $150 consultation + $10 platform fee
 
@@ -70,7 +74,7 @@ const AppointmentConfirmation = () => {
     }
   }, [id, session]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!appointment) {
       Swal.fire({
         title: 'Error',
@@ -80,8 +84,42 @@ const AppointmentConfirmation = () => {
       });
       return;
     }
+
+    setPaymentLoading(true);
     
-    setShowPaymentForm(true);
+    try {
+      // Create payment intent with Stripe
+      const response = await fetch('/api/stripe/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          appointmentId: appointment._id,
+          amount: appointmentAmount,
+          doctorName: doctor?.name,
+          patientName: session?.user?.name,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      const { clientSecret } = await response.json();
+      setClientSecret(clientSecret);
+      setShowPaymentForm(true);
+    } catch (error) {
+      console.error('Payment error:', error);
+      Swal.fire({
+        title: 'Payment Error',
+        text: 'Failed to initialize payment. Please try again.',
+        icon: 'error',
+        confirmButtonColor: '#435ba1'
+      });
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   const handlePaymentSuccess = async () => {
@@ -236,11 +274,9 @@ const AppointmentConfirmation = () => {
               </div>
             ) : showPaymentForm ? (
               <div className="space-y-4">
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Payment Processing</h4>
-                  <p className="text-sm text-gray-600">Complete your payment to confirm the appointment.</p>
-                </div>
-                <PaymentForm
+                <StripePaymentForm
+                  clientSecret={clientSecret}
+                  stripePromise={stripePromise}
                   appointmentId={appointment?._id}
                   amount={appointmentAmount}
                   doctorName={doctor?.name}
@@ -252,11 +288,20 @@ const AppointmentConfirmation = () => {
             ) : (
               <button
                 onClick={handlePayment}
-                disabled={!appointment}
+                disabled={paymentLoading || !appointment}
                 className="w-full bg-[#435ba1] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#4c69c6] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <CreditCard className="w-5 h-5" />
-                <span>Proceed to Payment</span>
+                {paymentLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Initializing Payment...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5" />
+                    <span>Proceed to Payment</span>
+                  </>
+                )}
               </button>
             )}
           </div>

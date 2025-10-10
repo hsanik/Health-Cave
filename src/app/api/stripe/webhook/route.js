@@ -35,8 +35,9 @@ export async function POST(request) {
       try {
         const appointmentId = paymentIntent.metadata.appointmentId;
         if (appointmentId) {
-          // Update appointment payment status
-          const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/appointments/${appointmentId}/payment`, {
+          // Update appointment payment status via Express backend
+          const backendUrl = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:5000';
+          const response = await fetch(`${backendUrl}/appointments/${appointmentId}/payment`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -50,6 +51,8 @@ export async function POST(request) {
 
           if (!response.ok) {
             console.error('Failed to update appointment payment status');
+          } else {
+            console.log('Appointment payment status updated successfully');
           }
         }
       } catch (error) {
@@ -65,7 +68,8 @@ export async function POST(request) {
       try {
         const appointmentId = failedPayment.metadata.appointmentId;
         if (appointmentId) {
-          await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/appointments/${appointmentId}/payment`, {
+          const backendUrl = process.env.NEXT_PUBLIC_SERVER_URI || 'http://localhost:5000';
+          await fetch(`${backendUrl}/appointments/${appointmentId}/payment`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
