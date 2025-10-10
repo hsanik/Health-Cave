@@ -8,7 +8,7 @@ const Page = () => {
   // Load applications
   const fetchApplications = async () => {
     try {
-      const res = await fetch("http://localhost:5000/doctorApply");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctorApply`);
       const data = await res.json();
       setApplications(data);
     } catch (err) {
@@ -23,7 +23,7 @@ const Page = () => {
   // Approve doctor
   const handleApprove = async (app) => {
     try {
-      const res = await fetch("http://localhost:5000/makeDoctor", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/makeDoctor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...app, role: "doctor" }),
@@ -43,7 +43,7 @@ const Page = () => {
   // Cancel doctor application
   const handleCancel = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/doctorApply/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctorApply/${id}`, {
         method: "DELETE",
       });
 

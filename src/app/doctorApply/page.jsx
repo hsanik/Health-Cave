@@ -26,7 +26,7 @@ const Page = () => {
       // add role property before sending
       const applicationData = { ...formData, role: "user" };
 
-      const res = await fetch("http://localhost:5000/doctorApply", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctorApply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(applicationData),

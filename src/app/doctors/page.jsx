@@ -8,7 +8,7 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch("http://localhost:5000/doctors");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors`);
         const data = await res.json();
         setDoctors(data);
       } catch (error) {
