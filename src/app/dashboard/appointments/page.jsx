@@ -1,26 +1,25 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import React, { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Plus, Clock, User, Phone, Mail, MapPin, FileText, CreditCard, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { Calendar, Plus, Clock, User, Phone, Mail, FileText, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import Swal from 'sweetalert2'
 
 export default function AppointmentsPage() {
-  const { data: session } = useSession()
   const [appointments, setAppointments] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled, completed
 
-  useEffect(() => {
-    fetchAppointments()
-  }, [session])
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (isRefresh = false, silent = false) => {
     try {
-      setLoading(true)
+      if (isRefresh && !silent) {
+        setRefreshing(true)
+      } else if (!silent) {
+        setLoading(true)
+      }
       const response = await fetch('http://localhost:5000/appointments')
       if (response.ok) {
         const data = await response.json()
@@ -29,8 +28,16 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
-      setLoading(false)
+      if (isRefresh && !silent) {
+        setRefreshing(false)
+      } else if (!silent) {
+        setLoading(false)
+      }
     }
+  }
+
+  const handleRefresh = () => {
+    fetchAppointments(true)
   }
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
@@ -44,7 +51,8 @@ export default function AppointmentsPage() {
       })
 
       if (response.ok) {
-        await fetchAppointments() // Refresh the list
+        // Silently refresh data without loading spinner
+        await fetchAppointments(false, true)
         Swal.fire({
           title: 'Success!',
           text: `Appointment ${newStatus} successfully.`,
@@ -64,6 +72,50 @@ export default function AppointmentsPage() {
       })
     }
   }
+
+  const deleteAppointment = async (appointmentId, patientName) => {
+    const result = await Swal.fire({
+      title: 'Delete Appointment?',
+      text: `Are you sure you want to delete the appointment for ${patientName}? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`http://localhost:5000/appointments/${appointmentId}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          // Silently refresh data without loading spinner
+          await fetchAppointments(false, true)
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'The appointment has been deleted successfully.',
+            icon: 'success',
+            confirmButtonColor: '#435ba1'
+          })
+        } else {
+          throw new Error('Failed to delete appointment')
+        }
+      } catch (error) {
+        console.error('Error deleting appointment:', error)
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to delete appointment. Please try again.',
+          icon: 'error',
+          confirmButtonColor: '#435ba1'
+        })
+      }
+    }
+  }
+
+
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -131,10 +183,20 @@ export default function AppointmentsPage() {
             Manage patient appointments and schedules.
           </p>
         </div>
-        <Button onClick={() => window.location.href = '/doctors'}>
-          <Plus className="w-4 h-4 mr-2" />
-          Book New Appointment
-        </Button>
+        <div className="flex space-x-3">
+          <Button 
+            onClick={handleRefresh}
+            disabled={refreshing}
+            variant="outline"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
+          <Button onClick={() => window.location.href = '/doctors'}>
+            <Plus className="w-4 h-4 mr-2" />
+            Book New Appointment
+          </Button>
+        </div>
       </div>
 
       {/* Filter Tabs */}
@@ -157,13 +219,27 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Appointments List */}
-      {filteredAppointments.length === 0 ? (
+      {appointments.length === 0 && !loading && !refreshing ? (
+        <Card className="p-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <RefreshCw className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
+                Click Refresh to Load Appointments
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Click the refresh button above to load your appointments data.
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : filteredAppointments.length === 0 && appointments.length > 0 ? (
         <Card className="p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-                No Appointments Found
+                No {filter === 'all' ? '' : filter.charAt(0).toUpperCase() + filter.slice(1)} Appointments Found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
                 {filter === 'all' 
@@ -259,7 +335,7 @@ export default function AppointmentsPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex space-x-2">
+                  <div className="flex flex-wrap gap-2">
                     {appointment.status === 'pending' && (
                       <>
                         <Button
@@ -288,6 +364,16 @@ export default function AppointmentsPage() {
                         Mark Complete
                       </Button>
                     )}
+                    
+                    {/* Delete Button - Available for all appointments */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => deleteAppointment(appointment._id, appointment.patientName)}
+                      className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
