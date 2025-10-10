@@ -14,6 +14,9 @@ import {
   MessageSquare,
   BarChart3,
   BookText,
+  SquareUserRound,
+  House,
+  UserSearch 
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -22,12 +25,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
   const sidebarItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
     { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
+    { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
+    { icon: UserSearch , label: 'Users', href: '/dashboard/allUsers' },
     { icon: Users, label: "Patients", href: "/dashboard/patients" },
     { icon: Calendar, label: "Appointments", href: "/dashboard/appointments" },
     { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
     { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
     { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
     { icon: Settings, label: "Profile", href: "/dashboard/profile" },
+    { icon: House, label: "Back To Home", href: "/" },
   ];
 
   return (
