@@ -265,6 +265,7 @@ export default function ProfilePage() {
     }))
   }
 
+
   const handleCancel = () => {
     // Reset form to original data or redirect
     if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
