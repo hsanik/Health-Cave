@@ -12,7 +12,7 @@ const DoctorDetails = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`); // your backend API
+        const res = await fetch(`http://localhost:5000/doctors/${id}`); // your backend API
         if (!res.ok) throw new Error("Doctor not found");
         const data = await res.json();
         setDoctor(data);
@@ -79,13 +79,11 @@ const DoctorDetails = () => {
             </p>
             <p>
               <span className="font-semibold">Languages:</span>{" "}
-              {Array.isArray(doctor.languages) 
-                ? doctor.languages.join(", ") 
-                : doctor.languages || "Not specified"}
+              {doctor.languages?.join(", ")}
             </p>
 
             <a
-              href={`/dashboard/appointments?doctorId=${doctor._id}&doctorName=${encodeURIComponent(doctor.name)}&specialization=${encodeURIComponent(doctor.specialization)}`}
+              href={`/book-appointment/${doctor._id}`} // replace with your booking page route
               className="inline-block px-4 py-2 bg-[#435ba1] text-white text-sm font-medium rounded hover:bg-[#4c69c6] transition mt-4"
             >
               Book An Appointment
