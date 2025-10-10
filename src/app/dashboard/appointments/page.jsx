@@ -1,25 +1,24 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Plus, Clock, User, Phone, Mail, FileText, CheckCircle, XCircle, AlertCircle, RefreshCw, Trash2 } from 'lucide-react'
+import { Calendar, Plus, Clock, User, Phone, Mail, FileText, CheckCircle, XCircle, AlertCircle, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import Swal from 'sweetalert2'
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled, completed
 
-  const fetchAppointments = async (isRefresh = false, silent = false) => {
+  // Auto-load appointments on page load
+  useEffect(() => {
+    fetchAppointments()
+  }, [])
+
+  const fetchAppointments = async () => {
     try {
-      if (isRefresh && !silent) {
-        setRefreshing(true)
-      } else if (!silent) {
-        setLoading(true)
-      }
       const response = await fetch('http://localhost:5000/appointments')
       if (response.ok) {
         const data = await response.json()
@@ -28,16 +27,8 @@ export default function AppointmentsPage() {
     } catch (error) {
       console.error('Error fetching appointments:', error)
     } finally {
-      if (isRefresh && !silent) {
-        setRefreshing(false)
-      } else if (!silent) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
-  }
-
-  const handleRefresh = () => {
-    fetchAppointments(true)
   }
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
@@ -51,8 +42,8 @@ export default function AppointmentsPage() {
       })
 
       if (response.ok) {
-        // Silently refresh data without loading spinner
-        await fetchAppointments(false, true)
+        // Auto-update data without loading spinner
+        await fetchAppointments()
         Swal.fire({
           title: 'Success!',
           text: `Appointment ${newStatus} successfully.`,
@@ -92,8 +83,8 @@ export default function AppointmentsPage() {
         })
 
         if (response.ok) {
-          // Silently refresh data without loading spinner
-          await fetchAppointments(false, true)
+          // Auto-update data without loading spinner
+          await fetchAppointments()
           Swal.fire({
             title: 'Deleted!',
             text: 'The appointment has been deleted successfully.',
@@ -183,20 +174,10 @@ export default function AppointmentsPage() {
             Manage patient appointments and schedules.
           </p>
         </div>
-        <div className="flex space-x-3">
-          <Button 
-            onClick={handleRefresh}
-            disabled={refreshing}
-            variant="outline"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            {refreshing ? 'Refreshing...' : 'Refresh'}
-          </Button>
-          <Button onClick={() => window.location.href = '/doctors'}>
-            <Plus className="w-4 h-4 mr-2" />
-            Book New Appointment
-          </Button>
-        </div>
+        <Button onClick={() => window.location.href = '/doctors'}>
+          <Plus className="w-4 h-4 mr-2" />
+          Book New Appointment
+        </Button>
       </div>
 
       {/* Filter Tabs */}
@@ -219,27 +200,13 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Appointments List */}
-      {appointments.length === 0 && !loading && !refreshing ? (
-        <Card className="p-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <RefreshCw className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-                Click Refresh to Load Appointments
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Click the refresh button above to load your appointments data.
-              </p>
-            </div>
-          </div>
-        </Card>
-      ) : filteredAppointments.length === 0 && appointments.length > 0 ? (
+      {filteredAppointments.length === 0 ? (
         <Card className="p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-                No {filter === 'all' ? '' : filter.charAt(0).toUpperCase() + filter.slice(1)} Appointments Found
+                No {filter === 'all' ? 'Appointments' : filter.charAt(0).toUpperCase() + filter.slice(1) + ' Appointments'} Found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
                 {filter === 'all' 
@@ -275,7 +242,7 @@ export default function AppointmentsPage() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                        Dr. {appointment.doctorName}
+                         {appointment.doctorName}
                       </h3>
                       {getStatusIcon(appointment.status)}
                     </div>
