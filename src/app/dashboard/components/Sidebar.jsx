@@ -2,6 +2,8 @@
 
 
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,16 +16,60 @@ import {
   MessageSquare,
   BarChart3,
   BookText,
+  Clock,
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
+
   const pathname = usePathname()
+  const { data: session, status } = useSession()
+  const [isDoctor, setIsDoctor] = useState(false)
+
+
+  // Check if user is a doctor by checking if they exist in doctors collection
+  useEffect(() => {
+    const checkDoctorStatus = async () => {
+      // Only check if session is loaded and user is authenticated
+      if (status === 'loading') {
+        return
+      }
+
+      if (status !== 'authenticated' || !session) {
+        setIsDoctor(false)
+        return
+      }
+
+      if (!session?.user?.id) {
+        setIsDoctor(false)
+        return
+      }
+
+      try {
+        const apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`
+
+        const response = await fetch(apiUrl)
+
+        if (response.ok) {
+          const data = await response.json()
+          setIsDoctor(data.isDoctor)
+        } else {
+          setIsDoctor(false)
+        }
+      } catch (error) {
+        console.error('Error checking doctor status:', error)
+        setIsDoctor(false)
+      }
+    }
+
+    checkDoctorStatus()
+  }, [session, status])
 
   const sidebarItems = [
     { icon: Home, label: "Dashboard", href: "/dashboard" },
     { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
     { icon: Users, label: "Patients", href: "/dashboard/patients" },
     { icon: Calendar, label: "Appointments", href: "/dashboard/appointments" },
+    ...(isDoctor ? [{ icon: Clock, label: "Availability", href: "/dashboard/availability" }] : []),
     { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
     { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
     { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },

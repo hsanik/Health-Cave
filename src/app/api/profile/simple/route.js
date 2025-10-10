@@ -1,49 +1,133 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import clientPromise from '@/lib/mongodb'
+import { ObjectId } from 'mongodb'
 
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session || !session.user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    // Return session data as profile data for now
-    const user = {
-      _id: session.user.id,
-      name: session.user.name,
-      email: session.user.email,
-      phone: session.user.phone || '',
-      address: session.user.address || '',
-      location: session.user.address || '',
-      specialization: session.user.specialization || '',
-      bio: session.user.bio || '',
-      experience: session.user.experience || '',
-      education: session.user.education || '',
-      hospital: '',
-      licenseNumber: '',
-      workingHours: '',
-      notifications: {
+    const client = await clientPromise
+    const db = client.db('healthCave')
+    const usersCollection = db.collection('users')
+
+    // Fetch user from database
+    const user = await usersCollection.findOne({ _id: new ObjectId(session.user.id) })
+
+    if (!user) {
+      // Fetch availability from backend server even for fallback
+      let availability = []
+      try {
+        // First check if user is a doctor and get the correct doctor ID
+        const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`)
+        if (doctorResponse.ok) {
+          const doctorData = await doctorResponse.json()
+          if (doctorData.isDoctor && doctorData.doctor) {
+            // Use the doctor's _id for fetching availability
+            const doctorId = doctorData.doctor._id
+            const availabilityResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/${doctorId}/availability`)
+            if (availabilityResponse.ok) {
+              const availabilityData = await availabilityResponse.json()
+              availability = availabilityData.availability || []
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching availability for fallback:', error)
+      }
+
+      // Return session data as fallback if user not found in database
+      const fallbackUser = {
+        _id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        phone: session.user.phone || '',
+        address: session.user.address || '',
+        location: session.user.address || '',
+        specialization: session.user.specialization || '',
+        bio: session.user.bio || '',
+        experience: session.user.experience || '',
+        education: session.user.education || '',
+        hospital: '',
+        licenseNumber: '',
+        workingHours: '',
+        availability: availability,
+        notifications: {
+          emailNotifications: true,
+          smsNotifications: false,
+          appointmentReminders: true,
+          marketingEmails: false
+        },
+        privacy: {
+          profileVisibility: true,
+          showEmail: false,
+          showPhone: false
+        }
+      }
+      return NextResponse.json({ user: fallbackUser }, { status: 200 })
+    }
+
+    // Fetch availability from backend server
+    let availability = []
+    try {
+      // First check if user is a doctor and get the correct doctor ID
+      const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`)
+      if (doctorResponse.ok) {
+        const doctorData = await doctorResponse.json()
+        if (doctorData.isDoctor && doctorData.doctor) {
+          // Use the doctor's _id for fetching availability
+          const doctorId = doctorData.doctor._id
+            const availabilityResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/${doctorId}/availability`)
+          if (availabilityResponse.ok) {
+            const availabilityData = await availabilityResponse.json()
+            availability = availabilityData.availability || []
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching availability:', error)
+    }
+
+    // Merge session data with database data, preferring database data
+    const profileUser = {
+      _id: user._id,
+      name: user.name || session.user.name,
+      email: user.email || session.user.email,
+      phone: user.phone || '',
+      address: user.address || '',
+      location: user.location || user.address || '',
+      specialization: user.specialization || '',
+      bio: user.bio || '',
+      experience: user.experience || '',
+      education: user.education || '',
+      hospital: user.hospital || '',
+      licenseNumber: user.licenseNumber || '',
+      workingHours: user.workingHours || '',
+      availability: availability,
+      notifications: user.notifications || {
         emailNotifications: true,
         smsNotifications: false,
         appointmentReminders: true,
         marketingEmails: false
       },
-      privacy: {
+      privacy: user.privacy || {
         profileVisibility: true,
         showEmail: false,
         showPhone: false
       }
     }
 
-    return NextResponse.json({ user }, { status: 200 })
+    return NextResponse.json({ user: profileUser }, { status: 200 })
   } catch (error) {
     console.error('Error fetching profile:', error)
-    return NextResponse.json({ 
-      message: 'Internal server error', 
-      error: error.message 
+    return NextResponse.json({
+      message: 'Internal server error',
+      error: error.message
     }, { status: 500 })
   }
 }
