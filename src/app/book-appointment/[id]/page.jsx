@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Calendar, Clock, User, Phone, Mail, CreditCard, MapPin, FileText } from "lucide-react";
-import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 const BookAppointment = () => {
     const params = useParams();
@@ -15,6 +15,21 @@ const BookAppointment = () => {
     const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const [bookedAppointments, setBookedAppointments] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+
+    // Helper function to format date as DD/MM/YYYY
+    const formatDateToDDMMYYYY = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    // Helper function to format date for input (YYYY-MM-DD)
+    const formatDateForInput = (date) => {
+        return date.toISOString().split('T')[0];
+    };
 
     const [formData, setFormData] = useState({
         patientName: "",
@@ -22,7 +37,7 @@ const BookAppointment = () => {
         patientPhone: "",
         patientAge: "",
         patientGender: "",
-        appointmentDate: "",
+        appointmentDate: formatDateForInput(new Date()), // Pre-select today's date for input
         appointmentTime: "",
         appointmentType: "consultation",
         symptoms: "",
@@ -60,17 +75,26 @@ const BookAppointment = () => {
                 setDoctor(data);
             } catch (error) {
                 console.error(error);
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to load doctor information",
-                    icon: "error",
-                    confirmButtonColor: "#435ba1"
-                });
+                toast.error("Failed to load doctor information");
             } finally {
                 setLoading(false);
             }
         };
+
+        const fetchBookedAppointments = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/appointments/doctor/${id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setBookedAppointments(data);
+                }
+            } catch (error) {
+                console.error("Error fetching booked appointments:", error);
+            }
+        };
+
         fetchDoctor();
+        fetchBookedAppointments();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -79,6 +103,47 @@ const BookAppointment = () => {
             ...prev,
             [name]: value
         }));
+
+        // Reset time when date changes
+        if (name === 'appointmentDate') {
+            setFormData(prev => ({
+                ...prev,
+                appointmentTime: ""
+            }));
+        }
+    };
+
+    const getAvailableTimeSlots = () => {
+        const allTimeSlots = [
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
+        ];
+
+        // Get booked times for the selected date
+        const selectedDateStr = formData.appointmentDate;
+        const bookedTimes = bookedAppointments
+            .filter(appointment => {
+                const appointmentDate = appointment.appointmentDate;
+                // Convert appointment date to YYYY-MM-DD format for comparison
+                let formattedAppointmentDate;
+                if (appointmentDate) {
+                    const date = new Date(appointmentDate);
+                    formattedAppointmentDate = formatDateForInput(date);
+                }
+                return formattedAppointmentDate === selectedDateStr &&
+                    appointment.status !== 'cancelled';
+            })
+            .map(appointment => appointment.appointmentTime);
+
+        return allTimeSlots.filter(time => !bookedTimes.includes(time));
+    };
+
+    const formatTimeDisplay = (time) => {
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+        return `${displayHour}:${minutes} ${ampm}`;
     };
 
     const updateUserRole = async () => {
@@ -127,6 +192,7 @@ const BookAppointment = () => {
             // Create appointment data
             const appointmentData = {
                 ...formData,
+                appointmentDate: new Date(formData.appointmentDate).toISOString(), // Convert to ISO string for database
                 doctorId: id,
                 doctorName: doctor.name,
                 doctorSpecialization: doctor.specialization,
@@ -158,24 +224,16 @@ const BookAppointment = () => {
                 localStorage.setItem('lastAppointmentId', result.insertedId);
             }
 
-            Swal.fire({
-                title: "Appointment Booked!",
-                text: "Your appointment has been successfully booked. Please proceed with payment.",
-                icon: "success",
-                confirmButtonColor: "#435ba1"
-            }).then(() => {
-                // Redirect to payment or confirmation page
+            toast.success("Appointment booked successfully! Redirecting to payment...");
+
+            // Redirect to payment or confirmation page after a short delay
+            setTimeout(() => {
                 router.push(`/appointment-confirmation/${id}`);
-            });
+            }, 1500);
 
         } catch (error) {
             console.error("Error booking appointment:", error);
-            Swal.fire({
-                title: "Error",
-                text: "Failed to book appointment. Please try again.",
-                icon: "error",
-                confirmButtonColor: "#435ba1"
-            });
+            toast.error("Failed to book appointment. Please try again.");
         } finally {
             setSubmitting(false);
         }
@@ -197,10 +255,7 @@ const BookAppointment = () => {
         );
     }
 
-    // Get tomorrow's date as minimum date
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const minDate = tomorrow.toISOString().split('T')[0];
+    // Available time slots and date validation handled by calendar component
 
     return (
         <div className="w-11/12 mx-auto py-10">
@@ -354,9 +409,12 @@ const BookAppointment = () => {
                                     value={formData.appointmentDate}
                                     onChange={handleInputChange}
                                     required
-                                    min={minDate}
+                                    min={formatDateForInput(new Date())} // Today's date as minimum
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
                                 />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Selected: {formData.appointmentDate ? formatDateToDDMMYYYY(new Date(formData.appointmentDate)) : 'No date selected'}
+                                </p>
                             </div>
 
                             <div>
@@ -372,19 +430,21 @@ const BookAppointment = () => {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
                                 >
                                     <option value="">Select Time</option>
-                                    <option value="09:00">09:00 AM</option>
-                                    <option value="09:30">09:30 AM</option>
-                                    <option value="10:00">10:00 AM</option>
-                                    <option value="10:30">10:30 AM</option>
-                                    <option value="11:00">11:00 AM</option>
-                                    <option value="11:30">11:30 AM</option>
-                                    <option value="14:00">02:00 PM</option>
-                                    <option value="14:30">02:30 PM</option>
-                                    <option value="15:00">03:00 PM</option>
-                                    <option value="15:30">03:30 PM</option>
-                                    <option value="16:00">04:00 PM</option>
-                                    <option value="16:30">04:30 PM</option>
+                                    {getAvailableTimeSlots().length === 0 ? (
+                                        <option value="" disabled>No available slots for this date</option>
+                                    ) : (
+                                        getAvailableTimeSlots().map(time => (
+                                            <option key={time} value={time}>
+                                                {formatTimeDisplay(time)}
+                                            </option>
+                                        ))
+                                    )}
                                 </select>
+                                {formData.appointmentDate && getAvailableTimeSlots().length === 0 && (
+                                    <p className="text-sm text-red-600 mt-1">
+                                        No available time slots for this date. Please select another date.
+                                    </p>
+                                )}
                             </div>
 
                             <div>
