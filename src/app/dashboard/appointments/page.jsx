@@ -1,157 +1,175 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Calendar, Plus, Clock, User, Phone, Mail, FileText, CheckCircle, XCircle, AlertCircle, Trash2 } from 'lucide-react'
-import Image from 'next/image'
-import Swal from 'sweetalert2'
+import React, { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Calendar,
+  Plus,
+  Clock,
+  User,
+  Phone,
+  Mail,
+  FileText,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import Swal from "sweetalert2";
 
 export default function AppointmentsPage() {
-  const [appointments, setAppointments] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all') // all, pending, confirmed, cancelled, completed
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all"); // all, pending, confirmed, cancelled, completed
 
   // Auto-load appointments on page load
   useEffect(() => {
-    fetchAppointments()
-  }, [])
+    fetchAppointments();
+  }, []);
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/appointments')
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+      );
       if (response.ok) {
-        const data = await response.json()
-        setAppointments(data)
+        const data = await response.json();
+        setAppointments(data);
       }
     } catch (error) {
-      console.error('Error fetching appointments:', error)
+      console.error("Error fetching appointments:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/appointments/${appointmentId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
 
       if (response.ok) {
         // Auto-update data without loading spinner
-        await fetchAppointments()
+        await fetchAppointments();
         Swal.fire({
-          title: 'Success!',
+          title: "Success!",
           text: `Appointment ${newStatus} successfully.`,
-          icon: 'success',
-          confirmButtonColor: '#435ba1'
-        })
+          icon: "success",
+          confirmButtonColor: "#435ba1",
+        });
       } else {
-        throw new Error('Failed to update appointment')
+        throw new Error("Failed to update appointment");
       }
     } catch (error) {
-      console.error('Error updating appointment:', error)
+      console.error("Error updating appointment:", error);
       Swal.fire({
-        title: 'Error!',
-        text: 'Failed to update appointment status.',
-        icon: 'error',
-        confirmButtonColor: '#435ba1'
-      })
+        title: "Error!",
+        text: "Failed to update appointment status.",
+        icon: "error",
+        confirmButtonColor: "#435ba1",
+      });
     }
-  }
+  };
 
   const deleteAppointment = async (appointmentId, patientName) => {
     const result = await Swal.fire({
-      title: 'Delete Appointment?',
+      title: "Delete Appointment?",
       text: `Are you sure you want to delete the appointment for ${patientName}? This action cannot be undone.`,
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel'
-    })
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`http://localhost:5000/appointments/${appointmentId}`, {
-          method: 'DELETE',
-        })
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (response.ok) {
           // Auto-update data without loading spinner
-          await fetchAppointments()
+          await fetchAppointments();
           Swal.fire({
-            title: 'Deleted!',
-            text: 'The appointment has been deleted successfully.',
-            icon: 'success',
-            confirmButtonColor: '#435ba1'
-          })
+            title: "Deleted!",
+            text: "The appointment has been deleted successfully.",
+            icon: "success",
+            confirmButtonColor: "#435ba1",
+          });
         } else {
-          throw new Error('Failed to delete appointment')
+          throw new Error("Failed to delete appointment");
         }
       } catch (error) {
-        console.error('Error deleting appointment:', error)
+        console.error("Error deleting appointment:", error);
         Swal.fire({
-          title: 'Error!',
-          text: 'Failed to delete appointment. Please try again.',
-          icon: 'error',
-          confirmButtonColor: '#435ba1'
-        })
+          title: "Error!",
+          text: "Failed to delete appointment. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#435ba1",
+        });
       }
     }
-  }
-
-
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'confirmed':
-        return <CheckCircle className="w-5 h-5 text-green-500" />
-      case 'cancelled':
-        return <XCircle className="w-5 h-5 text-red-500" />
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-blue-500" />
+      case "confirmed":
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case "cancelled":
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      case "completed":
+        return <CheckCircle className="w-5 h-5 text-blue-500" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-yellow-500" />
+        return <AlertCircle className="w-5 h-5 text-yellow-500" />;
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      case 'completed':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+      case "confirmed":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "cancelled":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "completed":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
       default:
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
     }
-  }
+  };
 
-  const filteredAppointments = appointments.filter(appointment => {
-    if (filter === 'all') return true
-    return appointment.status === filter
-  })
+  const filteredAppointments = appointments.filter((appointment) => {
+    if (filter === "all") return true;
+    return appointment.status === filter;
+  });
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Not set'
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+    if (!dateString) return "Not set";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const formatTime = (timeString) => {
-    if (!timeString) return 'Not set'
-    return timeString
-  }
+    if (!timeString) return "Not set";
+    return timeString;
+  };
 
   if (loading) {
     return (
@@ -160,7 +178,7 @@ export default function AppointmentsPage() {
           <p className="text-lg font-semibold">Loading appointments...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -174,7 +192,7 @@ export default function AppointmentsPage() {
             Manage patient appointments and schedules.
           </p>
         </div>
-        <Button onClick={() => window.location.href = '/doctors'}>
+        <Button onClick={() => (window.location.href = "/doctors")}>
           <Plus className="w-4 h-4 mr-2" />
           Book New Appointment
         </Button>
@@ -183,19 +201,21 @@ export default function AppointmentsPage() {
       {/* Filter Tabs */}
       <div className="mb-6">
         <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-fit">
-          {['all', 'pending', 'confirmed', 'cancelled', 'completed'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                filter === status
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
+          {["all", "pending", "confirmed", "cancelled", "completed"].map(
+            (status) => (
+              <button
+                key={status}
+                onClick={() => setFilter(status)}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === status
+                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -206,11 +226,17 @@ export default function AppointmentsPage() {
             <div className="text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">
-                No {filter === 'all' ? 'Appointments' : filter.charAt(0).toUpperCase() + filter.slice(1) + ' Appointments'} Found
+                No{" "}
+                {filter === "all"
+                  ? "Appointments"
+                  : filter.charAt(0).toUpperCase() +
+                    filter.slice(1) +
+                    " Appointments"}{" "}
+                Found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {filter === 'all' 
-                  ? 'No appointments have been scheduled yet.' 
+                {filter === "all"
+                  ? "No appointments have been scheduled yet."
                   : `No ${filter} appointments found.`}
               </p>
             </div>
@@ -238,11 +264,11 @@ export default function AppointmentsPage() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                         {appointment.doctorName}
+                        {appointment.doctorName}
                       </h3>
                       {getStatusIcon(appointment.status)}
                     </div>
@@ -252,7 +278,7 @@ export default function AppointmentsPage() {
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Patient: {appointment.patientName}
                     </p>
-                    
+
                     {/* Appointment Details */}
                     <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                       <div className="flex items-center space-x-2">
@@ -278,7 +304,8 @@ export default function AppointmentsPage() {
                         <FileText className="w-4 h-4 text-gray-400 mt-0.5" />
                         <div>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Symptoms:</span> {appointment.symptoms}
+                            <span className="font-medium">Symptoms:</span>{" "}
+                            {appointment.symptoms}
                           </p>
                         </div>
                       </div>
@@ -289,25 +316,37 @@ export default function AppointmentsPage() {
                 {/* Right Section - Status & Actions */}
                 <div className="flex flex-col items-end space-y-3">
                   <div className="flex items-center space-x-3">
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
-                      {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                        appointment.status
+                      )}`}
+                    >
+                      {appointment.status.charAt(0).toUpperCase() +
+                        appointment.status.slice(1)}
                     </span>
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      appointment.paymentStatus === 'paid' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                    }`}>
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        appointment.paymentStatus === "paid"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                          : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                      }`}
+                    >
                       Payment: {appointment.paymentStatus}
                     </span>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-2">
-                    {appointment.status === 'pending' && (
+                    {appointment.status === "pending" && (
                       <>
                         <Button
                           size="sm"
-                          onClick={() => updateAppointmentStatus(appointment._id, 'confirmed')}
+                          onClick={() =>
+                            updateAppointmentStatus(
+                              appointment._id,
+                              "confirmed"
+                            )
+                          }
                           className="bg-green-600 hover:bg-green-700"
                         >
                           Confirm
@@ -315,28 +354,40 @@ export default function AppointmentsPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => updateAppointmentStatus(appointment._id, 'cancelled')}
+                          onClick={() =>
+                            updateAppointmentStatus(
+                              appointment._id,
+                              "cancelled"
+                            )
+                          }
                           className="border-red-300 text-red-600 hover:bg-red-50"
                         >
                           Cancel
                         </Button>
                       </>
                     )}
-                    {appointment.status === 'confirmed' && (
+                    {appointment.status === "confirmed" && (
                       <Button
                         size="sm"
-                        onClick={() => updateAppointmentStatus(appointment._id, 'completed')}
+                        onClick={() =>
+                          updateAppointmentStatus(appointment._id, "completed")
+                        }
                         className="bg-blue-600 hover:bg-blue-700"
                       >
                         Mark Complete
                       </Button>
                     )}
-                    
+
                     {/* Delete Button - Available for all appointments */}
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => deleteAppointment(appointment._id, appointment.patientName)}
+                      onClick={() =>
+                        deleteAppointment(
+                          appointment._id,
+                          appointment.patientName
+                        )
+                      }
                       className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -349,5 +400,5 @@ export default function AppointmentsPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
