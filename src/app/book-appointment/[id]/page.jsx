@@ -235,7 +235,7 @@ const BookAppointment = () => {
 
       // Save appointment to backend
       const response = await fetch(
-        "${process.env.NEXT_PUBLIC_SERVER_URI}/appointments",
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`,
         {
           method: "POST",
           headers: {
