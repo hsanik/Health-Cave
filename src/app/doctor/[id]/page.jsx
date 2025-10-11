@@ -12,7 +12,9 @@ const DoctorDetails = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
+        ); // your backend API
         if (!res.ok) throw new Error("Doctor not found");
         const data = await res.json();
         setDoctor(data);

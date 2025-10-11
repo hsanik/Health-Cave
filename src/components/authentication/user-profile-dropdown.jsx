@@ -111,6 +111,19 @@ export default function UserProfileDropdown() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                   {session.user.email}
                 </p>
+                {session.user.role && (
+                  <div className="mt-1">
+                    <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${
+                      session.user.role === 'patient' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : session.user.role === 'doctor'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                    }`}>
+                      {session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

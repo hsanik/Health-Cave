@@ -596,9 +596,25 @@ export default function ProfilePage() {
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
                 {session?.user?.email || 'user@example.com'}
               </p>
-              <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 dark:bg-gray-700 rounded-lg py-2 px-4">
-                <Stethoscope className="w-4 h-4" />
-                <span>Healthcare Professional</span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 dark:bg-gray-700 rounded-lg py-2 px-4">
+                  <Stethoscope className="w-4 h-4" />
+                  <span>Healthcare Professional</span>
+                </div>
+                
+                {/* User Role Display */}
+                <div className="flex items-center justify-center">
+                  <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
+                    session?.user?.role === 'patient' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : session?.user?.role === 'doctor'
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                  }`}>
+                    <User className="w-4 h-4 mr-1" />
+                    Role: {session?.user?.role ? session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1) : 'User'}
+                  </span>
+                </div>
               </div>
             </div>
           </Card>
