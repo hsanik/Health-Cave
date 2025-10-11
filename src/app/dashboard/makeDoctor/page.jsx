@@ -9,7 +9,7 @@ const Page = () => {
   const fetchApplications = async () => {
     try {
       const res = await fetch(
-        "${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply"
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply`
       );
       const data = await res.json();
       setApplications(data);
@@ -26,7 +26,7 @@ const Page = () => {
   const handleApprove = async (app) => {
     try {
       const res = await fetch(
-        "${process.env.NEXT_PUBLIC_SERVER_URI}/makeDoctor",
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/makeDoctor`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
