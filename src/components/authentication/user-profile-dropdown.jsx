@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { LogOut, LayoutDashboard, ChevronDown } from 'lucide-react'
+import { LogOut, LayoutDashboard, ChevronDown, MessageSquare, Video } from 'lucide-react'
 import Image from 'next/image'
 import Swal from 'sweetalert2'
 
@@ -136,6 +136,28 @@ export default function UserProfileDropdown() {
             >
               <LayoutDashboard className="h-4 w-4 mr-3" />
               Dashboard
+            </button>
+            
+            <button
+              onClick={() => {
+                router.push('/chat');
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <MessageSquare className="h-4 w-4 mr-3" />
+              Chat
+            </button>
+            
+            <button
+              onClick={() => {
+                router.push('/video-call');
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Video className="h-4 w-4 mr-3" />
+              Video Call
             </button>
             
             <button

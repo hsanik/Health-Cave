@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import NavConditional from '@/components/nav/nav-conditional'
 import FooterConditional from '@/components/footer/footer-conditional'
 import BackToTop from '@/components/back-to-top/back-to-top'
-import ChatbotComponent from '@/app/chatbot/ChatbotComponent'
+import CustomChatbot from '@/components/chatbot/CustomChatbot'
 import { useEffect, useState } from 'react'
 
 export default function ConditionalLayout({ children }) {
@@ -31,9 +31,7 @@ export default function ConditionalLayout({ children }) {
     return (
       <>
         {children}
-        <div className="chatbot-container">
-          <ChatbotComponent />
-        </div>
+        <CustomChatbot />
         <BackToTop />
       </>
     )
@@ -46,9 +44,7 @@ export default function ConditionalLayout({ children }) {
       <main className="mx-auto w-11/12 py-6">
         {children}
       </main>
-      <div className="chatbot-container">
-        <ChatbotComponent />
-      </div>
+      <CustomChatbot />
       <FooterConditional />
       <BackToTop />
     </>
