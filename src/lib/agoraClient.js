@@ -11,6 +11,11 @@ let rtmClient = null;
  * @returns {Promise<Object>} The RTM client instance
  */
 export const getAgoraRTMClient = async () => {
+  // Ensure we're running on the client side
+  if (typeof window === 'undefined') {
+    throw new Error('Agora RTM client can only be initialized on the client side');
+  }
+  
   if (!rtmClient) {
     try {
       rtmClient = AgoraRTM.createInstance(agoraConfig.appId);
