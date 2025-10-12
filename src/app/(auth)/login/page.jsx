@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { ButtonSpinner } from "@/components/ui/loading-spinner";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -240,7 +241,7 @@ function LoginContent() {
               disabled={isLoading}
               className="w-full bg-[#435ba1] hover:bg-[#4c69c6] text-white py-3 px-4 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? <ButtonSpinner text="Signing in..." /> : "Sign In"}
             </Button>
           </form>
 
@@ -261,7 +262,7 @@ function LoginContent() {
                 onClick={() => handleOAuth('google')}
                 disabled={isOauthLoading === 'google'}
               >
-                {isOauthLoading === 'google' ? 'Connecting…' : 'Sign in with Google'}
+                {isOauthLoading === 'google' ? <ButtonSpinner text="Connecting..." variant="default" /> : 'Sign in with Google'}
               </Button>
               <Button
                 variant="outline"
@@ -269,7 +270,7 @@ function LoginContent() {
                 onClick={() => handleOAuth('github')}
                 disabled={isOauthLoading === 'github'}
               >
-                {isOauthLoading === 'github' ? 'Connecting…' : 'Sign in with GitHub'}
+                {isOauthLoading === 'github' ? <ButtonSpinner text="Connecting..." variant="default" /> : 'Sign in with GitHub'}
               </Button>
             </div>
           </div>
