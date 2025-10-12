@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import {
@@ -15,11 +15,11 @@ import {
 import Swal from "sweetalert2";
 import StripePaymentForm from "@/components/stripe/CheckoutForm";
 import getStripe from "@/lib/stripe";
+import axios from "axios";
 
 const AppointmentConfirmation = () => {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const { id } = params;
 
@@ -37,34 +37,30 @@ const AppointmentConfirmation = () => {
     const fetchData = async () => {
       try {
         // Fetch doctor data
-        const doctorRes = await fetch(
+        const doctorRes = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
         );
-        if (!doctorRes.ok) throw new Error("Doctor not found");
-        const doctorData = await doctorRes.json();
-        setDoctor(doctorData);
+        setDoctor(doctorRes.data);
 
         // Get appointment ID from localStorage (set during booking)
         const appointmentId = localStorage.getItem("lastAppointmentId");
         if (appointmentId) {
           // Try to fetch specific appointment first
           try {
-            const appointmentRes = await fetch(
+            const appointmentRes = await axios.get(
               `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}`
             );
-            if (appointmentRes.ok) {
-              const appointmentData = await appointmentRes.json();
-              if (appointmentData.userId === session?.user?.id) {
-                setAppointment(appointmentData);
-              }
-            } else {
+            if (appointmentRes.data.userId === session?.user?.id) {
+              setAppointment(appointmentRes.data);
+            }
+          } catch (error) {
+            if (error.response?.status === 404) {
               // Fallback: fetch all appointments and find the one
-              const allAppointmentsRes = await fetch(
-                `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
-              );
-              if (allAppointmentsRes.ok) {
-                const appointments = await allAppointmentsRes.json();
-                const userAppointment = appointments.find(
+              try {
+                const allAppointmentsRes = await axios.get(
+                  `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+                );
+                const userAppointment = allAppointmentsRes.data.find(
                   (apt) =>
                     apt._id === appointmentId &&
                     apt.userId === session?.user?.id
@@ -72,14 +68,16 @@ const AppointmentConfirmation = () => {
                 if (userAppointment) {
                   setAppointment(userAppointment);
                 }
+              } catch (fallbackError) {
+                console.error("Error fetching all appointments:", fallbackError);
               }
+            } else {
+              console.error("Error fetching appointment:", error);
             }
-          } catch (error) {
-            console.error("Error fetching appointment:", error);
           }
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching doctor:", error);
       } finally {
         setLoading(false);
       }
@@ -105,24 +103,14 @@ const AppointmentConfirmation = () => {
 
     try {
       // Create payment intent with Stripe
-      const response = await fetch("/api/stripe/create-payment-intent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          appointmentId: appointment._id,
-          amount: appointmentAmount,
-          doctorName: doctor?.name,
-          patientName: session?.user?.name,
-        }),
+      const response = await axios.post("/api/stripe/create-payment-intent", {
+        appointmentId: appointment._id,
+        amount: appointmentAmount,
+        doctorName: doctor?.name,
+        patientName: session?.user?.name,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create payment intent");
-      }
-
-      const { clientSecret } = await response.json();
+      const { clientSecret } = response.data;
       setClientSecret(clientSecret);
       setShowPaymentForm(true);
     } catch (error) {
@@ -252,13 +240,13 @@ const AppointmentConfirmation = () => {
                     <p className="font-semibold">
                       {appointment?.appointmentDate
                         ? new Date(
-                            appointment.appointmentDate
-                          ).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
+                          appointment.appointmentDate
+                        ).toLocaleDateString("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
                         : "To be confirmed"}
                     </p>
                   </div>
@@ -279,11 +267,10 @@ const AppointmentConfirmation = () => {
                   <div>
                     <p className="text-sm text-gray-600">Payment Status</p>
                     <p
-                      className={`font-semibold ${
-                        appointment?.paymentStatus === "paid"
+                      className={`font-semibold ${appointment?.paymentStatus === "paid"
                           ? "text-green-600"
                           : "text-yellow-600"
-                      }`}
+                        }`}
                     >
                       {appointment?.paymentStatus === "paid"
                         ? "Payment Complete"

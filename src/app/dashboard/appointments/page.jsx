@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
@@ -31,13 +32,10 @@ export default function AppointmentsPage() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
       );
-      if (response.ok) {
-        const data = await response.json();
-        setAppointments(data);
-      }
+      setAppointments(response.data);
     } catch (error) {
       console.error("Error fetching appointments:", error);
     } finally {
@@ -47,29 +45,19 @@ export default function AppointmentsPage() {
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
-      const response = await fetch(
+      await axios.put(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
+        { status: newStatus }
       );
 
-      if (response.ok) {
-        // Auto-update data without loading spinner
-        await fetchAppointments();
-        Swal.fire({
-          title: "Success!",
-          text: `Appointment ${newStatus} successfully.`,
-          icon: "success",
-          confirmButtonColor: "#435ba1",
-        });
-      } else {
-        throw new Error("Failed to update appointment");
-      }
+      // Auto-update data without loading spinner
+      await fetchAppointments();
+      Swal.fire({
+        title: "Success!",
+        text: `Appointment ${newStatus} successfully.`,
+        icon: "success",
+        confirmButtonColor: "#435ba1",
+      });
     } catch (error) {
       console.error("Error updating appointment:", error);
       Swal.fire({
@@ -95,25 +83,18 @@ export default function AppointmentsPage() {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}`,
-          {
-            method: "DELETE",
-          }
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/${appointmentId}`
         );
 
-        if (response.ok) {
-          // Auto-update data without loading spinner
-          await fetchAppointments();
-          Swal.fire({
-            title: "Deleted!",
-            text: "The appointment has been deleted successfully.",
-            icon: "success",
-            confirmButtonColor: "#435ba1",
-          });
-        } else {
-          throw new Error("Failed to delete appointment");
-        }
+        // Auto-update data without loading spinner
+        await fetchAppointments();
+        Swal.fire({
+          title: "Deleted!",
+          text: "The appointment has been deleted successfully.",
+          icon: "success",
+          confirmButtonColor: "#435ba1",
+        });
       } catch (error) {
         console.error("Error deleting appointment:", error);
         Swal.fire({
@@ -206,11 +187,10 @@ export default function AppointmentsPage() {
               <button
                 key={status}
                 onClick={() => setFilter(status)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  filter === status
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === status
                     ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }`}
+                  }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </button>
@@ -230,8 +210,8 @@ export default function AppointmentsPage() {
                 {filter === "all"
                   ? "Appointments"
                   : filter.charAt(0).toUpperCase() +
-                    filter.slice(1) +
-                    " Appointments"}{" "}
+                  filter.slice(1) +
+                  " Appointments"}{" "}
                 Found
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
@@ -325,11 +305,10 @@ export default function AppointmentsPage() {
                         appointment.status.slice(1)}
                     </span>
                     <span
-                      className={`px-3 py-1 text-xs font-medium rounded-full ${
-                        appointment.paymentStatus === "paid"
+                      className={`px-3 py-1 text-xs font-medium rounded-full ${appointment.paymentStatus === "paid"
                           ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                           : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                      }`}
+                        }`}
                     >
                       Payment: {appointment.paymentStatus}
                     </span>
