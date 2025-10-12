@@ -85,7 +85,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
           if (isDoctor) {
             role = 'doctor'
           } else {
-            const adminEmails = ['admin@healthcave.com', 'admin@example.com']
+            const adminEmails = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com']
             if (adminEmails.includes(session.user.email)) {
               role = 'admin'
             } else {
