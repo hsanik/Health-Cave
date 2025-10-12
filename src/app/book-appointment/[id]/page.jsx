@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import {
@@ -12,21 +12,26 @@ import {
   CreditCard,
   MapPin,
   FileText,
+  ArrowLeft,
+  Star,
+  DollarSign,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { PageSpinner, ButtonSpinner } from "@/components/ui/loading-spinner";
 
-const BookAppointment = () => {
-  const params = useParams();
+const BookAppointment = ({ params }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { id } = params;
+
+  // Unwrap params Promise for Next.js 15+
+  const resolvedParams = React.use(params);
+  const { id } = resolvedParams;
 
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [bookedAppointments, setBookedAppointments] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Helper function to format date as DD/MM/YYYY
   const formatDateToDDMMYYYY = (date) => {
@@ -82,9 +87,21 @@ const BookAppointment = () => {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
         );
-        setDoctor(response.data);
+
+        // Process and validate doctor data
+        const doctorData = {
+          ...response.data,
+          name: String(response.data.name || ''),
+          specialization: String(response.data.specialization || ''),
+          hospital: String(response.data.hospital || ''),
+          rating: Number(response.data.rating) || 4.5,
+          consultationFee: Number(response.data.consultationFee) || 100,
+          image: response.data.image || ''
+        };
+
+        setDoctor(doctorData);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching doctor:", error);
         toast.error("Failed to load doctor information");
       } finally {
         setLoading(false);
@@ -102,8 +119,10 @@ const BookAppointment = () => {
       }
     };
 
-    fetchDoctor();
-    fetchBookedAppointments();
+    if (id) {
+      fetchDoctor();
+      fetchBookedAppointments();
+    }
   }, [id]);
 
   const handleInputChange = (e) => {
@@ -250,17 +269,25 @@ const BookAppointment = () => {
   };
 
   if (status === "loading" || loading) {
-    return (
-      <div className="w-11/12 mx-auto py-20 text-center">
-        <p className="text-lg font-semibold">Loading...</p>
-      </div>
-    );
+    return <PageSpinner text="Loading appointment booking..." />;
   }
 
   if (!doctor) {
     return (
-      <div className="w-11/12 mx-auto py-20 text-center">
-        <h1 className="text-2xl font-bold text-red-600">Doctor not found</h1>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Doctor not found</h1>
+            <p className="text-gray-600 mb-6">The doctor you're trying to book with doesn't exist or has been removed.</p>
+            <button
+              onClick={() => router.push('/doctors')}
+              className="bg-[#435ba1] text-white px-6 py-2 rounded-lg hover:bg-[#4c69c6] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2 inline" />
+              Back to Doctors
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -268,29 +295,67 @@ const BookAppointment = () => {
   // Available time slots and date validation handled by calendar component
 
   return (
-    <div className="w-11/12 mx-auto py-10">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.push('/doctors')}
+            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Doctors</span>
+          </button>
+        </div>
+
         {/* Doctor Info Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          <div className="flex items-center space-x-6">
-            <div className="relative w-24 h-24 rounded-full overflow-hidden">
-              <Image
-                src={doctor.image}
-                alt={doctor.name}
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-6">
+              <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+                {doctor.image && doctor.image.trim() !== '' ? (
+                  <Image
+                    src={doctor.image}
+                    alt={doctor.name}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                    <User className="w-12 h-12 text-gray-500" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-800">
+                  Dr. {doctor.name}
+                </h1>
+                <p className="text-[#435ba1] font-medium text-lg">
+                  {doctor.specialization}
+                </p>
+                <p className="text-gray-600 flex items-center mt-1">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {doctor.hospital}
+                </p>
+                <div className="flex items-center space-x-4 mt-2">
+                  <div className="flex items-center">
+                    <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                    <span className="text-sm font-medium">{doctor.rating}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <DollarSign className="w-4 h-4 text-green-600 mr-1" />
+                    <span className="text-sm font-medium">${doctor.consultationFee}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                {doctor.name}
-              </h1>
-              <p className="text-[#435ba1] font-medium">
-                {doctor.specialization}
-              </p>
-              <p className="text-gray-600">{doctor.hospital}</p>
-              <p className="text-yellow-500 font-medium">⭐ {doctor.rating}</p>
+
+            {/* Quick Info Card */}
+            <div className="bg-blue-50 rounded-lg p-4 min-w-[200px]">
+              <h3 className="text-sm font-semibold text-blue-900 mb-2">Consultation Fee</h3>
+              <p className="text-2xl font-bold text-blue-800">${doctor.consultationFee}</p>
+              <p className="text-xs text-blue-600 mt-1">Payment required after booking</p>
             </div>
           </div>
         </div>
@@ -576,14 +641,37 @@ const BookAppointment = () => {
             <div className="pt-6">
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || !formData.appointmentTime}
                 className="w-full flex items-center justify-center px-6 py-3 bg-[#435ba1] text-white font-medium rounded-lg hover:bg-[#4c69c6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <CreditCard className="w-5 h-5 mr-2" />
-                {submitting
-                  ? "Processing..."
-                  : "Book Appointment & Proceed to Payment"}
+                {submitting ? (
+                  <ButtonSpinner text="Processing..." />
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Book Appointment & Proceed to Payment
+                  </>
+                )}
               </button>
+
+              {!formData.appointmentTime && formData.appointmentDate && (
+                <p className="text-sm text-red-600 mt-2 text-center">
+                  Please select an appointment time to continue
+                </p>
+              )}
+
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <CreditCard className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-medium text-yellow-800">Payment Information</h4>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      After booking, you'll be redirected to complete your payment of <strong>${doctor.consultationFee}</strong>.
+                      Your appointment will be confirmed once payment is processed.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         </div>
