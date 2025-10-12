@@ -10,8 +10,8 @@ import {
   User,
   CreditCard,
   ArrowLeft,
-  Loader2,
 } from "lucide-react";
+import { ButtonSpinner } from "@/components/ui/loading-spinner";
 import Swal from "sweetalert2";
 import StripePaymentForm from "@/components/stripe/CheckoutForm";
 import getStripe from "@/lib/stripe";
@@ -409,10 +409,7 @@ const AppointmentConfirmation = () => {
                   className="w-full bg-[#435ba1] text-white py-4 px-6 rounded-lg font-semibold hover:bg-[#4c69c6] transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                 >
                   {paymentLoading ? (
-                    <>
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                      <span>Initializing Payment...</span>
-                    </>
+                    <ButtonSpinner text="Initializing Payment..." size="default" />
                   ) : (
                     <>
                       <CreditCard className="w-6 h-6" />
