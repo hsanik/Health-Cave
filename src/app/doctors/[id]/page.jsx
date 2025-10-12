@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Link from 'next/link';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageSpinner } from '@/components/ui/loading-spinner';
-import { IoMdChatbubbles } from 'react-icons/io';
 import {
   Clock,
   MapPin,
@@ -21,7 +19,6 @@ import {
   Calendar,
   Award,
   BookOpen,
-  Languages,
   ArrowLeft,
   MessageCircle
 } from 'lucide-react';
@@ -33,6 +30,10 @@ export default function DoctorDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Unwrap params Promise for Next.js 15+
+  const resolvedParams = React.use(params);
+  const { id } = resolvedParams;
+
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -40,7 +41,7 @@ export default function DoctorDetailPage({ params }) {
         setError(null);
 
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${params.id}`
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
         );
 
         // Process and validate doctor data
@@ -72,10 +73,10 @@ export default function DoctorDetailPage({ params }) {
       }
     };
 
-    if (params.id) {
+    if (id) {
       fetchDoctor();
     }
-  }, [params.id]);
+  }, [id]);
 
   const startChat = () => {
     if (!session) {
@@ -203,8 +204,8 @@ export default function DoctorDetailPage({ params }) {
                 {/* Availability Badge */}
                 <div className="absolute top-3 right-3">
                   <span className={`px-3 py-1 text-xs font-medium rounded-full ${doctor.availability === 'Available'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
                     }`}>
                     {doctor.availability}
                   </span>
