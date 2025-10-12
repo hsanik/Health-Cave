@@ -9,25 +9,22 @@ import {
   DollarSign,
   CreditCard,
   TrendingUp,
-  TrendingDown,
   RefreshCw,
   CheckCircle,
   XCircle,
   Clock,
   ArrowUpRight,
-  ArrowDownRight,
   MoreHorizontal,
   AlertCircle,
+  X,
 } from 'lucide-react'
 
 export default function PaymentDashboard() {
-  const [refreshing, setRefreshing] = useState(false)
-  const { paymentData, analytics, loading, error, refreshData } = useStripePayments(true, 30000)
+  const [selectedPayment, setSelectedPayment] = useState(null)
+  const { paymentData, analytics, loading, error, refreshData } = useStripePayments()
 
   const handleRefresh = async () => {
-    setRefreshing(true)
     await refreshData()
-    setRefreshing(false)
   }
 
   const formatCurrency = (amount, currency = 'usd') => {
@@ -67,6 +64,8 @@ export default function PaymentDashboard() {
     }
   }
 
+
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -92,15 +91,15 @@ export default function PaymentDashboard() {
               Payment Dashboard
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              Real-time payment data from Stripe
+              Payment data from Stripe
             </p>
           </div>
           <Button onClick={handleRefresh} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
+            Refresh
           </Button>
         </div>
-        
+
         <Card className="p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -130,16 +129,16 @@ export default function PaymentDashboard() {
             Payment Dashboard
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Real-time payment data from Stripe
+            Payment data from Stripe
           </p>
         </div>
         <Button
           onClick={handleRefresh}
-          disabled={refreshing}
+          disabled={loading}
           variant="outline"
           size="sm"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>
@@ -218,7 +217,7 @@ export default function PaymentDashboard() {
                 </p>
                 <div className="flex items-center mt-1 text-sm text-red-600">
                   <XCircle className="w-4 h-4 mr-1" />
-                  {paymentData.statistics.totalPayments > 0 ? 
+                  {paymentData.statistics.totalPayments > 0 ?
                     ((paymentData.statistics.failedPayments / paymentData.statistics.totalPayments) * 100).toFixed(1) : 0}%
                 </div>
               </div>
@@ -241,13 +240,13 @@ export default function PaymentDashboard() {
               <MoreHorizontal className="w-4 h-4" />
             </Button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="text-left py-3 px-4 font-medium text-gray-600 dark:text-gray-400">
-                    Payment ID
+                    Customer
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600 dark:text-gray-400">
                     Amount
@@ -256,43 +255,91 @@ export default function PaymentDashboard() {
                     Status
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600 dark:text-gray-400">
-                    Method
+                    Date
                   </th>
                   <th className="text-left py-3 px-4 font-medium text-gray-600 dark:text-gray-400">
-                    Date
+                    Action
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {paymentData.payments.map((payment) => (
-                  <tr key={payment.id} className="border-b border-gray-100 dark:border-gray-800">
+                {paymentData.payments.map((payment, index) => (
+                  <tr
+                    key={payment.id}
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <td className="py-3 px-4">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                          {payment.metadata?.customerName ? payment.metadata.customerName.charAt(0).toUpperCase() :
+                            payment.metadata?.patientName ? payment.metadata.patientName.charAt(0).toUpperCase() :
+                              (index + 1)}
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {payment.metadata?.customerName ||
+                              payment.metadata?.patientName ||
+                              payment.metadata?.doctorName ||
+                              `Customer #${index + 1}`}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {payment.metadata?.email ||
+                              payment.metadata?.appointmentType ||
+                              'Payment transaction'}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center">
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                          {formatCurrency(payment.amount / 100, payment.currency)}
+                        </span>
+                        {payment.metadata?.service && (
+                          <span className="ml-2 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded-full">
+                            {payment.metadata.service}
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center">
                         {getStatusIcon(payment.status)}
-                        <span className="ml-2 text-sm font-mono text-gray-900 dark:text-white">
-                          {payment.id.substring(0, 20)}...
+                        <span className={`ml-2 inline-block px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(payment.status)}`}>
+                          {payment.status === 'succeeded' ? 'Completed' :
+                            payment.status === 'failed' ? 'Failed' :
+                              payment.status === 'processing' ? 'Processing' :
+                                payment.status === 'requires_payment_method' ? 'Pending' :
+                                  payment.status}
                         </span>
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(payment.amount / 100, payment.currency)}
-                      </span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {new Date(payment.created * 1000).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(payment.created * 1000).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(payment.status)}`}>
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {payment.payment_method_types?.join(', ') || 'N/A'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {formatDate(payment.created)}
-                      </span>
+                      <Button
+                        onClick={() => setSelectedPayment(payment)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20"
+                      >
+                        View Details
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -352,6 +399,183 @@ export default function PaymentDashboard() {
               </div>
             )}
           </Card>
+        </div>
+      )}
+
+      {/* Payment Details Modal */}
+      {selectedPayment && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Payment Details
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Transaction #{selectedPayment.id.slice(-8)}
+                </p>
+              </div>
+              <Button
+                onClick={() => setSelectedPayment(null)}
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full p-2"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+
+              {/* Payment Status */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Status</span>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(selectedPayment.status)}
+                  <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                    {selectedPayment.status === 'succeeded' ? 'Completed' :
+                      selectedPayment.status === 'failed' ? 'Failed' :
+                        selectedPayment.status === 'processing' ? 'Processing' :
+                          selectedPayment.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Amount */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Amount</span>
+                <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {formatCurrency(selectedPayment.amount / 100, selectedPayment.currency)}
+                </span>
+              </div>
+
+              {/* Customer */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Customer</span>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    {selectedPayment.metadata?.customerName ||
+                      selectedPayment.metadata?.patientName ||
+                      'Customer'}
+                  </div>
+                  {selectedPayment.metadata?.email && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {selectedPayment.metadata.email}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Service */}
+              {(selectedPayment.metadata?.service || selectedPayment.metadata?.appointmentType) && (
+                <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Service</span>
+                  <div className="text-right">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      {selectedPayment.metadata?.service || selectedPayment.metadata?.appointmentType}
+                    </div>
+                    {selectedPayment.metadata?.doctorName && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Dr. {selectedPayment.metadata.doctorName}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Date */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Date</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  {formatDate(selectedPayment.created)}
+                </span>
+              </div>
+
+              {/* Payment Method */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Payment Method</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                  {selectedPayment.payment_method_types?.join(', ') || 'N/A'}
+                </span>
+              </div>
+
+              {/* Transaction ID */}
+              <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Transaction ID</span>
+                <div className="text-right max-w-xs">
+                  <span className="text-xs font-mono text-gray-900 dark:text-white break-all">
+                    {selectedPayment.id}
+                  </span>
+                </div>
+              </div>
+
+              {/* Customer ID */}
+              {selectedPayment.customer && (
+                <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Customer ID</span>
+                  <span className="text-xs font-mono text-gray-900 dark:text-white">
+                    {selectedPayment.customer}
+                  </span>
+                </div>
+              )}
+
+              {/* Additional Metadata */}
+              {selectedPayment.metadata && Object.keys(selectedPayment.metadata).length > 0 && (
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-3">
+                    Additional Information
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.entries(selectedPayment.metadata).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between py-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">
+                          {key.replace(/([A-Z])/g, ' $1').trim()}
+                        </span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {selectedPayment.description && (
+                <div className="flex items-start justify-between py-3 border-b border-gray-100 dark:border-gray-800">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Description</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                    {selectedPayment.description}
+                  </span>
+                </div>
+              )}
+
+              {/* Error Information */}
+              {selectedPayment.last_payment_error && (
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-medium text-red-600 dark:text-red-400 mb-3 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    Error Details
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Error Code</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {selectedPayment.last_payment_error.code}
+                      </span>
+                    </div>
+                    <div className="flex items-start justify-between py-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Message</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                        {selectedPayment.last_payment_error.message}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
