@@ -19,7 +19,8 @@ import {
   Clock,
   SquareUserRound,
   House,
-  UserSearch 
+  UserSearch,
+  CreditCard
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -85,7 +86,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
           if (isDoctor) {
             role = 'doctor'
           } else {
-            const adminEmails = ['admin@healthcave.com', 'admin@example.com']
+            const adminEmails = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com']
             if (adminEmails.includes(session.user.email)) {
               role = 'admin'
             } else {
@@ -117,6 +118,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
       { icon: Users, label: "Patients", href: "/dashboard/patients" },
       { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
+      { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
       { icon: BarChart3, label: "System Analytics", href: "/dashboard/analytics" },
     ]
 
