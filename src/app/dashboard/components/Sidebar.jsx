@@ -67,20 +67,98 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
     checkDoctorStatus()
   }, [session, status])
 
-  const sidebarItems = [
-    { icon: Home, label: "Dashboard", href: "/dashboard" },
-    { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
-    { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
-    { icon: UserSearch , label: 'Users', href: '/dashboard/allUsers' },
-    { icon: Users, label: "Patients", href: "/dashboard/patients" },
-    { icon: Calendar, label: "Appointments", href: "/dashboard/appointments" },
-    ...(isDoctor ? [{ icon: Clock, label: "Availability", href: "/dashboard/availability" }] : []),
-    { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
-    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
-    { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-    { icon: Settings, label: "Profile", href: "/dashboard/profile" },
-    { icon: House, label: "Back To Home", href: "/" },
-  ];
+  // Determine user role
+  const [userRole, setUserRole] = useState('patient')
+
+  useEffect(() => {
+    const determineRole = async () => {
+      if (status !== 'authenticated' || !session?.user) return
+
+      let role = session.user.role || 'patient'
+      
+      if (!session.user.role || session.user.role === 'user') {
+        try {
+          const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`)
+          const doctors = await doctorResponse.json()
+          const isDoctor = doctors.some(doctor => doctor.email === session.user.email)
+          
+          if (isDoctor) {
+            role = 'doctor'
+          } else {
+            const adminEmails = ['admin@healthcave.com', 'admin@example.com']
+            if (adminEmails.includes(session.user.email)) {
+              role = 'admin'
+            } else {
+              role = 'patient'
+            }
+          }
+        } catch (error) {
+          console.error('Error determining role:', error)
+          role = 'patient'
+        }
+      }
+      
+      setUserRole(role)
+      setIsDoctor(role === 'doctor')
+    }
+
+    determineRole()
+  }, [session, status])
+
+  // Role-based sidebar items
+  const getSidebarItems = () => {
+    const commonItems = [
+      { icon: Home, label: "Dashboard", href: "/dashboard" },
+    ]
+
+    const adminItems = [
+      { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
+      { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
+      { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
+      { icon: Users, label: "Patients", href: "/dashboard/patients" },
+      { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
+      { icon: BarChart3, label: "System Analytics", href: "/dashboard/analytics" },
+    ]
+
+    const doctorItems = [
+      { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: Clock, label: "Availability", href: "/dashboard/availability" },
+      { icon: Users, label: "My Patients", href: "/dashboard/patients" },
+      { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
+      { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
+      { icon: BarChart3, label: "Practice Analytics", href: "/dashboard/analytics" },
+    ]
+
+    const patientItems = [
+      { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
+      { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
+    ]
+
+    const profileItems = [
+      { icon: Settings, label: "Profile", href: "/dashboard/profile" },
+      { icon: House, label: "Back To Home", href: "/" },
+    ]
+
+    let roleItems = []
+    switch (userRole) {
+      case 'admin':
+        roleItems = adminItems
+        break
+      case 'doctor':
+        roleItems = doctorItems
+        break
+      case 'patient':
+        roleItems = patientItems
+        break
+      default:
+        roleItems = patientItems
+    }
+
+    return [...commonItems, ...roleItems, ...profileItems]
+  }
+
+  const sidebarItems = getSidebarItems()
 
   return (
     <>
