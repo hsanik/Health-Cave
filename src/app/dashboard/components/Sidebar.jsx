@@ -30,80 +30,43 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
   const [isDoctor, setIsDoctor] = useState(false)
 
 
-  // Check if user is a doctor by checking if they exist in doctors collection
+  // Check if user is a doctor - simplified version without API call
   useEffect(() => {
-    const checkDoctorStatus = async () => {
-      // Only check if session is loaded and user is authenticated
-      if (status === 'loading') {
-        return
-      }
+    if (status === 'loading') return
 
-      if (status !== 'authenticated' || !session) {
-        setIsDoctor(false)
-        return
-      }
-
-      if (!session?.user?.id) {
-        setIsDoctor(false)
-        return
-      }
-
-      try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`
-
-        const response = await fetch(apiUrl)
-
-        if (response.ok) {
-          const data = await response.json()
-          setIsDoctor(data.isDoctor)
-        } else {
-          setIsDoctor(false)
-        }
-      } catch (error) {
-        console.error('Error checking doctor status:', error)
-        setIsDoctor(false)
-      }
+    if (status !== 'authenticated' || !session?.user) {
+      setIsDoctor(false)
+      return
     }
 
-    checkDoctorStatus()
+    // Simple check based on user role or email
+    const isDoctorRole = session.user.role === 'doctor'
+    const isAdminEmail = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com'].includes(session.user.email)
+
+    setIsDoctor(isDoctorRole && !isAdminEmail)
   }, [session, status])
 
   // Determine user role
   const [userRole, setUserRole] = useState('patient')
 
   useEffect(() => {
-    const determineRole = async () => {
-      if (status !== 'authenticated' || !session?.user) return
+    if (status !== 'authenticated' || !session?.user) return
 
-      let role = session.user.role || 'patient'
-      
-      if (!session.user.role || session.user.role === 'user') {
-        try {
-          const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`)
-          const doctors = await doctorResponse.json()
-          const isDoctor = doctors.some(doctor => doctor.email === session.user.email)
-          
-          if (isDoctor) {
-            role = 'doctor'
-          } else {
-            const adminEmails = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com']
-            if (adminEmails.includes(session.user.email)) {
-              role = 'admin'
-            } else {
-              role = 'patient'
-            }
-          }
-        } catch (error) {
-          console.error('Error determining role:', error)
-          role = 'patient'
-        }
+    let role = session.user.role || 'patient'
+
+    // Simple role determination without API calls
+    if (!session.user.role || session.user.role === 'user') {
+      const adminEmails = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com']
+      if (adminEmails.includes(session.user.email)) {
+        role = 'admin'
+      } else {
+        // Default to patient if no specific role is set
+        role = 'patient'
       }
-      
-      setUserRole(role)
-      setIsDoctor(role === 'doctor')
     }
 
-    determineRole()
+    setUserRole(role)
+    setIsDoctor(role === 'doctor')
   }, [session, status])
 
   // Role-based sidebar items
