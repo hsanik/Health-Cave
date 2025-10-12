@@ -14,6 +14,7 @@ import {
   FileText,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const BookAppointment = () => {
   const params = useParams();
@@ -78,12 +79,10 @@ const BookAppointment = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await fetch(
+        const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
         );
-        if (!res.ok) throw new Error("Doctor not found");
-        const data = await res.json();
-        setDoctor(data);
+        setDoctor(response.data);
       } catch (error) {
         console.error(error);
         toast.error("Failed to load doctor information");
@@ -94,13 +93,10 @@ const BookAppointment = () => {
 
     const fetchBookedAppointments = async () => {
       try {
-        const res = await fetch(
+        const response = await axios.get(
           `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/doctor/${id}`
         );
-        if (res.ok) {
-          const data = await res.json();
-          setBookedAppointments(data);
-        }
+        setBookedAppointments(response.data);
       } catch (error) {
         console.error("Error fetching booked appointments:", error);
       }
@@ -173,24 +169,15 @@ const BookAppointment = () => {
 
   const updateUserRole = async () => {
     try {
-      const response = await fetch("/api/profile/update-role", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ role: "patient" }),
+      const response = await axios.put("/api/profile/update-role", {
+        role: "patient"
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update user role");
-      }
-
-      const result = await response.json();
-      console.log("Role update result:", result);
+      console.log("Role update result:", response.data);
 
       // The role update might not happen if user already has a different role
       // This is expected behavior and not an error
-      return result;
+      return response.data;
     } catch (error) {
       console.error("Error updating user role:", error);
       // Don't throw error here as appointment booking should still proceed
@@ -234,27 +221,16 @@ const BookAppointment = () => {
       };
 
       // Save appointment to backend
-      const response = await fetch(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(appointmentData),
-        }
+        appointmentData
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to book appointment");
-      }
-
-      const result = await response.json();
-      console.log("Appointment created:", result);
+      console.log("Appointment created:", response.data);
 
       // Store appointment ID for the confirmation page
-      if (result.insertedId) {
-        localStorage.setItem("lastAppointmentId", result.insertedId);
+      if (response.data.insertedId) {
+        localStorage.setItem("lastAppointmentId", response.data.insertedId);
       }
 
       toast.success(
