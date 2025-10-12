@@ -451,7 +451,7 @@ const DoctorsPage = () => {
                   {/* Action Buttons */}
                   <div className="flex space-x-2">
                     <Link
-                      href={`/doctor/${doctor._id}`}
+                      href={`/doctors/${doctor._id}`}
                       className="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
                     >
                       View Profile
