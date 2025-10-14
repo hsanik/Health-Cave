@@ -74,7 +74,7 @@ const UsersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:5000/users/${id}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/users/${id}`, {
             method: "DELETE",
           });
           if (res.ok) {
