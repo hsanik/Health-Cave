@@ -16,6 +16,7 @@ import {
   XCircle,
   AlertCircle,
   Trash2,
+  CreditCard,
 } from "lucide-react";
 import Image from "next/image";
 import Swal from "sweetalert2";
@@ -163,6 +164,11 @@ export default function AppointmentsPage() {
         });
       }
     }
+  };
+
+  const handlePayNow = (appointmentId) => {
+    // Redirect to payment page with appointment ID
+    window.location.href = `/payment/${appointmentId}`;
   };
 
   const getStatusIcon = (status) => {
@@ -398,6 +404,20 @@ export default function AppointmentsPage() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-2">
+                    {/* Pay Now Button - Show for users with pending payment */}
+                    {userRole === "user" &&
+                      appointment.paymentStatus === "pending" &&
+                      appointment.status !== "cancelled" && (
+                        <Button
+                          size="sm"
+                          onClick={() => handlePayNow(appointment._id)}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Pay Now
+                        </Button>
+                      )}
+
                     {/* Admin and Doctor can manage appointment status */}
                     {(userRole === "admin" || userRole === "doctor") && (
                       <>
