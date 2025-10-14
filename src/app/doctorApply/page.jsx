@@ -27,7 +27,7 @@ const Page = () => {
       const applicationData = { ...formData, role: "user" };
 
       const res = await fetch(
-        "${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply",
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
