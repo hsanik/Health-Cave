@@ -20,16 +20,26 @@ const DAYS_OF_WEEK = [
 ]
 
 export default function AvailabilityManager({ availability = [], onSave, isLoading = false }) {
-  console.log('🔍 AvailabilityManager received availability:', availability?.length || 0, 'slots')
-  const [availableSlots, setAvailableSlots] = useState(availability.length > 0 ? availability : [
-    { day: '', startTime: '', endTime: '', isAvailable: true }
-  ])
+  console.log('🔍 AvailabilityManager received availability:', availability)
+
+  // Ensure availability is always an array
+  const safeAvailability = Array.isArray(availability) ? availability : []
+
+  const [availableSlots, setAvailableSlots] = useState(
+    safeAvailability.length > 0
+      ? safeAvailability
+      : [{ day: '', startTime: '', endTime: '', isAvailable: true }]
+  )
 
   // Update internal state when availability prop changes
   useEffect(() => {
-    console.log('🔍 AvailabilityManager updating slots with:', availability?.length || 0, 'slots')
-    if (availability && availability.length > 0) {
-      setAvailableSlots(availability)
+    console.log('🔍 AvailabilityManager updating slots with:', availability)
+    const safeAvail = Array.isArray(availability) ? availability : []
+    if (safeAvail.length > 0) {
+      setAvailableSlots(safeAvail)
+    } else {
+      // Initialize with one empty slot if no availability
+      setAvailableSlots([{ day: '', startTime: '', endTime: '', isAvailable: true }])
     }
   }, [availability])
 
@@ -93,7 +103,7 @@ export default function AvailabilityManager({ availability = [], onSave, isLoadi
       </div>
 
       <div className="space-y-4">
-        {availableSlots.map((slot, index) => (
+        {Array.isArray(availableSlots) && availableSlots.map((slot, index) => (
           <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
               <div>

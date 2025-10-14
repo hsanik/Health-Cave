@@ -10,36 +10,39 @@ export async function PUT(request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is a doctor by using the check endpoint
-    let doctorId = session.user.id; // Default to session user ID
-    try {
-      const doctorResponse = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_SERVER_URI
-        }/doctors/check-by-email/${encodeURIComponent(session.user.email)}`
-      );
-      if (doctorResponse.ok) {
-        const data = await doctorResponse.json();
-        if (!data.isDoctor) {
+    // Check if user is a doctor
+    const userRole = session.user.role || 'user';
+    
+    if (userRole !== 'doctor') {
+      // Fallback: Check doctors collection
+      try {
+        const doctorsResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
+        );
+        
+        if (!doctorsResponse.ok) {
           return NextResponse.json(
             { message: "Access denied. Only doctors can manage availability." },
             { status: 403 }
           );
         }
-        // Use the doctor's _id for the availability update
-        doctorId = data.doctor._id;
-      } else {
+
+        const doctors = await doctorsResponse.json();
+        const doctorRecord = doctors.find(doc => doc.email === session.user.email);
+        
+        if (!doctorRecord) {
+          return NextResponse.json(
+            { message: "Access denied. Only doctors can manage availability." },
+            { status: 403 }
+          );
+        }
+      } catch (error) {
+        console.error("Error verifying doctor status:", error);
         return NextResponse.json(
           { message: "Access denied. Only doctors can manage availability." },
           { status: 403 }
         );
       }
-    } catch (error) {
-      console.error("Error verifying doctor status:", error);
-      return NextResponse.json(
-        { message: "Access denied. Only doctors can manage availability." },
-        { status: 403 }
-      );
     }
 
     const { availability } = await request.json();
@@ -51,9 +54,31 @@ export async function PUT(request) {
       );
     }
 
+    // Get doctor record to find doctor ID
+    const doctorsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
+    );
+    
+    if (!doctorsResponse.ok) {
+      return NextResponse.json(
+        { message: "Failed to fetch doctor information" },
+        { status: 500 }
+      );
+    }
+
+    const doctors = await doctorsResponse.json();
+    const doctorRecord = doctors.find(doc => doc.email === session.user.email);
+    
+    if (!doctorRecord) {
+      return NextResponse.json(
+        { message: "Doctor record not found" },
+        { status: 404 }
+      );
+    }
+
     // Call backend server to update availability
     const backendResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${doctorId}/availability`,
+      `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${doctorRecord._id}/availability`,
       {
         method: "PUT",
         headers: {

@@ -17,27 +17,42 @@ export default function AvailabilityPage() {
 
   useEffect(() => {
     const checkDoctorStatusAndFetch = async () => {
-      if (!session?.user?.id) return;
+      if (!session?.user) return;
 
       try {
-        // Check if user is a doctor
-        const doctorResponse = await fetch(
-          `${
-            process.env.NEXT_PUBLIC_SERVER_URI
-          }/doctors/check-by-email/${encodeURIComponent(session.user.email)}`
-        );
-        if (doctorResponse.ok) {
-          const data = await doctorResponse.json();
-          setIsDoctor(data.isDoctor);
-
-          if (data.isDoctor) {
-            await fetchAvailability();
-          } else {
+        // Check if user role is doctor
+        const userRole = session.user.role || 'user';
+        
+        if (userRole === 'doctor') {
+          setIsDoctor(true);
+          await fetchAvailability();
+        } else {
+          // Fallback: Check if user exists in doctors collection
+          try {
+            const doctorsRes = await fetch(
+              `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
+            );
+            if (doctorsRes.ok) {
+              const doctors = await doctorsRes.json();
+              const isDoctorInCollection = doctors.some(
+                (doc) => doc.email === session.user.email
+              );
+              setIsDoctor(isDoctorInCollection);
+              
+              if (isDoctorInCollection) {
+                await fetchAvailability();
+              } else {
+                setIsLoadingData(false);
+              }
+            } else {
+              setIsDoctor(false);
+              setIsLoadingData(false);
+            }
+          } catch (error) {
+            console.error("Error checking doctors collection:", error);
+            setIsDoctor(false);
             setIsLoadingData(false);
           }
-        } else {
-          setIsDoctor(false);
-          setIsLoadingData(false);
         }
       } catch (error) {
         console.error("Error checking doctor status:", error);
@@ -58,14 +73,22 @@ export default function AvailabilityPage() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 Profile API response:', data);
         const user = data.user;
-        setAvailability(user.availability || []);
+        console.log('📊 User availability:', user.availability);
+        
+        // Ensure availability is an array
+        const availabilityData = Array.isArray(user.availability) ? user.availability : [];
+        console.log('📊 Setting availability to:', availabilityData);
+        setAvailability(availabilityData);
       } else {
         toast.error("Failed to load availability data");
+        setAvailability([]);
       }
     } catch (error) {
       console.error("Error fetching availability:", error);
       toast.error("Failed to load availability data");
+      setAvailability([]);
     } finally {
       setIsLoadingData(false);
     }
