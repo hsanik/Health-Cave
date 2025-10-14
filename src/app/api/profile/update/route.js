@@ -12,14 +12,14 @@ export async function PUT(request) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const { 
-      name, 
-      email, 
-      phone, 
-      address, 
-      specialization, 
-      bio, 
-      experience, 
+    const {
+      name,
+      email,
+      phone,
+      address,
+      specialization,
+      bio,
+      experience,
       education,
       hospital,
       licenseNumber,
@@ -54,13 +54,16 @@ export async function PUT(request) {
       return NextResponse.json({ message: 'No fields to update' }, { status: 400 })
     }
 
-    const result = await usersCollection.updateOne(
-      { _id: new ObjectId(session.user.id) },
-      { $set: updateFields }
-    )
+    // Only update local database if there are fields to update
+    if (Object.keys(updateFields).length > 0) {
+      const result = await usersCollection.updateOne(
+        { _id: new ObjectId(session.user.id) },
+        { $set: updateFields }
+      )
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+      if (result.matchedCount === 0) {
+        return NextResponse.json({ message: 'User not found' }, { status: 404 })
+      }
     }
 
     return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200 })

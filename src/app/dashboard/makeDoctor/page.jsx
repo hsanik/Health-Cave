@@ -8,7 +8,9 @@ const Page = () => {
   // Load applications
   const fetchApplications = async () => {
     try {
-      const res = await fetch("http://localhost:5000/doctorApply");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply`
+      );
       const data = await res.json();
       setApplications(data);
     } catch (err) {
@@ -23,11 +25,14 @@ const Page = () => {
   // Approve doctor
   const handleApprove = async (app) => {
     try {
-      const res = await fetch("http://localhost:5000/makeDoctor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...app, role: "doctor" }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/makeDoctor`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...app, role: "doctor" }),
+        }
+      );
 
       if (res.ok) {
         Swal.fire("✅ Approved", `${app.name} is now a doctor!`, "success");
@@ -43,9 +48,12 @@ const Page = () => {
   // Cancel doctor application
   const handleCancel = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/doctorApply/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/doctorApply/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (res.ok) {
         Swal.fire("🗑️ Deleted", "Application removed", "success");

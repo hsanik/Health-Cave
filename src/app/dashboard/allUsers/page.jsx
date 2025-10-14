@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -11,7 +11,7 @@ const UsersPage = () => {
 
   // Fetch all users from MongoDB
   useEffect(() => {
-    fetch("http://localhost:5000/users")
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/users`)
       .then((res) => res.json())
       .then((data) => {
         setUsers(data);
@@ -22,9 +22,10 @@ const UsersPage = () => {
 
   // Search filter
   useEffect(() => {
-    const result = users.filter((u) =>
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase())
+    const result = users.filter(
+      (u) =>
+        u.name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase())
     );
     setFiltered(result);
   }, [search, users]);
@@ -40,15 +41,16 @@ const UsersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:5000/users/admin/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/users/admin/${id}`,
+            {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
           if (res.ok) {
             setUsers((prev) =>
-              prev.map((u) =>
-                u._id === id ? { ...u, role: "admin" } : u
-              )
+              prev.map((u) => (u._id === id ? { ...u, role: "admin" } : u))
             );
             Swal.fire("Success", "User promoted to admin!", "success");
           } else {
@@ -74,9 +76,18 @@ const UsersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
+<<<<<<< HEAD
           const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/users/${id}`, {
             method: "DELETE",
           });
+=======
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/users/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
+>>>>>>> development
           if (res.ok) {
             setUsers((prev) => prev.filter((u) => u._id !== id));
             Swal.fire("Deleted!", "User has been removed.", "success");

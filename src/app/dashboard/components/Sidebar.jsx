@@ -2,6 +2,8 @@
 
 
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,27 +16,83 @@ import {
   MessageSquare,
   BarChart3,
   BookText,
+  Clock,
   SquareUserRound,
   House,
-  UserSearch 
+  UserSearch,
+  CreditCard
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
-  const pathname = usePathname()
 
-  const sidebarItems = [
-    { icon: Home, label: "Dashboard", href: "/dashboard" },
-    { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
-    { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
-    { icon: UserSearch , label: 'Users', href: '/dashboard/allUsers' },
-    { icon: Users, label: "Patients", href: "/dashboard/patients" },
-    { icon: Calendar, label: "Appointments", href: "/dashboard/appointments" },
-    { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
-    { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
-    { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-    { icon: Settings, label: "Profile", href: "/dashboard/profile" },
-    { icon: House, label: "Back To Home", href: "/" },
-  ];
+  const pathname = usePathname()
+  const { data: session, status } = useSession()
+  // Get user role from session
+  const [userRole, setUserRole] = useState('user')
+
+  useEffect(() => {
+    if (status !== 'authenticated' || !session?.user) return
+
+    // Use role from session (set by JWT callback)
+    const role = session.user.role || 'user'
+    setUserRole(role)
+  }, [session, status])
+
+  // Role-based sidebar items
+  const getSidebarItems = () => {
+    const commonItems = [
+      { icon: Home, label: "Dashboard", href: "/dashboard" },
+    ]
+
+    const adminItems = [
+      { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
+      { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
+      { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
+      { icon: Users, label: "Patients", href: "/dashboard/patients" },
+      { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
+      { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
+      { icon: BarChart3, label: "System Analytics", href: "/dashboard/analytics" },
+    ]
+
+    const doctorItems = [
+      { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: Clock, label: "Availability", href: "/dashboard/availability" },
+      { icon: Users, label: "My Patients", href: "/dashboard/patients" },
+      { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
+      { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
+      { icon: BarChart3, label: "Practice Analytics", href: "/dashboard/analytics" },
+    ]
+
+    const userItems = [
+      { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
+      { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
+    ]
+
+    const profileItems = [
+      { icon: Settings, label: "Profile", href: "/dashboard/profile" },
+      { icon: House, label: "Back To Home", href: "/" },
+    ]
+
+    let roleItems = []
+    switch (userRole) {
+      case 'admin':
+        roleItems = adminItems
+        break
+      case 'doctor':
+        roleItems = doctorItems
+        break
+      case 'user':
+        roleItems = userItems
+        break
+      default:
+        roleItems = userItems
+    }
+
+    return [...commonItems, ...roleItems, ...profileItems]
+  }
+
+  const sidebarItems = getSidebarItems()
 
   return (
     <>

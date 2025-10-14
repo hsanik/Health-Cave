@@ -9,7 +9,7 @@ const Page = () => {
   // Fetch doctors
   const fetchDoctors = async () => {
     try {
-      const res = await fetch("http://localhost:5000/doctors");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`);
       const data = await res.json();
       setDoctors(data);
     } catch (err) {
@@ -34,9 +34,12 @@ const Page = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:5000/doctors/${id}`, {
-            method: "DELETE",
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
 
           if (res.ok) {
             Swal.fire("Removed!", `${name} has been deleted.`, "success");

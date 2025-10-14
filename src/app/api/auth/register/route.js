@@ -37,11 +37,38 @@ export async function POST(req) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Determine user role
+    let userRole = "user";
+    
+    // Check if admin email
+    const adminEmails = [
+      'admin@healthcave.com',
+      'admin@example.com',
+      'admin@gmail.com'
+    ];
+
+    if (adminEmails.includes(email)) {
+      userRole = 'admin';
+    } else {
+      // Check if doctor
+      try {
+        const doctorsCollection = db.collection("doctors");
+        const doctorRecord = await doctorsCollection.findOne({ email: email });
+        if (doctorRecord) {
+          userRole = 'doctor';
+        }
+      } catch (doctorCheckError) {
+        console.error('Error checking doctor status during registration:', doctorCheckError);
+      }
+    }
+
     const newUser = {
       email,
       name: firstName + " " + lastName,
       password: hashedPassword,
+      role: userRole,
       createdAt: new Date(),
+      updatedAt: new Date(),
       emailVerified: new Date(),
       accounts: [],
     };

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { LogOut, LayoutDashboard, ChevronDown } from 'lucide-react'
+import { LogOut, LayoutDashboard, ChevronDown, MessageSquare, Video } from 'lucide-react'
 import Image from 'next/image'
 import Swal from 'sweetalert2'
 
@@ -111,6 +111,21 @@ export default function UserProfileDropdown() {
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                   {session.user.email}
                 </p>
+                {session.user.role && (
+                  <div className="mt-1">
+                    <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${
+                      session.user.role === 'user' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : session.user.role === 'doctor'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        : session.user.role === 'admin'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                    }`}>
+                      {session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -123,6 +138,28 @@ export default function UserProfileDropdown() {
             >
               <LayoutDashboard className="h-4 w-4 mr-3" />
               Dashboard
+            </button>
+            
+            <button
+              onClick={() => {
+                router.push('/chat');
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <MessageSquare className="h-4 w-4 mr-3" />
+              Chat
+            </button>
+            
+            <button
+              onClick={() => {
+                router.push('/video-call');
+                setIsOpen(false);
+              }}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Video className="h-4 w-4 mr-3" />
+              Video Call
             </button>
             
             <button
