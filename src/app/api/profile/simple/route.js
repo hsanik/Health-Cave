@@ -19,6 +19,29 @@ export async function GET(request) {
     // Fetch user from database
     const user = await usersCollection.findOne({ _id: new ObjectId(session.user.id) })
 
+    // Check if user is a doctor and fetch availability from doctors collection
+    let availability = []
+    const userRole = session.user.role || 'user'
+    
+    if (userRole === 'doctor') {
+      try {
+        const doctorsResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
+        )
+        
+        if (doctorsResponse.ok) {
+          const doctors = await doctorsResponse.json()
+          const doctorRecord = doctors.find(doc => doc.email === session.user.email)
+          
+          if (doctorRecord && doctorRecord.availability) {
+            availability = doctorRecord.availability
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching doctor availability:', error)
+      }
+    }
+
     if (!user) {
       // Return session data as fallback if user not found in database
       const fallbackUser = {
@@ -35,7 +58,7 @@ export async function GET(request) {
         hospital: '',
         licenseNumber: '',
         workingHours: '',
-        availability: [],
+        availability: availability,
         notifications: {
           emailNotifications: true,
           smsNotifications: false,
@@ -66,7 +89,7 @@ export async function GET(request) {
       hospital: user.hospital || '',
       licenseNumber: user.licenseNumber || '',
       workingHours: user.workingHours || '',
-      availability: [],
+      availability: availability,
       notifications: user.notifications || {
         emailNotifications: true,
         smsNotifications: false,
