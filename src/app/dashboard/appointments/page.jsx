@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,20 +22,77 @@ import Swal from "sweetalert2";
 import axios from "axios";
 
 export default function AppointmentsPage() {
+  const { data: session, status } = useSession();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all"); // all, pending, confirmed, cancelled, completed
+  const [userRole, setUserRole] = useState(null);
 
   // Auto-load appointments on page load
   useEffect(() => {
-    fetchAppointments();
-  }, []);
+    if (status === "authenticated" && session?.user) {
+      setUserRole(session.user.role || "user");
+      fetchAppointments();
+    }
+  }, [status, session]);
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
-      );
+      if (!session?.user) return;
+
+      const role = session.user.role || "user";
+      let response;
+
+      // Fetch appointments based on user role
+      if (role === "admin") {
+        // Admin can see all appointments
+        response = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+        );
+      } else if (role === "doctor") {
+        // Doctor can see their appointments
+        // First, try to get doctor ID from session or fetch from doctors collection
+        const doctorsRes = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
+        );
+        const doctor = doctorsRes.data.find(
+          (doc) => doc.email === session.user.email
+        );
+
+        if (doctor) {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/doctor/${doctor._id}`
+          );
+        } else {
+          // Fallback: filter by email if doctor ID not found
+          const allAppointments = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+          );
+          response = {
+            data: allAppointments.data.filter(
+              (apt) => apt.doctorEmail === session.user.email
+            ),
+          };
+        }
+      } else {
+        // Regular user can only see their own appointments
+        if (session.user.id) {
+          response = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/user/${session.user.id}`
+          );
+        } else {
+          // Fallback: filter by email if user ID not available
+          const allAppointments = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+          );
+          response = {
+            data: allAppointments.data.filter(
+              (apt) => apt.patientEmail === session.user.email
+            ),
+          };
+        }
+      }
+
       setAppointments(response.data);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -162,21 +220,45 @@ export default function AppointmentsPage() {
     );
   }
 
+  const getPageTitle = () => {
+    switch (userRole) {
+      case "admin":
+        return {
+          title: "All Appointments",
+          description: "Manage all patient appointments and schedules.",
+        };
+      case "doctor":
+        return {
+          title: "My Appointments",
+          description: "Manage your patient appointments and schedules.",
+        };
+      default:
+        return {
+          title: "My Appointments",
+          description: "View and manage your appointments.",
+        };
+    }
+  };
+
+  const pageInfo = getPageTitle();
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            Appointments
+            {pageInfo.title}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage patient appointments and schedules.
+            {pageInfo.description}
           </p>
         </div>
-        <Button onClick={() => (window.location.href = "/doctors")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Book New Appointment
-        </Button>
+        {userRole === "user" && (
+          <Button onClick={() => (window.location.href = "/doctors")}>
+            <Plus className="w-4 h-4 mr-2" />
+            Book New Appointment
+          </Button>
+        )}
       </div>
 
       {/* Filter Tabs */}
@@ -316,20 +398,58 @@ export default function AppointmentsPage() {
 
                   {/* Action Buttons */}
                   <div className="flex flex-wrap gap-2">
-                    {appointment.status === "pending" && (
+                    {/* Admin and Doctor can manage appointment status */}
+                    {(userRole === "admin" || userRole === "doctor") && (
                       <>
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            updateAppointmentStatus(
-                              appointment._id,
-                              "confirmed"
-                            )
-                          }
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          Confirm
-                        </Button>
+                        {appointment.status === "pending" && (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                updateAppointmentStatus(
+                                  appointment._id,
+                                  "confirmed"
+                                )
+                              }
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Confirm
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                updateAppointmentStatus(
+                                  appointment._id,
+                                  "cancelled"
+                                )
+                              }
+                              className="border-red-300 text-red-600 hover:bg-red-50"
+                            >
+                              Cancel
+                            </Button>
+                          </>
+                        )}
+                        {appointment.status === "confirmed" && (
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              updateAppointmentStatus(
+                                appointment._id,
+                                "completed"
+                              )
+                            }
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            Mark Complete
+                          </Button>
+                        )}
+                      </>
+                    )}
+
+                    {/* Users can only cancel their pending appointments */}
+                    {userRole === "user" &&
+                      appointment.status === "pending" && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -341,36 +461,26 @@ export default function AppointmentsPage() {
                           }
                           className="border-red-300 text-red-600 hover:bg-red-50"
                         >
-                          Cancel
+                          Cancel Appointment
                         </Button>
-                      </>
-                    )}
-                    {appointment.status === "confirmed" && (
+                      )}
+
+                    {/* Delete Button - Only for admin */}
+                    {userRole === "admin" && (
                       <Button
                         size="sm"
+                        variant="outline"
                         onClick={() =>
-                          updateAppointmentStatus(appointment._id, "completed")
+                          deleteAppointment(
+                            appointment._id,
+                            appointment.patientName
+                          )
                         }
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                       >
-                        Mark Complete
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     )}
-
-                    {/* Delete Button - Available for all appointments */}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        deleteAppointment(
-                          appointment._id,
-                          appointment.patientName
-                        )
-                      }
-                      className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               </div>
