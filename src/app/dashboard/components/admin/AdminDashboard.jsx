@@ -66,8 +66,8 @@ export default function AdminDashboard() {
       // Mock recent users data
       setRecentUsers([
         { name: 'Dr. Sarah Johnson', time: '2 hours ago', status: 'doctor', type: 'New Doctor Registration' },
-        { name: 'Michael Chen', time: '4 hours ago', status: 'patient', type: 'New Patient' },
-        { name: 'Emily Davis', time: '6 hours ago', status: 'patient', type: 'New Patient' },
+        { name: 'Michael Chen', time: '4 hours ago', status: 'user', type: 'New User' },
+        { name: 'Emily Davis', time: '6 hours ago', status: 'user', type: 'New User' },
         { name: 'Dr. David Wilson', time: '1 day ago', status: 'doctor', type: 'Doctor Application' },
       ])
 

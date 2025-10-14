@@ -27,46 +27,15 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
 
   const pathname = usePathname()
   const { data: session, status } = useSession()
-  const [isDoctor, setIsDoctor] = useState(false)
-
-
-  // Check if user is a doctor - simplified version without API call
-  useEffect(() => {
-    if (status === 'loading') return
-
-    if (status !== 'authenticated' || !session?.user) {
-      setIsDoctor(false)
-      return
-    }
-
-    // Simple check based on user role or email
-    const isDoctorRole = session.user.role === 'doctor'
-    const isAdminEmail = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com'].includes(session.user.email)
-
-    setIsDoctor(isDoctorRole && !isAdminEmail)
-  }, [session, status])
-
-  // Determine user role
-  const [userRole, setUserRole] = useState('patient')
+  // Get user role from session
+  const [userRole, setUserRole] = useState('user')
 
   useEffect(() => {
     if (status !== 'authenticated' || !session?.user) return
 
-    let role = session.user.role || 'patient'
-
-    // Simple role determination without API calls
-    if (!session.user.role || session.user.role === 'user') {
-      const adminEmails = ['admin@healthcave.com', 'admin@example.com', 'admin@gmail.com']
-      if (adminEmails.includes(session.user.email)) {
-        role = 'admin'
-      } else {
-        // Default to patient if no specific role is set
-        role = 'patient'
-      }
-    }
-
+    // Use role from session (set by JWT callback)
+    const role = session.user.role || 'user'
     setUserRole(role)
-    setIsDoctor(role === 'doctor')
   }, [session, status])
 
   // Role-based sidebar items
@@ -94,7 +63,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: BarChart3, label: "Practice Analytics", href: "/dashboard/analytics" },
     ]
 
-    const patientItems = [
+    const userItems = [
       { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
       { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
       { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
@@ -113,11 +82,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       case 'doctor':
         roleItems = doctorItems
         break
-      case 'patient':
-        roleItems = patientItems
+      case 'user':
+        roleItems = userItems
         break
       default:
-        roleItems = patientItems
+        roleItems = userItems
     }
 
     return [...commonItems, ...roleItems, ...profileItems]

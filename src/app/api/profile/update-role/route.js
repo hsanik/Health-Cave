@@ -17,7 +17,7 @@ export async function PUT(request) {
 
     const { role } = await request.json();
     
-    if (!role || !['user', 'patient', 'doctor'].includes(role)) {
+    if (!role || !['user', 'admin', 'doctor'].includes(role)) {
       return NextResponse.json(
         { error: 'Invalid role' },
         { status: 400 }
@@ -38,8 +38,8 @@ export async function PUT(request) {
       );
     }
 
-    // Only allow role change from "user" to "patient" when booking appointment
-    if (role === 'patient' && currentUser.role && currentUser.role !== 'user') {
+    // Only allow role change from "user" to "user" when booking appointment
+    if (role === 'user' && currentUser.role && currentUser.role !== 'user') {
       return NextResponse.json(
         { 
           message: 'Role change not allowed - user already has a different role',

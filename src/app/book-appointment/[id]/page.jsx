@@ -189,7 +189,7 @@ const BookAppointment = ({ params }) => {
   const updateUserRole = async () => {
     try {
       const response = await axios.put("/api/profile/update-role", {
-        role: "patient"
+        role: "user"
       });
 
       console.log("Role update result:", response.data);
@@ -209,7 +209,7 @@ const BookAppointment = ({ params }) => {
     setSubmitting(true);
 
     try {
-      // Update user role to patient (only if current role is "user")
+      // Update user role to user (only if current role is "user")
       const roleUpdateResult = await updateUserRole();
 
       // Log the role update result for debugging
