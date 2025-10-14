@@ -4,10 +4,10 @@ import { User, UserCheck, Stethoscope } from 'lucide-react';
 const UserRoleBadge = ({ role, className = "" }) => {
   const getRoleConfig = (role) => {
     switch (role?.toLowerCase()) {
-      case 'patient':
+      case 'user':
         return {
           icon: UserCheck,
-          label: 'Patient',
+          label: 'User',
           bgColor: 'bg-green-100 dark:bg-green-900',
           textColor: 'text-green-800 dark:text-green-200',
           borderColor: 'border-green-200 dark:border-green-700'
@@ -19,6 +19,14 @@ const UserRoleBadge = ({ role, className = "" }) => {
           bgColor: 'bg-blue-100 dark:bg-blue-900',
           textColor: 'text-blue-800 dark:text-blue-200',
           borderColor: 'border-blue-200 dark:border-blue-700'
+        };
+      case 'admin':
+        return {
+          icon: User,
+          label: 'Admin',
+          bgColor: 'bg-red-100 dark:bg-red-900',
+          textColor: 'text-red-800 dark:text-red-200',
+          borderColor: 'border-red-200 dark:border-red-700'
         };
       default:
         return {

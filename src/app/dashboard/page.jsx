@@ -26,11 +26,18 @@ export default function Dashboard() {
 
       try {
         setLoading(true)
-        const role = await determineUserRole(session)
+        // Use role from session (set by JWT callback) or determine it
+        let role = session.user.role || 'user'
+        
+        // Only call determineUserRole if role is not set or invalid
+        if (!role || !['admin', 'doctor', 'user'].includes(role)) {
+          role = await determineUserRole(session)
+        }
+        
         setUserRole(role)
       } catch (error) {
         console.error('Error setting up dashboard:', error)
-        setUserRole('patient') // Fallback
+        setUserRole(session.user.role || 'user') // Use session role or fallback
       } finally {
         setLoading(false)
       }
@@ -49,7 +56,7 @@ export default function Dashboard() {
       return <AdminDashboard />
     case 'doctor':
       return <DoctorDashboard />
-    case 'patient':
+    case 'user':
       return <PatientDashboard />
     default:
       return <PatientDashboard />

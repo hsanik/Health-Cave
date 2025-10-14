@@ -1,30 +1,32 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+    if (process.env.NEXT_PUBLIC_SERVER_URI) {
       try {
-        const resp = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${session.user.id}/appointments`)
+        const resp = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/users/${session.user.id}/appointments`
+        );
         if (resp.ok) {
-          const data = await resp.json()
-          return NextResponse.json({ appointments: data.appointments || [] })
+          const data = await resp.json();
+          return NextResponse.json({ appointments: data.appointments || [] });
         }
-      } catch (e) { console.error('get-user-appointments backend error', e) }
+      } catch (e) {
+        console.error("get-user-appointments backend error", e);
+      }
     }
 
     // Mock
-    return NextResponse.json({ appointments: [] })
+    return NextResponse.json({ appointments: [] });
   } catch (e) {
-    console.error('get-user-appointments error', e)
-    return NextResponse.json({ appointments: [] }, { status: 200 })
+    console.error("get-user-appointments error", e);
+    return NextResponse.json({ appointments: [] }, { status: 200 });
   }
 }
-
-

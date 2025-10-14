@@ -605,10 +605,12 @@ export default function ProfilePage() {
                 {/* User Role Display */}
                 <div className="flex items-center justify-center">
                   <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
-                    session?.user?.role === 'patient' 
+                    session?.user?.role === 'user' 
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : session?.user?.role === 'doctor'
                       ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      : session?.user?.role === 'admin'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
                       : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                   }`}>
                     <User className="w-4 h-4 mr-1" />

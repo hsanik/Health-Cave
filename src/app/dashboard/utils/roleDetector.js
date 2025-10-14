@@ -1,42 +1,46 @@
-import axios from 'axios'
-
 export const determineUserRole = async (session) => {
-    if (!session?.user) return 'patient'
+    if (!session?.user) return 'user'
 
-    // Check if role is already in session
-    if (session.user.role && session.user.role !== 'user') {
+    // Check if role is already in session and valid
+    if (session.user.role && ['admin', 'doctor', 'user'].includes(session.user.role)) {
         return session.user.role
     }
 
+    // Fallback role determination (should rarely be needed with improved JWT callback)
     try {
-        // Check if user is a doctor
-        const doctorResponse = await axios.get(
-            `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`
-        )
-        const isDoctor = doctorResponse.data.some(
-            doctor => doctor.email === session.user.email
-        )
-
-        if (isDoctor) {
-            return 'doctor'
-        }
-
-        // Check if user is admin (you can define admin emails or use a separate API)
+        // Check if user is admin first
         const adminEmails = [
             'admin@healthcave.com',
             'admin@example.com',
-            'admin@gmail.com' // Add your admin emails here
+            'admin@gmail.com'
         ]
 
         if (adminEmails.includes(session.user.email)) {
             return 'admin'
         }
 
-        // Default to patient
-        return 'patient'
+        // Check if user is a doctor via API
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/doctors`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        if (response.ok) {
+            const doctors = await response.json()
+            const isDoctor = doctors.some(doctor => doctor.email === session.user.email)
+            
+            if (isDoctor) {
+                return 'doctor'
+            }
+        }
+
+        // Default to user
+        return 'user'
     } catch (error) {
         console.error('Error determining user role:', error)
-        return 'patient' // Default fallback
+        return session.user.role || 'user' // Use session role or default to user
     }
 }
 
@@ -63,7 +67,7 @@ export const getRoleBasedSidebarItems = (userRole) => {
         { icon: 'BarChart3', label: "Practice Analytics", href: "/dashboard/analytics" },
     ]
 
-    const patientItems = [
+    const userItems = [
         { icon: 'Calendar', label: "My Appointments", href: "/dashboard/appointments" },
         { icon: 'FileText', label: "Medical Records", href: "/dashboard/records" },
         { icon: 'MessageSquare', label: "Messages", href: "/dashboard/messages" },
@@ -82,11 +86,11 @@ export const getRoleBasedSidebarItems = (userRole) => {
         case 'doctor':
             roleItems = doctorItems
             break
-        case 'patient':
-            roleItems = patientItems
+        case 'user':
+            roleItems = userItems
             break
         default:
-            roleItems = patientItems
+            roleItems = userItems
     }
 
     return [...commonItems, ...roleItems, ...profileItems]
@@ -110,9 +114,9 @@ export const getRoleInfo = (userRole) => {
                 color: 'text-blue-600',
                 bgColor: 'bg-blue-100'
             }
-        case 'patient':
+        case 'user':
             return {
-                title: 'Patient Dashboard',
+                title: 'User Dashboard',
                 subtitle: 'Manage your health and appointments',
                 icon: 'Heart',
                 color: 'text-green-600',

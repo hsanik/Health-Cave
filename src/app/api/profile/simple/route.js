@@ -20,27 +20,6 @@ export async function GET(request) {
     const user = await usersCollection.findOne({ _id: new ObjectId(session.user.id) })
 
     if (!user) {
-      // Fetch availability from backend server even for fallback
-      let availability = []
-      try {
-        // First check if user is a doctor and get the correct doctor ID
-        const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`)
-        if (doctorResponse.ok) {
-          const doctorData = await doctorResponse.json()
-          if (doctorData.isDoctor && doctorData.doctor) {
-            // Use the doctor's _id for fetching availability
-            const doctorId = doctorData.doctor._id
-            const availabilityResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/${doctorId}/availability`)
-            if (availabilityResponse.ok) {
-              const availabilityData = await availabilityResponse.json()
-              availability = availabilityData.availability || []
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching availability for fallback:', error)
-      }
-
       // Return session data as fallback if user not found in database
       const fallbackUser = {
         _id: session.user.id,
@@ -56,7 +35,7 @@ export async function GET(request) {
         hospital: '',
         licenseNumber: '',
         workingHours: '',
-        availability: availability,
+        availability: [],
         notifications: {
           emailNotifications: true,
           smsNotifications: false,
@@ -70,27 +49,6 @@ export async function GET(request) {
         }
       }
       return NextResponse.json({ user: fallbackUser }, { status: 200 })
-    }
-
-    // Fetch availability from backend server
-    let availability = []
-    try {
-      // First check if user is a doctor and get the correct doctor ID
-      const doctorResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/check-by-email/${encodeURIComponent(session.user.email)}`)
-      if (doctorResponse.ok) {
-        const doctorData = await doctorResponse.json()
-        if (doctorData.isDoctor && doctorData.doctor) {
-          // Use the doctor's _id for fetching availability
-          const doctorId = doctorData.doctor._id
-            const availabilityResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/doctors/${doctorId}/availability`)
-          if (availabilityResponse.ok) {
-            const availabilityData = await availabilityResponse.json()
-            availability = availabilityData.availability || []
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching availability:', error)
     }
 
     // Merge session data with database data, preferring database data
@@ -108,7 +66,7 @@ export async function GET(request) {
       hospital: user.hospital || '',
       licenseNumber: user.licenseNumber || '',
       workingHours: user.workingHours || '',
-      availability: availability,
+      availability: [],
       notifications: user.notifications || {
         emailNotifications: true,
         smsNotifications: false,
