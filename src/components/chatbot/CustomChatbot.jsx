@@ -163,7 +163,7 @@ const CustomChatbot = () => {
           const strongMatch =
             (first.name || "").toLowerCase() === queryValue.toLowerCase();
           if (data.doctors.length === 1 || strongMatch) {
-            router.push(`/doctor/${detailsId}`);
+            router.push(`/doctors/${detailsId}`);
           } else {
             // Otherwise open the list filtered view
             router.push(`/doctors?specialty=${encodeURIComponent(queryValue)}`);
