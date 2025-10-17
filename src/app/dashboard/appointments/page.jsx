@@ -214,7 +214,14 @@ export default function AppointmentsPage() {
 
   const formatTime = (timeString) => {
     if (!timeString) return "Not set";
-    return timeString;
+    
+    // Convert 24-hour format to 12-hour format with AM/PM
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    
+    return `${displayHour}:${minutes} ${ampm}`;
   };
 
   if (loading) {
