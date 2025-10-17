@@ -16,11 +16,19 @@ import {
   MapPin,
   Star,
   DollarSign,
-  Clock,
   Users,
   ChevronDown,
   X,
 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 const DoctorsPage = () => {
   const [doctors, setDoctors] = useState([]);
@@ -28,6 +36,8 @@ const DoctorsPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const doctorsPerPage = 9;
   const [selectedAvailability, setSelectedAvailability] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [showFilters, setShowFilters] = useState(false);
@@ -152,6 +162,22 @@ const DoctorsPage = () => {
     selectedAvailability ||
     priceRange.min ||
     priceRange.max;
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredDoctors.length / doctorsPerPage);
+  const indexOfLastDoctor = currentPage * doctorsPerPage;
+  const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
+  const currentDoctors = filteredDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedSpecialization, selectedAvailability, priceRange]);
 
   if (loading) {
     return <PageSpinner text="Loading doctors..." />;
@@ -297,7 +323,8 @@ const DoctorsPage = () => {
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-gray-600">
-            Showing {filteredDoctors.length} of {doctors.length} doctors
+            Showing {indexOfFirstDoctor + 1}-{Math.min(indexOfLastDoctor, filteredDoctors.length)} of {filteredDoctors.length} doctors
+            {filteredDoctors.length !== doctors.length && ` (filtered from ${doctors.length} total)`}
           </p>
           {hasActiveFilters && (
             <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -349,113 +376,171 @@ const DoctorsPage = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDoctors.map((doctor) => (
-              <div
-                key={doctor._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-              >
-                {/* Doctor Image */}
-                <div className="relative h-64 bg-gray-200">
-                  {doctor.image &&
-                    doctor.image.trim() !== "" &&
-                    !doctor.image.includes("imgbox.com") &&
-                    (doctor.image.startsWith('http://') || doctor.image.startsWith('https://')) ? (
-                    <Image
-                      src={doctor.image}
-                      alt={doctor.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-                      <Users className="w-16 h-16 text-gray-400" />
-                    </div>
-                  )}
-                  {/* Availability Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${doctor.availabilityStatus === "Available"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                        }`}
-                    >
-                      {doctor.availabilityStatus}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Doctor Info */}
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                        {formatDoctorName(doctor.name)}
-                      </h3>
-                      <p className="text-[#435ba1] font-medium text-sm">
-                        {String(doctor.specialization)}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium text-gray-700">
-                        {Number(doctor.rating) || 0}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentDoctors.map((doctor) => (
+                <div
+                  key={doctor._id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                >
+                  {/* Doctor Image */}
+                  <div className="relative h-64 bg-gray-200">
+                    {doctor.image &&
+                      doctor.image.trim() !== "" &&
+                      !doctor.image.includes("imgbox.com") &&
+                      (doctor.image.startsWith('http://') || doctor.image.startsWith('https://')) ? (
+                      <Image
+                        src={doctor.image}
+                        alt={doctor.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                        <Users className="w-16 h-16 text-gray-400" />
+                      </div>
+                    )}
+                    {/* Availability Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${doctor.availabilityStatus === "Available"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
+                      >
+                        {doctor.availabilityStatus}
                       </span>
                     </div>
                   </div>
 
-                  {/* Hospital */}
-                  {doctor.hospital && (
-                    <div className="flex items-center space-x-2 mb-3">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {String(doctor.hospital)}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Stats Row */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center space-x-2">
-                      <DollarSign className="w-4 h-4 text-green-600" />
+                  {/* Doctor Info */}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-xs text-gray-500">Consultation Fee</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          ${Number(doctor.consultationFee) || 0}
+                        <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                          {formatDoctorName(doctor.name)}
+                        </h3>
+                        <p className="text-[#435ba1] font-medium text-sm">
+                          {String(doctor.specialization)}
                         </p>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4 text-blue-600" />
-                      <div>
-                        <p className="text-xs text-gray-500">Patients</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {Number(doctor.patients) || 0}+
-                        </p>
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-sm font-medium text-gray-700">
+                          {Number(doctor.rating) || 0}
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <Link
-                      href={`/doctors/${doctor._id}`}
-                      className="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
-                    >
-                      View Profile
-                    </Link>
-                    <Link
-                      href={`/book-appointment/${doctor._id}`}
-                      className="flex-1 bg-[#435ba1] text-white text-center py-2 px-4 rounded-lg hover:bg-[#4c69c6] transition-colors text-sm font-medium"
-                    >
-                      Book Now
-                    </Link>
+                    {/* Hospital */}
+                    {doctor.hospital && (
+                      <div className="flex items-center space-x-2 mb-3">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          {String(doctor.hospital)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <DollarSign className="w-4 h-4 text-green-600" />
+                        <div>
+                          <p className="text-xs text-gray-500">Consultation Fee</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            ${Number(doctor.consultationFee) || 0}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-blue-600" />
+                        <div>
+                          <p className="text-xs text-gray-500">Patients</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {Number(doctor.patients) || 0}+
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                      <Link
+                        href={`/doctors/${doctor._id}`}
+                        className="flex-1 bg-gray-100 text-gray-700 text-center py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                      >
+                        View Profile
+                      </Link>
+                      <Link
+                        href={`/book-appointment/${doctor._id}`}
+                        className="flex-1 bg-[#435ba1] text-white text-center py-2 px-4 rounded-lg hover:bg-[#4c69c6] transition-colors text-sm font-medium"
+                      >
+                        Book Now
+                      </Link>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+
+                    {[...Array(totalPages)].map((_, index) => {
+                      const pageNumber = index + 1;
+
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        pageNumber === 1 ||
+                        pageNumber === totalPages ||
+                        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationLink
+                              onClick={() => handlePageChange(pageNumber)}
+                              isActive={currentPage === pageNumber}
+                              className="cursor-pointer"
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      } else if (
+                        pageNumber === currentPage - 2 ||
+                        pageNumber === currentPage + 2
+                      ) {
+                        return (
+                          <PaginationItem key={pageNumber}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
