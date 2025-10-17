@@ -278,7 +278,7 @@ export default function DoctorDetailPage({ params }) {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    Dr. {doctor.name}
+                    {doctor.name.startsWith('Dr.') || doctor.name.startsWith('Dr ') ? doctor.name : `Dr. ${doctor.name}`}
                   </h1>
                   <p className="text-xl text-[#435ba1] font-medium mb-2">
                     {doctor.specialization}
