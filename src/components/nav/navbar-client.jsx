@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import Image from 'next/image'
@@ -15,15 +16,20 @@ const mainLinks = [
   { href: '/about', label: 'About' },
   { href: '/music', label: 'Music Therapy' },
   { href: '/contact', label: 'Contact' },
-  { href: '/doctorApply', label: 'Become A Doctor' },
+  { href: '/doctorApply', label: 'Become A Doctor', roleRestricted: true }, // Only show for users
 ]
 
 export default function NavbarClient() {
+  const { data: session, status } = useSession()
   const [isDark, setIsDark] = useState(false)
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
   const { isLoading, isAuthenticated } = useAuth()
+  
+  // Get user role - only set after session is loaded
+  const sessionLoading = status === 'loading'
+  const userRole = session?.user?.role || 'user'
 
   const onDashboard = pathname?.startsWith('/dashboard')
 
@@ -50,6 +56,24 @@ export default function NavbarClient() {
     if (href === '/') return pathname === '/'
     return pathname.startsWith(href)
   }
+
+  // Filter links based on user role
+  const getVisibleLinks = () => {
+    return mainLinks.filter(link => {
+      // If link is role-restricted (Become A Doctor)
+      if (link.roleRestricted) {
+        // Hide during session loading to prevent flash
+        if (sessionLoading) {
+          return false
+        }
+        // Only show for regular users or not authenticated
+        return userRole === 'user'
+      }
+      return true
+    })
+  }
+
+  const visibleLinks = getVisibleLinks()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/60 dark:bg-background/30 backdrop-blur-md supports-[backdrop-filter]:bg-background/30">
@@ -85,7 +109,7 @@ export default function NavbarClient() {
         {/* Navigation Links */}
         {!onDashboard && (
           <div className="hidden md:flex items-center justify-center gap-5 text-base font-medium">
-            {mainLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -172,7 +196,7 @@ export default function NavbarClient() {
           <div className="mx-auto w-11/12 pb-3">
             <div className="rounded-xl border bg-background/70 dark:bg-background/30 backdrop-blur-md p-4">
               <div className="flex flex-col gap-3 text-base font-medium">
-                {mainLinks.map((link) => (
+                {visibleLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
