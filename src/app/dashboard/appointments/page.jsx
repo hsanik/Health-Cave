@@ -21,6 +21,7 @@ import {
 import Image from "next/image";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { formatDoctorName } from "@/utils/doctorUtils";
 
 export default function AppointmentsPage() {
   const { data: session, status } = useSession();
@@ -336,7 +337,7 @@ export default function AppointmentsPage() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                        {appointment.doctorName}
+                        {formatDoctorName(appointment.doctorName)}
                       </h3>
                       {getStatusIcon(appointment.status)}
                     </div>

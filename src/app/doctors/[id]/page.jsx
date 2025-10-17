@@ -401,8 +401,8 @@ export default function DoctorDetailPage({ params }) {
                     <p className="text-lg font-semibold text-blue-900">{getTodayWorkingHours(doctor)}</p>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-sm font-medium ${doctor.availabilityStatus === 'Available'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
                     }`}>
                     {doctor.availabilityStatus}
                   </div>
@@ -415,8 +415,8 @@ export default function DoctorDetailPage({ params }) {
                   <div
                     key={index}
                     className={`flex items-center justify-between p-3 rounded-lg ${schedule.isAvailable
-                        ? 'bg-green-50 border border-green-200'
-                        : 'bg-gray-50 border border-gray-200'
+                      ? 'bg-green-50 border border-green-200'
+                      : 'bg-gray-50 border border-gray-200'
                       }`}
                   >
                     <span className="font-medium text-gray-900">{schedule.day}</span>
