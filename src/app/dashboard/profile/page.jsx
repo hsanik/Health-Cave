@@ -26,6 +26,8 @@ export default function ProfilePage() {
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [dataFetched, setDataFetched] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [profileImage, setProfileImage] = useState(null)
 
   // Profile form state
   const [profileData, setProfileData] = useState({
@@ -125,6 +127,10 @@ export default function ProfilePage() {
           licenseNumber: user.licenseNumber || '',
           workingHours: user.workingHours || ''
         })
+
+        if (user.image) {
+          setProfileImage(user.image)
+        }
 
         if (user.notifications) {
           setNotifications(user.notifications)
@@ -265,6 +271,73 @@ export default function ProfilePage() {
     }))
   }
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB')
+      return
+    }
+
+    setUploadingImage(true)
+    const loadingToast = toast.loading('Uploading image...')
+
+    try {
+      // Upload to ImgBB
+      const formData = new FormData()
+      formData.append('image', file)
+      formData.append('key', process.env.NEXT_PUBLIC_IMGBB_API_KEY)
+
+      const imgbbResponse = await fetch('https://api.imgbb.com/1/upload', {
+        method: 'POST',
+        body: formData
+      })
+
+      const imgbbData = await imgbbResponse.json()
+
+      if (imgbbData.success) {
+        const imageUrl = imgbbData.data.url
+
+        // Update profile with new image URL
+        const response = await fetch('/api/profile/update', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            image: imageUrl
+          }),
+        })
+
+        if (response.ok) {
+          setProfileImage(imageUrl)
+          toast.success('Profile photo updated successfully!', { id: loadingToast })
+
+          // Refresh the page to update session
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
+        } else {
+          throw new Error('Failed to update profile')
+        }
+      } else {
+        throw new Error('Failed to upload image')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Failed to upload image. Please try again.', { id: loadingToast })
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   const handleCancel = () => {
     // Reset form to original data or redirect
@@ -668,10 +741,15 @@ export default function ProfilePage() {
             )}
             <div className="text-center">
               <div className="relative inline-block">
-                <div className="w-48 h-48 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  {session?.user?.image ? (
+                <div className="w-48 h-48 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 relative overflow-hidden">
+                  {uploadingImage && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                      <Loader2 className="w-12 h-12 text-white animate-spin" />
+                    </div>
+                  )}
+                  {profileImage || session?.user?.image ? (
                     <img
-                      src={session.user.image}
+                      src={profileImage || session.user.image}
                       alt="Profile"
                       className="w-48 h-48 rounded-full object-cover"
                     />
@@ -679,11 +757,26 @@ export default function ProfilePage() {
                     <User className="w-24 h-24 text-white" />
                   )}
                 </div>
+                <input
+                  type="file"
+                  id="profile-image-upload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={uploadingImage}
+                />
                 <Button
                   size="sm"
+                  type="button"
+                  onClick={() => document.getElementById('profile-image-upload')?.click()}
+                  disabled={uploadingImage}
                   className="absolute bottom-2 right-2 rounded-full w-12 h-12 p-0"
                 >
-                  <Camera className="w-5 h-5" />
+                  {uploadingImage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Camera className="w-5 h-5" />
+                  )}
                 </Button>
               </div>
               <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
@@ -718,12 +811,12 @@ export default function ProfilePage() {
                 {/* User Role Display */}
                 <div className="flex items-center justify-center">
                   <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${session?.user?.role === 'user'
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : session?.user?.role === 'doctor'
-                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                        : session?.user?.role === 'admin'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : session?.user?.role === 'doctor'
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      : session?.user?.role === 'admin'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                     }`}>
                     {session?.user?.role === 'doctor' && <Stethoscope className="w-4 h-4 mr-1" />}
                     {session?.user?.role === 'admin' && <Shield className="w-4 h-4 mr-1" />}

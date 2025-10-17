@@ -26,7 +26,8 @@ export async function PUT(request) {
       workingHours,
       location,
       notifications,
-      privacy
+      privacy,
+      image
     } = await request.json()
 
     const client = await clientPromise
@@ -49,6 +50,7 @@ export async function PUT(request) {
     if (workingHours) updateFields.workingHours = workingHours
     if (notifications) updateFields.notifications = notifications
     if (privacy) updateFields.privacy = privacy
+    if (image) updateFields.image = image
 
     if (Object.keys(updateFields).length === 0) {
       return NextResponse.json({ message: 'No fields to update' }, { status: 400 })
