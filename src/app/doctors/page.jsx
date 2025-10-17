@@ -4,6 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import { PageSpinner } from "@/components/ui/loading-spinner";
+import { formatDoctorName } from "@/utils/doctorUtils";
+import { 
+  getAvailabilityStatus, 
+  getNextAvailable, 
+  processDoctorAvailability 
+} from "@/utils/availabilityUtils";
 import {
   Search,
   Filter,
@@ -50,25 +56,22 @@ const DoctorsPage = () => {
         );
         const doctorsData = response.data;
 
-        // Process and validate doctor data
-        const processedDoctors = doctorsData.map((doctor) => ({
-          ...doctor,
-          // Ensure all fields have proper types and fallbacks
-          name: String(doctor.name || ""),
-          specialization: String(doctor.specialization || ""),
-          hospital: String(doctor.hospital || ""),
-          rating: Number(doctor.rating) || 4.5,
-          consultationFee: Number(doctor.consultationFee) || 100,
-          availability:
-            typeof doctor.availability === "string"
-              ? doctor.availability
-              : "Available",
-          nextAvailable:
-            typeof doctor.nextAvailable === "string"
-              ? doctor.nextAvailable
-              : "Today",
-          patients: Number(doctor.patients) || 0,
-        }));
+        // Process and validate doctor data with dynamic availability
+        const processedDoctors = doctorsData.map((doctor) => {
+          const baseDoctor = {
+            ...doctor,
+            // Ensure all fields have proper types and fallbacks
+            name: String(doctor.name || ""),
+            specialization: String(doctor.specialization || ""),
+            hospital: String(doctor.hospital || ""),
+            rating: Number(doctor.rating) || 4.5,
+            consultationFee: Number(doctor.consultationFee) || 100,
+            patients: Number(doctor.patients) || 0,
+          };
+          
+          // Add computed availability based on schedule
+          return processDoctorAvailability(baseDoctor);
+        });
 
         setDoctors(processedDoctors);
         setFilteredDoctors(processedDoctors);
@@ -113,7 +116,7 @@ const DoctorsPage = () => {
     // Availability filter
     if (selectedAvailability) {
       filtered = filtered.filter(
-        (doctor) => doctor.availability === selectedAvailability
+        (doctor) => doctor.availabilityStatus === selectedAvailability
       );
     }
 
@@ -374,12 +377,12 @@ const DoctorsPage = () => {
                   <div className="absolute top-3 right-3">
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        String(doctor.availability) === "Available"
+                        doctor.availabilityStatus === "Available"
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {String(doctor.availability)}
+                      {doctor.availabilityStatus}
                     </span>
                   </div>
                 </div>
@@ -389,7 +392,7 @@ const DoctorsPage = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                        {String(doctor.name)}
+                        {formatDoctorName(doctor.name)}
                       </h3>
                       <p className="text-[#435ba1] font-medium text-sm">
                         {String(doctor.specialization)}
@@ -436,15 +439,15 @@ const DoctorsPage = () => {
                   </div>
 
                   {/* Next Available */}
-                  {/* <div className="flex items-center space-x-2 mb-4">
+                  <div className="flex items-center space-x-2 mb-4">
                     <Clock className="w-4 h-4 text-gray-400" />
                     <span className="text-sm text-gray-600">
                       Next available:{" "}
                       <span className="font-medium">
-                        {String(doctor.nextAvailable)}
+                        {doctor.nextAvailable}
                       </span>
                     </span>
-                  </div> */}
+                  </div>
 
                   {/* Action Buttons */}
                   <div className="flex space-x-2">
