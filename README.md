@@ -20,7 +20,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 
 ## � Keey Features
 
-### � **User Mainagement & Authentication**
+### � **User Management & Authentication**
 - 🔐 **Secure Authentication** - NextAuth.js with multiple providers (Email, Google, GitHub)
 - 👥 **Role-Based Access Control** - Separate dashboards for Patients, Doctors, and Admins
 - 📧 **Email Verification** - Secure account verification via email
