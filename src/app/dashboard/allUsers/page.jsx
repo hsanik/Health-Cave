@@ -1,24 +1,67 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { FaUserShield, FaTrashAlt, FaSearch } from "react-icons/fa";
 
 const UsersPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Check authentication and role
+  useEffect(() => {
+    if (status === 'loading') return;
+    
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    const userRole = session?.user?.role || 'user';
+    if (userRole !== 'admin') {
+      Swal.fire({
+        title: 'Access Denied',
+        text: 'Only administrators can access this page.',
+        icon: 'error',
+        confirmButtonColor: '#435ba1',
+      }).then(() => {
+        router.push('/dashboard');
+      });
+      return;
+    }
+
+    // Fetch users if admin
+    fetchUsers();
+  }, [status, session, router]);
 
   // Fetch all users from MongoDB
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URI}/users`)
-      .then((res) => res.json())
+  const fetchUsers = () => {
+    setLoading(true);
+    fetch('/api/users')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        return res.json();
+      })
       .then((data) => {
         setUsers(data);
         setFiltered(data);
       })
-      .catch((err) => console.error("Error loading users:", err));
-  }, []);
+      .catch((err) => {
+        console.error("Error loading users:", err);
+        Swal.fire("Error", "Failed to load users", "error");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   // Search filter
   useEffect(() => {
@@ -41,20 +84,19 @@ const UsersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URI}/users/admin/${id}`,
-            {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
+          const res = await fetch(`/api/users/${id}/admin`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+          });
+          
           if (res.ok) {
             setUsers((prev) =>
               prev.map((u) => (u._id === id ? { ...u, role: "admin" } : u))
             );
             Swal.fire("Success", "User promoted to admin!", "success");
           } else {
-            Swal.fire("Error", "Failed to promote user", "error");
+            const error = await res.json();
+            Swal.fire("Error", error.message || "Failed to promote user", "error");
           }
         } catch (err) {
           Swal.fire("Error", err.message, "error");
@@ -76,17 +118,16 @@ const UsersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URI}/users/${id}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const res = await fetch(`/api/users/${id}`, {
+            method: "DELETE",
+          });
+          
           if (res.ok) {
             setUsers((prev) => prev.filter((u) => u._id !== id));
             Swal.fire("Deleted!", "User has been removed.", "success");
           } else {
-            Swal.fire("Error", "Failed to delete user", "error");
+            const error = await res.json();
+            Swal.fire("Error", error.message || "Failed to delete user", "error");
           }
         } catch (err) {
           Swal.fire("Error", err.message, "error");
@@ -94,6 +135,19 @@ const UsersPage = () => {
       }
     });
   };
+
+  if (loading || status === 'loading') {
+    return (
+      <div className="w-11/12 mx-auto my-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading users...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-11/12 mx-auto my-8">
