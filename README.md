@@ -59,7 +59,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 - 💬 **Real-Time Chat** - Instant messaging between patients and doctors
 - 🤖 **AI Health Chatbot** - 24/7 automated health assistance
 - 📹 **Video Consultations** - Telemedicine appointments with video calls
-- 📧 **Email System** - Automated email notifications for important events
+- ✉️ **Email System** - Automated email notifications for important events
 
 ### 📊 **Health Tools & Calculators**
 - 🧮 **BMI Calculator** - Calculate Body Mass Index with health recommendations
@@ -77,12 +77,12 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 ### 🎵 **Wellness Features**
 - 🎵 **Audio Therapy** - Curated relaxation music and meditation tracks
 - 📚 **Health Blog** - Wellness tips, health news, and expert advice
-- 🧘 **Meditation Resources** - Guided meditation and mindfulness content
+- 🧘‍♀️ **Meditation Resources** - Guided meditation and mindfulness content
 - 💪 **Fitness Tips** - Exercise guides and workout recommendations
 
 ### 🔐 **Admin Dashboard**
 - 👥 **User Management** - View and manage all users
-- 👨‍⚕️ **Doctor Management** - Approve/reject doctor applications
+- 👨‍⚕️ **Doctor Management** - Approve or reject doctor applications
 - 📊 **Analytics** - System-wide statistics and insights
 - 📅 **Appointment Overview** - Monitor all appointments
 - 💰 **Payment Tracking** - View all transactions
@@ -93,7 +93,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 - 🌓 **Dark Mode** - Toggle between light and dark themes
 - 📱 **Responsive Design** - Optimized for all devices (mobile, tablet, desktop)
 - ⚡ **Fast Performance** - Optimized loading and caching
-- 🎭 **Smooth Animations** - Framer Motion for delightful interactions
+- ✨ **Smooth Animations** - Framer Motion for delightful interactions
 - 🔔 **Toast Notifications** - Real-time feedback for user actions
 - 🎨 **Modern UI** - Clean, intuitive interface with Tailwind CSS
 - 🌐 **Multi-Language Support** - Platform available in multiple languages
@@ -105,7 +105,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 - 🔒 **Secure Sessions** - JWT-based authentication
 - 🚫 **XSS Protection** - Cross-site scripting prevention
 - 🔐 **CSRF Protection** - Cross-site request forgery prevention
-- 📧 **Email Verification** - Prevent fake accounts
+- ✉️ **Email Verification** - Prevent fake accounts
 - 🔑 **Environment Variables** - Secure API key management
 
 ---
@@ -125,7 +125,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 ### **Backend**
 - 🔐 **NextAuth.js** - Authentication solution
 - 🗄️ **MongoDB** - NoSQL database
-- 📧 **Nodemailer** - Email service
+- ✉️ **Nodemailer** - Email service
 - 🔑 **bcrypt** - Password hashing
 - 💳 **Stripe** - Payment processing
 - 🔗 **Axios** - HTTP client
@@ -133,7 +133,7 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 ### **Additional Tools**
 - 🗺️ **Leaflet** - Interactive maps
 - 🤖 **React Chatbot Kit** - AI chatbot framework
-- 📸 **ImgBB API** - Image hosting service
+- � **ImgBBB API** - Image hosting service
 - 🎵 **Audio Player** - Custom audio therapy player
 - 📊 **Chart.js** - Data visualization
 
@@ -143,19 +143,12 @@ We believe healthcare should be accessible, efficient, and user-focused. HealthC
 
 **Check out the live application:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
 
-### Demo Accounts
-
-**Patient Account:**
-- Email: patient@demo.com
-- Password: demo123
-
-**Doctor Account:**
-- Email: doctor@demo.com
-- Password: demo123
-
-**Admin Account:**
-- Email: admin@demo.com
-- Password: admin123
+Experience all features firsthand:
+- Browse verified doctors directory
+- Use health calculators
+- Explore the health blog
+- Try the AI health chatbot
+- Listen to relaxing audio therapy
 
 ---
 
@@ -404,7 +397,7 @@ Each doctor has a unique schedule:
 
 ### **Profile Photo Upload**
 Seamless image upload experience:
-- 📸 Click camera icon to upload
+- � Cllick camera icon to upload
 - ✅ Automatic validation (type & size)
 - ☁️ Cloud storage via ImgBB
 - ⚡ Instant preview
@@ -534,17 +527,17 @@ POST /api/profile/upload    - Upload profile photo
 - ✅ Input validation and sanitization
 - ✅ Rate limiting on API endpoints
 - ✅ CORS configuration
-- ✅ SQL injection prevention
+- ✅ NoSQL injection prevention
 - ✅ XSS protection
 
 ---
 
 ## 📊 Performance Optimization
 
-- ⚡ Next.js Image Optimization
+- ⚡ Next.js Image optimization
 - 🗜️ Code splitting and lazy loading
 - 💾 MongoDB indexing
-- 🔄 React Query for data caching
+- 🔄 Data caching strategies
 - 📦 Bundle size optimization
 - 🚀 CDN for static assets
 - ⚡ Server-side rendering (SSR)
@@ -588,9 +581,9 @@ Built with ❤️ by **DevBytes Team**
 **Need help?** We're here for you!
 
 - 🌐 **Website:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
-- 📧 **Email:** support@healthcave.com
+- ✉️ **Email:** support@healthcave.com
 - 💬 **GitHub Issues:** [Report a Bug](https://github.com/hsanik/Health-Cave/issues)
-- 📱 **Twitter:** [@HealthCave](https://twitter.com/healthcave)
+- � **Twittter:** [@HealthCave](https://twitter.com/healthcave)
 
 ---
 
@@ -620,7 +613,7 @@ Special thanks to:
 - [ ] AI-powered diagnosis assistant
 - [ ] Wearable device integration
 - [ ] Telemedicine group sessions
-- [ ] Health records blockchain
+- [ ] Health records on blockchain
 
 ---
 
