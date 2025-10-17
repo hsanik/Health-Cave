@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageSpinner } from '@/components/ui/loading-spinner';
 import { formatDoctorName } from '@/utils/doctorUtils';
-import { 
-  processDoctorAvailability, 
+import {
+  processDoctorAvailability,
   getWeeklySchedule,
-  getTodayWorkingHours 
+  getTodayWorkingHours
 } from '@/utils/availabilityUtils';
 import {
   Clock,
@@ -392,7 +392,7 @@ export default function DoctorDetailPage({ params }) {
                 <Calendar className="w-5 h-5 text-[#435ba1]" />
                 <span>Weekly Schedule</span>
               </h3>
-              
+
               {/* Today's Hours */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between">
@@ -400,11 +400,10 @@ export default function DoctorDetailPage({ params }) {
                     <p className="text-sm text-blue-600 font-medium">Today's Hours</p>
                     <p className="text-lg font-semibold text-blue-900">{getTodayWorkingHours(doctor)}</p>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    doctor.availabilityStatus === 'Available' 
-                      ? 'bg-green-100 text-green-800' 
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${doctor.availabilityStatus === 'Available'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {doctor.availabilityStatus}
                   </div>
                 </div>
@@ -413,18 +412,16 @@ export default function DoctorDetailPage({ params }) {
               {/* Weekly Schedule */}
               <div className="space-y-2">
                 {getWeeklySchedule(doctor).map((schedule, index) => (
-                  <div 
+                  <div
                     key={index}
-                    className={`flex items-center justify-between p-3 rounded-lg ${
-                      schedule.isAvailable 
-                        ? 'bg-green-50 border border-green-200' 
+                    className={`flex items-center justify-between p-3 rounded-lg ${schedule.isAvailable
+                        ? 'bg-green-50 border border-green-200'
                         : 'bg-gray-50 border border-gray-200'
-                    }`}
+                      }`}
                   >
                     <span className="font-medium text-gray-900">{schedule.day}</span>
-                    <span className={`text-sm ${
-                      schedule.isAvailable ? 'text-green-700' : 'text-gray-500'
-                    }`}>
+                    <span className={`text-sm ${schedule.isAvailable ? 'text-green-700' : 'text-gray-500'
+                      }`}>
                       {schedule.hours || schedule.status}
                     </span>
                   </div>

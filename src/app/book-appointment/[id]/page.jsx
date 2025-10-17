@@ -15,10 +15,17 @@ import {
   ArrowLeft,
   Star,
   DollarSign,
+  AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { PageSpinner, ButtonSpinner } from "@/components/ui/loading-spinner";
+import { formatDoctorName } from "@/utils/doctorUtils";
+import { 
+  getCurrentDay, 
+  getWeeklySchedule,
+  processDoctorAvailability 
+} from "@/utils/availabilityUtils";
 
 const BookAppointment = ({ params }) => {
   const router = useRouter();
@@ -88,8 +95,8 @@ const BookAppointment = ({ params }) => {
           `${process.env.NEXT_PUBLIC_SERVER_URI}/doctors/${id}`
         );
 
-        // Process and validate doctor data
-        const doctorData = {
+        // Process and validate doctor data with availability
+        const baseDoctor = {
           ...response.data,
           name: String(response.data.name || ''),
           specialization: String(response.data.specialization || ''),
@@ -99,6 +106,7 @@ const BookAppointment = ({ params }) => {
           image: response.data.image || ''
         };
 
+        const doctorData = processDoctorAvailability(baseDoctor);
         setDoctor(doctorData);
       } catch (error) {
         console.error("Error fetching doctor:", error);
@@ -141,28 +149,106 @@ const BookAppointment = ({ params }) => {
     }
   };
 
+  // Check if selected date is doctor's off day
+  const isDoctorOffDay = (dateStr) => {
+    if (!doctor?.availability || !Array.isArray(doctor.availability)) {
+      return false;
+    }
+
+    const selectedDate = new Date(dateStr);
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[selectedDate.getDay()];
+    
+    const daySchedule = doctor.availability.find(slot => slot.day === dayName);
+    return !daySchedule || !daySchedule.isAvailable;
+  };
+
+  // Generate time slots based on doctor's schedule for selected date
+  const generateTimeSlotsFromSchedule = (dateStr) => {
+    if (!doctor?.availability || !Array.isArray(doctor.availability)) {
+      return [];
+    }
+
+    const selectedDate = new Date(dateStr);
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[selectedDate.getDay()];
+    
+    const daySchedule = doctor.availability.find(slot => slot.day === dayName);
+    
+    if (!daySchedule || !daySchedule.isAvailable) {
+      return [];
+    }
+
+    // Generate 30-minute slots between start and end time
+    const slots = [];
+    const [startHour, startMin] = daySchedule.startTime.split(':').map(Number);
+    const [endHour, endMin] = daySchedule.endTime.split(':').map(Number);
+    
+    let currentHour = startHour;
+    let currentMin = startMin;
+    
+    while (currentHour < endHour || (currentHour === endHour && currentMin < endMin)) {
+      const timeStr = `${String(currentHour).padStart(2, '0')}:${String(currentMin).padStart(2, '0')}`;
+      slots.push(timeStr);
+      
+      // Add 30 minutes
+      currentMin += 30;
+      if (currentMin >= 60) {
+        currentMin = 0;
+        currentHour += 1;
+      }
+    }
+    
+    return slots;
+  };
+
+  // Filter out past times if selected date is today
+  const filterPastTimes = (slots, dateStr) => {
+    const selectedDate = new Date(dateStr);
+    const today = new Date();
+    
+    // Reset time to compare only dates
+    selectedDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    
+    // If selected date is not today, return all slots
+    if (selectedDate.getTime() !== today.getTime()) {
+      return slots;
+    }
+    
+    // If today, filter out past times
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMin = now.getMinutes();
+    
+    return slots.filter(timeStr => {
+      const [hour, min] = timeStr.split(':').map(Number);
+      return hour > currentHour || (hour === currentHour && min > currentMin);
+    });
+  };
+
   const getAvailableTimeSlots = () => {
-    const allTimeSlots = [
-      "09:00",
-      "09:30",
-      "10:00",
-      "10:30",
-      "11:00",
-      "11:30",
-      "14:00",
-      "14:30",
-      "15:00",
-      "15:30",
-      "16:00",
-      "16:30",
-    ];
+    const selectedDateStr = formData.appointmentDate;
+    
+    if (!selectedDateStr) {
+      return [];
+    }
+
+    // Check if it's doctor's off day
+    if (isDoctorOffDay(selectedDateStr)) {
+      return [];
+    }
+
+    // Generate slots from doctor's schedule
+    let availableSlots = generateTimeSlotsFromSchedule(selectedDateStr);
+    
+    // Filter out past times if today
+    availableSlots = filterPastTimes(availableSlots, selectedDateStr);
 
     // Get booked times for the selected date
-    const selectedDateStr = formData.appointmentDate;
     const bookedTimes = bookedAppointments
       .filter((appointment) => {
         const appointmentDate = appointment.appointmentDate;
-        // Convert appointment date to YYYY-MM-DD format for comparison
         let formattedAppointmentDate;
         if (appointmentDate) {
           const date = new Date(appointmentDate);
@@ -175,7 +261,8 @@ const BookAppointment = ({ params }) => {
       })
       .map((appointment) => appointment.appointmentTime);
 
-    return allTimeSlots.filter((time) => !bookedTimes.includes(time));
+    // Filter out booked times
+    return availableSlots.filter((time) => !bookedTimes.includes(time));
   };
 
   const formatTimeDisplay = (time) => {
@@ -329,7 +416,7 @@ const BookAppointment = ({ params }) => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
-                  Dr. {doctor.name}
+                  {formatDoctorName(doctor.name)}
                 </h1>
                 <p className="text-[#435ba1] font-medium text-lg">
                   {doctor.specialization}
@@ -499,6 +586,14 @@ const BookAppointment = ({ params }) => {
                     ? formatDateToDDMMYYYY(new Date(formData.appointmentDate))
                     : "No date selected"}
                 </p>
+                {formData.appointmentDate && isDoctorOffDay(formData.appointmentDate) && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-700">
+                      Doctor is not available on this day. Please select another date.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -526,13 +621,16 @@ const BookAppointment = ({ params }) => {
                     ))
                   )}
                 </select>
-                {formData.appointmentDate &&
-                  getAvailableTimeSlots().length === 0 && (
-                    <p className="text-sm text-red-600 mt-1">
-                      No available time slots for this date. Please select
-                      another date.
+                {formData.appointmentDate && getAvailableTimeSlots().length === 0 && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded flex items-start space-x-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-red-700">
+                      {isDoctorOffDay(formData.appointmentDate)
+                        ? "Doctor is off on this day."
+                        : "No available time slots for this date (all booked or past times)."}
                     </p>
-                  )}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -637,11 +735,38 @@ const BookAppointment = ({ params }) => {
               </select>
             </div>
 
+            {/* Doctor's Weekly Schedule */}
+            {doctor?.availability && Array.isArray(doctor.availability) && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 className="text-sm font-semibold text-blue-900 mb-3 flex items-center">
+                  <Clock className="w-4 h-4 mr-2" />
+                  Doctor's Weekly Schedule
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {getWeeklySchedule(doctor).map((schedule, index) => (
+                    <div
+                      key={index}
+                      className={`text-xs p-2 rounded ${
+                        schedule.isAvailable
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <div className="font-semibold">{schedule.day}</div>
+                      <div className="text-xs mt-1">
+                        {schedule.hours || schedule.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Submit Button */}
             <div className="pt-6">
               <button
                 type="submit"
-                disabled={submitting || !formData.appointmentTime}
+                disabled={submitting || !formData.appointmentTime || isDoctorOffDay(formData.appointmentDate)}
                 className="w-full flex items-center justify-center px-6 py-3 bg-[#435ba1] text-white font-medium rounded-lg hover:bg-[#4c69c6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? (
