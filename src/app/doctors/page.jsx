@@ -356,20 +356,18 @@ const DoctorsPage = () => {
               >
                 {/* Doctor Image */}
                 <div className="relative h-48 bg-gray-200">
-                  {doctor.image && doctor.image.trim() !== "" ? (
+                  {doctor.image && doctor.image.trim() !== "" && !doctor.image.includes("imgbox.com") ? (
                     <Image
                       src={doctor.image}
                       alt={doctor.name}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                      unoptimized
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                      <Users className="w-16 h-16 text-gray-500" />
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                      <Users className="w-16 h-16 text-gray-400" />
                     </div>
                   )}
                   {/* Availability Badge */}
