@@ -389,69 +389,133 @@ export default function ProfilePage() {
             </form>
           </Card>
 
-          {/* Professional Information */}
-          <Card className="p-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <Stethoscope className="w-6 h-6 text-green-600 dark:text-green-400" />
-              <div>
-                <h3 className="font-semibold text-gray-800 dark:text-white">Professional Information</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Your medical practice details</p>
+          {/* Professional Information - Only for Doctors */}
+          {session?.user?.role === 'doctor' && (
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <Stethoscope className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-white">Professional Information</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Your medical practice details</p>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="specialization">Specialization</Label>
-                <Input
-                  id="specialization"
-                  value={profileData.specialization}
-                  onChange={(e) => handleInputChange('specialization', e.target.value)}
-                  placeholder="e.g., Cardiology, Pediatrics"
-                  disabled={isLoading}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="specialization">Specialization</Label>
+                  <Input
+                    id="specialization"
+                    value={profileData.specialization}
+                    onChange={(e) => handleInputChange('specialization', e.target.value)}
+                    placeholder="e.g., Cardiology, Pediatrics"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="experience">Years of Experience</Label>
+                  <Input
+                    id="experience"
+                    value={profileData.experience}
+                    onChange={(e) => handleInputChange('experience', e.target.value)}
+                    placeholder="e.g., 10 years"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="hospital">Hospital/Clinic</Label>
+                  <Input
+                    id="hospital"
+                    value={profileData.hospital}
+                    onChange={(e) => handleInputChange('hospital', e.target.value)}
+                    placeholder="Your workplace"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="licenseNumber">License Number</Label>
+                  <Input
+                    id="licenseNumber"
+                    value={profileData.licenseNumber}
+                    onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
+                    placeholder="Medical license number"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label htmlFor="workingHours">Working Hours</Label>
+                  <Input
+                    id="workingHours"
+                    value={profileData.workingHours}
+                    onChange={(e) => handleInputChange('workingHours', e.target.value)}
+                    placeholder="e.g., Mon-Fri 9:00 AM - 5:00 PM"
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="experience">Years of Experience</Label>
-                <Input
-                  id="experience"
-                  value={profileData.experience}
-                  onChange={(e) => handleInputChange('experience', e.target.value)}
-                  placeholder="e.g., 10 years"
-                  disabled={isLoading}
-                />
+            </Card>
+          )}
+
+          {/* Admin Information - Only for Admins */}
+          {session?.user?.role === 'admin' && (
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <Shield className="w-6 h-6 text-red-600 dark:text-red-400" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-white">Administrator Information</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">System administrator details</p>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="hospital">Hospital/Clinic</Label>
-                <Input
-                  id="hospital"
-                  value={profileData.hospital}
-                  onChange={(e) => handleInputChange('hospital', e.target.value)}
-                  placeholder="Your workplace"
-                  disabled={isLoading}
-                />
+
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Shield className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-red-900 dark:text-red-200 mb-1">
+                      Administrator Privileges
+                    </h4>
+                    <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+                      <li>• Full access to all system features</li>
+                      <li>• Manage users and doctors</li>
+                      <li>• View all appointments and payments</li>
+                      <li>• System analytics and reports</li>
+                      <li>• Approve doctor applications</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="licenseNumber">License Number</Label>
-                <Input
-                  id="licenseNumber"
-                  value={profileData.licenseNumber}
-                  onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
-                  placeholder="Medical license number"
-                  disabled={isLoading}
-                />
+            </Card>
+          )}
+
+          {/* Patient Information - Only for Regular Users */}
+          {session?.user?.role === 'user' && (
+            <Card className="p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <User className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-white">Patient Information</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Your health profile details</p>
+                </div>
               </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="workingHours">Working Hours</Label>
-                <Input
-                  id="workingHours"
-                  value={profileData.workingHours}
-                  onChange={(e) => handleInputChange('workingHours', e.target.value)}
-                  placeholder="e.g., Mon-Fri 9:00 AM - 5:00 PM"
-                  disabled={isLoading}
-                />
+
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <User className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-green-900 dark:text-green-200 mb-1">
+                      Patient Features
+                    </h4>
+                    <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                      <li>• Book appointments with doctors</li>
+                      <li>• View your medical records</li>
+                      <li>• Manage your appointments</li>
+                      <li>• Secure payment processing</li>
+                      <li>• Message your doctors</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           {/* Notification Preferences */}
           <Card className="p-6">
@@ -512,28 +576,42 @@ export default function ProfilePage() {
               <Shield className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               <div>
                 <h3 className="font-semibold text-gray-800 dark:text-white">Privacy Settings</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Control your privacy preferences</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {session?.user?.role === 'doctor'
+                    ? 'Control your profile visibility to patients'
+                    : session?.user?.role === 'admin'
+                      ? 'Administrator privacy preferences'
+                      : 'Control your privacy preferences'}
+                </p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Profile Visibility</Label>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Make your profile visible to patients</p>
+              {/* Profile Visibility - Only for Doctors */}
+              {session?.user?.role === 'doctor' && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Profile Visibility</Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Make your profile visible to patients</p>
+                  </div>
+                  <Switch
+                    checked={privacy.profileVisibility}
+                    onCheckedChange={(checked) =>
+                      setPrivacy(prev => ({ ...prev, profileVisibility: checked }))
+                    }
+                    disabled={isLoading}
+                  />
                 </div>
-                <Switch
-                  checked={privacy.profileVisibility}
-                  onCheckedChange={(checked) =>
-                    setPrivacy(prev => ({ ...prev, profileVisibility: checked }))
-                  }
-                  disabled={isLoading}
-                />
-              </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Show Email</Label>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Display email on public profile</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {session?.user?.role === 'doctor'
+                      ? 'Display email on public profile'
+                      : 'Share email with healthcare providers'}
+                  </p>
                 </div>
                 <Switch
                   checked={privacy.showEmail}
@@ -543,10 +621,15 @@ export default function ProfilePage() {
                   disabled={isLoading}
                 />
               </div>
+
               <div className="flex items-center justify-between">
                 <div>
                   <Label>Show Phone</Label>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Display phone number on public profile</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {session?.user?.role === 'doctor'
+                      ? 'Display phone number on public profile'
+                      : 'Share phone with healthcare providers'}
+                  </p>
                 </div>
                 <Switch
                   checked={privacy.showPhone}
@@ -555,6 +638,19 @@ export default function ProfilePage() {
                   }
                   disabled={isLoading}
                 />
+              </div>
+
+              {/* Additional Privacy Info */}
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                    {session?.user?.role === 'doctor'
+                      ? '💡 Tip: Enabling profile visibility helps patients find and book appointments with you.'
+                      : session?.user?.role === 'admin'
+                        ? '🔒 Your admin information is never publicly visible.'
+                        : '🔒 Your personal information is only shared with your healthcare providers.'}
+                  </p>
+                </div>
               </div>
             </div>
           </Card>
@@ -597,26 +693,60 @@ export default function ProfilePage() {
                 {session?.user?.email || 'user@example.com'}
               </p>
               <div className="space-y-3">
-                <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 dark:bg-gray-700 rounded-lg py-2 px-4">
-                  <Stethoscope className="w-4 h-4" />
-                  <span>Healthcare Professional</span>
-                </div>
-                
+                {/* Role-Specific Badge */}
+                {session?.user?.role === 'doctor' && (
+                  <div className="flex items-center justify-center space-x-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-lg py-2 px-4">
+                    <Stethoscope className="w-4 h-4" />
+                    <span>Healthcare Professional</span>
+                  </div>
+                )}
+
+                {session?.user?.role === 'admin' && (
+                  <div className="flex items-center justify-center space-x-2 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/30 rounded-lg py-2 px-4">
+                    <Shield className="w-4 h-4" />
+                    <span>System Administrator</span>
+                  </div>
+                )}
+
+                {session?.user?.role === 'user' && (
+                  <div className="flex items-center justify-center space-x-2 text-sm text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/30 rounded-lg py-2 px-4">
+                    <User className="w-4 h-4" />
+                    <span>Patient</span>
+                  </div>
+                )}
+
                 {/* User Role Display */}
                 <div className="flex items-center justify-center">
-                  <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${
-                    session?.user?.role === 'user' 
+                  <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${session?.user?.role === 'user'
                       ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                       : session?.user?.role === 'doctor'
-                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                      : session?.user?.role === 'admin'
-                      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                      : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                  }`}>
-                    <User className="w-4 h-4 mr-1" />
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                        : session?.user?.role === 'admin'
+                          ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                    }`}>
+                    {session?.user?.role === 'doctor' && <Stethoscope className="w-4 h-4 mr-1" />}
+                    {session?.user?.role === 'admin' && <Shield className="w-4 h-4 mr-1" />}
+                    {session?.user?.role === 'user' && <User className="w-4 h-4 mr-1" />}
+                    {!session?.user?.role && <User className="w-4 h-4 mr-1" />}
                     Role: {session?.user?.role ? session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1) : 'User'}
                   </span>
                 </div>
+
+                {/* Role-Specific Stats */}
+                {session?.user?.role === 'doctor' && profileData.specialization && (
+                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Specialization</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-white">{profileData.specialization}</p>
+                  </div>
+                )}
+
+                {session?.user?.role === 'doctor' && profileData.experience && (
+                  <div className="pt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Experience</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-white">{profileData.experience}</p>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
