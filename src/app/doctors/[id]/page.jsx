@@ -194,14 +194,16 @@ export default function DoctorDetailPage({ params }) {
             <Card className="p-6 sticky top-8">
               {/* Doctor Image */}
               <div className="relative w-full h-64 mb-6 bg-gray-200 rounded-lg overflow-hidden">
-                {doctor.image && doctor.image.trim() !== '' && !doctor.image.includes("imgbox.com") ? (
+                {doctor.image && 
+                 doctor.image.trim() !== '' && 
+                 !doctor.image.includes("imgbox.com") &&
+                 (doctor.image.startsWith('http://') || doctor.image.startsWith('https://')) ? (
                   <Image
                     src={doctor.image}
                     alt={doctor.name}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 400px"
-                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">

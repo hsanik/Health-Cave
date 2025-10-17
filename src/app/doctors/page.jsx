@@ -5,10 +5,10 @@ import Image from "next/image";
 import axios from "axios";
 import { PageSpinner } from "@/components/ui/loading-spinner";
 import { formatDoctorName } from "@/utils/doctorUtils";
-import { 
-  getAvailabilityStatus, 
-  getNextAvailable, 
-  processDoctorAvailability 
+import {
+  getAvailabilityStatus,
+  getNextAvailable,
+  processDoctorAvailability
 } from "@/utils/availabilityUtils";
 import {
   Search,
@@ -68,7 +68,7 @@ const DoctorsPage = () => {
             consultationFee: Number(doctor.consultationFee) || 100,
             patients: Number(doctor.patients) || 0,
           };
-          
+
           // Add computed availability based on schedule
           return processDoctorAvailability(baseDoctor);
         });
@@ -187,18 +187,16 @@ const DoctorsPage = () => {
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center space-x-2 px-4 py-3 border rounded-lg transition-colors ${
-                showFilters
-                  ? "bg-[#435ba1] text-white border-[#435ba1]"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
+              className={`flex items-center space-x-2 px-4 py-3 border rounded-lg transition-colors ${showFilters
+                ? "bg-[#435ba1] text-white border-[#435ba1]"
+                : "border-gray-300 hover:bg-gray-50"
+                }`}
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  showFilters ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 transition-transform ${showFilters ? "rotate-180" : ""
+                  }`}
               />
             </button>
           </div>
@@ -358,15 +356,17 @@ const DoctorsPage = () => {
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
               >
                 {/* Doctor Image */}
-                <div className="relative h-48 bg-gray-200">
-                  {doctor.image && doctor.image.trim() !== "" && !doctor.image.includes("imgbox.com") ? (
+                <div className="relative h-64 bg-gray-200">
+                  {doctor.image &&
+                    doctor.image.trim() !== "" &&
+                    !doctor.image.includes("imgbox.com") &&
+                    (doctor.image.startsWith('http://') || doctor.image.startsWith('https://')) ? (
                     <Image
                       src={doctor.image}
                       alt={doctor.name}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
@@ -376,11 +376,10 @@ const DoctorsPage = () => {
                   {/* Availability Badge */}
                   <div className="absolute top-3 right-3">
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        doctor.availabilityStatus === "Available"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${doctor.availabilityStatus === "Available"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}
                     >
                       {doctor.availabilityStatus}
                     </span>
@@ -436,17 +435,6 @@ const DoctorsPage = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Next Available */}
-                  <div className="flex items-center space-x-2 mb-4">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">
-                      Next available:{" "}
-                      <span className="font-medium">
-                        {doctor.nextAvailable}
-                      </span>
-                    </span>
                   </div>
 
                   {/* Action Buttons */}
