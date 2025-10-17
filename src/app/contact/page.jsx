@@ -343,7 +343,7 @@ export default function Contact() {
                   For urgent medical situations, please call our emergency line
                   immediately.
                 </p>
-                <p className="text-2xl font-bold">+1 (555) 911-HELP</p>
+                <p className="text-2xl font-bold">+1 555-123-4567</p>
                 <p className="text-sm text-[#fafafa] mt-2">Available 24/7</p>
               </div>
             </article>
