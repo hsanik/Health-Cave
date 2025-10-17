@@ -8,6 +8,12 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageSpinner } from '@/components/ui/loading-spinner';
+import { formatDoctorName } from '@/utils/doctorUtils';
+import { 
+  processDoctorAvailability, 
+  getWeeklySchedule,
+  getTodayWorkingHours 
+} from '@/utils/availabilityUtils';
 import {
   Clock,
   MapPin,
@@ -45,7 +51,7 @@ export default function DoctorDetailPage({ params }) {
         );
 
         // Process and validate doctor data
-        const doctorData = {
+        const baseDoctor = {
           ...response.data,
           // Ensure all fields have proper types and fallbacks
           name: String(response.data.name || ''),
@@ -53,8 +59,6 @@ export default function DoctorDetailPage({ params }) {
           hospital: String(response.data.hospital || ''),
           rating: Number(response.data.rating) || 4.5,
           consultationFee: Number(response.data.consultationFee) || 100,
-          availability: typeof response.data.availability === 'string' ? response.data.availability : "Available",
-          nextAvailable: typeof response.data.nextAvailable === 'string' ? response.data.nextAvailable : "Today",
           patients: Number(response.data.patients) || 0,
           email: String(response.data.email || ''),
           phone: String(response.data.phone || ''),
@@ -64,6 +68,8 @@ export default function DoctorDetailPage({ params }) {
           languages: Array.isArray(response.data.languages) ? response.data.languages : []
         };
 
+        // Add computed availability
+        const doctorData = processDoctorAvailability(baseDoctor);
         setDoctor(doctorData);
       } catch (error) {
         console.error('Error fetching doctor:', error);
@@ -204,11 +210,11 @@ export default function DoctorDetailPage({ params }) {
                 )}
                 {/* Availability Badge */}
                 <div className="absolute top-3 right-3">
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${doctor.availability === 'Available'
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${doctor.availabilityStatus === 'Available'
                     ? 'bg-green-100 text-green-800'
                     : 'bg-red-100 text-red-800'
                     }`}>
-                    {doctor.availability}
+                    {doctor.availabilityStatus}
                   </span>
                 </div>
               </div>
@@ -279,7 +285,7 @@ export default function DoctorDetailPage({ params }) {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                    {doctor.name.startsWith('Dr.') || doctor.name.startsWith('Dr ') ? doctor.name : `Dr. ${doctor.name}`}
+                    {formatDoctorName(doctor.name)}
                   </h1>
                   <p className="text-xl text-[#435ba1] font-medium mb-2">
                     {doctor.specialization}
@@ -383,22 +389,59 @@ export default function DoctorDetailPage({ params }) {
             {/* Availability Schedule */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-[#435ba1]" />
-                <span>Availability Schedule</span>
+                <Calendar className="w-5 h-5 text-[#435ba1]" />
+                <span>Weekly Schedule</span>
               </h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700">
-                  {formatAvailability(doctor.availability)}
-                </p>
-                {doctor.nextAvailable && (
-                  <div className="mt-3 flex items-center space-x-2">
+              
+              {/* Today's Hours */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-600 font-medium">Today's Hours</p>
+                    <p className="text-lg font-semibold text-blue-900">{getTodayWorkingHours(doctor)}</p>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    doctor.availabilityStatus === 'Available' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {doctor.availabilityStatus}
+                  </div>
+                </div>
+              </div>
+
+              {/* Weekly Schedule */}
+              <div className="space-y-2">
+                {getWeeklySchedule(doctor).map((schedule, index) => (
+                  <div 
+                    key={index}
+                    className={`flex items-center justify-between p-3 rounded-lg ${
+                      schedule.isAvailable 
+                        ? 'bg-green-50 border border-green-200' 
+                        : 'bg-gray-50 border border-gray-200'
+                    }`}
+                  >
+                    <span className="font-medium text-gray-900">{schedule.day}</span>
+                    <span className={`text-sm ${
+                      schedule.isAvailable ? 'text-green-700' : 'text-gray-500'
+                    }`}>
+                      {schedule.hours || schedule.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Next Available */}
+              {doctor.nextAvailable && (
+                <div className="mt-4 bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4 text-green-600" />
                     <span className="text-sm text-gray-600">
                       Next available: <span className="font-medium text-green-600">{doctor.nextAvailable}</span>
                     </span>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </Card>
 
             {/* Additional Information */}
