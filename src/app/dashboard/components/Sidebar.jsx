@@ -20,7 +20,8 @@ import {
   SquareUserRound,
   House,
   UserSearch,
-  CreditCard
+  CreditCard,
+  UserPlus
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -46,6 +47,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
 
     const adminItems = [
       { icon: BookText, label: 'Doctor Applications', href: '/dashboard/makeDoctor' },
+      { icon: UserPlus, label: 'Add Doctor', href: '/dashboard/addDoctor' },
       { icon: SquareUserRound, label: 'Doctors', href: '/dashboard/doctorList' },
       { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
       { icon: Users, label: "Patients", href: "/dashboard/patients" },
