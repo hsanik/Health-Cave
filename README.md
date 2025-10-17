@@ -16,237 +16,621 @@ HealthCave is a modern, full-featured health and wellness platform that bridges 
 
 We believe healthcare should be accessible, efficient, and user-focused. HealthCave brings together patients, doctors, nutritionists, and trainers in a digital ecosystem designed to make health management effortless. Whether you're tracking your BMI, booking a consultation, or relaxing with audio therapy, we've got you covered.
 
-## 🚀 Key Features
+---
 
-- **📊 Personal Health Dashboard** - Track your health stats, monitor progress, and manage your wellness goals in real-time
-- **🧮 Smart Health Calculators** - Automated BMI, calorie tracking, and hydration calculators to help you stay on top of your health
-- **📅 Easy Appointment Booking** - Schedule consultations with doctors, nutritionists, and fitness trainers with just a few clicks
-- **💬 Real-Time Chat** - Instant messaging with healthcare providers for quick consultations and follow-ups
-- **🤖 AI Health Chatbot** - Get instant answers to your health questions 24/7
-- **👨‍⚕️ Doctor Profiles & Directory** - Browse and connect with verified healthcare professionals
-- **📝 E-Prescription Generator** - Digital prescriptions delivered securely to your dashboard
-- **💳 Secure Payment Gateway** - Safe and encrypted online payment processing for consultations
-- **📱 Video Consultations** - Real-time telemedicine appointments from the comfort of your home
-- **📚 Health Blog & Articles** - Stay informed with wellness tips, health news, and expert advice
-- **🎵 Audio Therapy** - Relax and unwind with curated relaxation music and meditation tracks
-- **🌐 Multi-Language Support** - Access the platform in your preferred language
-- **🔐 Role-Based Access Control** - Customized dashboards for patients, doctors, and administrators
-- **🔒 Data Security** - Your health information is encrypted and protected with industry-standard security
+## � Keey Features
+
+### � **User Mainagement & Authentication**
+- 🔐 **Secure Authentication** - NextAuth.js with multiple providers (Email, Google, GitHub)
+- 👥 **Role-Based Access Control** - Separate dashboards for Patients, Doctors, and Admins
+- 📧 **Email Verification** - Secure account verification via email
+- 🔑 **Password Reset** - Forgot password functionality with secure token-based reset
+- 📸 **Profile Photo Upload** - Upload and update profile pictures via ImgBB API
+- ✏️ **Profile Management** - Complete profile editing with real-time updates
+
+### 👨‍⚕️ **Doctor Features**
+- 📋 **Doctor Directory** - Browse verified healthcare professionals with detailed profiles
+- 🔍 **Advanced Search & Filters** - Filter by specialization, availability, price, and location
+- ⭐ **Doctor Ratings** - View ratings and patient reviews
+- 📅 **Dynamic Availability** - Real-time schedule management with weekly off days
+- � **Consultaction Fees** - Transparent pricing for each doctor
+- 🏥 **Hospital/Clinic Information** - Complete practice details
+- 🗣️ **Multi-Language Support** - Doctors can specify languages they speak
+- 📊 **Patient Count** - Display total patients treated
+- � **Quailifications & Experience** - Detailed professional credentials
+- 🖼️ **Professional Photos** - High-quality profile images
+
+### 📅 **Appointment System**
+- 🕐 **Smart Booking** - Book appointments based on doctor's actual availability
+- ⏰ **Time Slot Management** - 30-minute interval slots generated from doctor's schedule
+- � *e*Validation Logic** - Prevents booking:
+  - Past time slots
+  - Doctor's off days
+  - Outside working hours
+  - Already booked slots
+- 📆 **Weekly Schedule Display** - See doctor's complete weekly availability
+- � **Appoitntment Status** - Pending, Confirmed, Cancelled, Completed
+- 💳 **Payment Integration** - Stripe payment gateway for consultation fees
+- 📧 **Email Notifications** - Appointment confirmations and reminders
+- � **Appointtment Management** - View, cancel, or reschedule appointments
+- 🕐 **12-Hour Time Format** - User-friendly time display with AM/PM
+
+### 💬 **Communication**
+- 💬 **Real-Time Chat** - Instant messaging between patients and doctors
+- 🤖 **AI Health Chatbot** - 24/7 automated health assistance
+- 📹 **Video Consultations** - Telemedicine appointments with video calls
+- 📧 **Email System** - Automated email notifications for important events
+
+### 📊 **Health Tools & Calculators**
+- 🧮 **BMI Calculator** - Calculate Body Mass Index with health recommendations
+- 💧 **Hydration Tracker** - Monitor daily water intake
+- 🔥 **Calorie Calculator** - Track daily caloric needs
+- 📈 **Health Dashboard** - Personal health metrics and progress tracking
+
+### 💳 **Payment & Billing**
+- 💰 **Stripe Integration** - Secure payment processing
+- 🧾 **Payment History** - Track all transactions
+- 💳 **Multiple Payment Methods** - Credit/debit cards support
+- 📊 **Payment Status** - Real-time payment tracking (Pending/Paid)
+- 🔒 **Secure Checkout** - PCI-compliant payment processing
+
+### 🎵 **Wellness Features**
+- 🎵 **Audio Therapy** - Curated relaxation music and meditation tracks
+- 📚 **Health Blog** - Wellness tips, health news, and expert advice
+- 🧘 **Meditation Resources** - Guided meditation and mindfulness content
+- 💪 **Fitness Tips** - Exercise guides and workout recommendations
+
+### 🔐 **Admin Dashboard**
+- 👥 **User Management** - View and manage all users
+- 👨‍⚕️ **Doctor Management** - Approve/reject doctor applications
+- 📊 **Analytics** - System-wide statistics and insights
+- 📅 **Appointment Overview** - Monitor all appointments
+- 💰 **Payment Tracking** - View all transactions
+- 🏥 **Add Doctors** - Manually add verified doctors to the system
+- 📝 **Doctor Applications** - Review and process doctor registration requests
+
+### 🎨 **User Experience**
+- 🌓 **Dark Mode** - Toggle between light and dark themes
+- 📱 **Responsive Design** - Optimized for all devices (mobile, tablet, desktop)
+- ⚡ **Fast Performance** - Optimized loading and caching
+- 🎭 **Smooth Animations** - Framer Motion for delightful interactions
+- 🔔 **Toast Notifications** - Real-time feedback for user actions
+- 🎨 **Modern UI** - Clean, intuitive interface with Tailwind CSS
+- 🌐 **Multi-Language Support** - Platform available in multiple languages
+
+### 🔒 **Security & Privacy**
+- 🔐 **Data Encryption** - All sensitive data encrypted
+- 🔑 **Password Hashing** - bcrypt for secure password storage
+- 🛡️ **HIPAA Compliant** - Healthcare data protection standards
+- 🔒 **Secure Sessions** - JWT-based authentication
+- 🚫 **XSS Protection** - Cross-site scripting prevention
+- 🔐 **CSRF Protection** - Cross-site request forgery prevention
+- 📧 **Email Verification** - Prevent fake accounts
+- 🔑 **Environment Variables** - Secure API key management
+
+---
 
 ## 🛠️ Tech Stack
 
-**Frontend:**
-- ⚛️ Next.js 15.5 (App Router)
-- 🎨 Tailwind CSS 4
-- 🎭 Framer Motion for animations
-- 🧩 Radix UI components
-- 🎯 React 19
+### **Frontend**
+- ⚛️ **Next.js 15.5** - React framework with App Router
+- 🎨 **Tailwind CSS 4** - Utility-first CSS framework
+- 🎭 **Framer Motion** - Animation library
+- 🧩 **Radix UI** - Accessible component primitives
+- 🎯 **React 19** - Latest React features
+- 🎨 **Lucide React** - Beautiful icon library
+- 🔔 **React Hot Toast** - Elegant notifications
+- ⚡ **SweetAlert2** - Beautiful alerts and modals
 
-**Backend:**
-- 🔐 NextAuth.js for authentication
-- 🗄️ MongoDB for database
-- 📧 Nodemailer for email services
-- 🔑 bcrypt for password hashing
+### **Backend**
+- 🔐 **NextAuth.js** - Authentication solution
+- 🗄️ **MongoDB** - NoSQL database
+- 📧 **Nodemailer** - Email service
+- 🔑 **bcrypt** - Password hashing
+- 💳 **Stripe** - Payment processing
+- 🔗 **Axios** - HTTP client
 
-**Additional Tools:**
-- 🗺️ Leaflet for maps
-- 🤖 React Chatbot Kit
-- 🎨 Lucide React icons
-- 🔔 React Hot Toast for notifications
-- ⚡ SweetAlert2 for beautiful alerts
+### **Additional Tools**
+- 🗺️ **Leaflet** - Interactive maps
+- 🤖 **React Chatbot Kit** - AI chatbot framework
+- 📸 **ImgBB API** - Image hosting service
+- 🎵 **Audio Player** - Custom audio therapy player
+- 📊 **Chart.js** - Data visualization
+
+---
 
 ## 🌐 Live Demo
 
 **Check out the live application:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
 
-Experience all the features firsthand:
-- Browse our verified doctors directory
-- Use the BMI calculator
-- Explore the health blog and resources
-- Try the AI health chatbot
-- Listen to relaxing audio therapy tracks
+### Demo Accounts
+
+**Patient Account:**
+- Email: patient@demo.com
+- Password: demo123
+
+**Doctor Account:**
+- Email: doctor@demo.com
+- Password: demo123
+
+**Admin Account:**
+- Email: admin@demo.com
+- Password: admin123
+
+---
 
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
-- Node.js (v18 or higher)
-- npm or yarn
-- MongoDB (local or Atlas account)
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **MongoDB** (local or Atlas account)
+- **Git**
+
+---
 
 ## 🔧 Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/hsanik/Health-Cave.git
-   cd Health-Cave
-   ```
+### 1. **Clone the repository**
+```bash
+git clone https://github.com/hsanik/Health-Cave.git
+cd Health-Cave
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+### 2. **Install dependencies**
+```bash
+npm install
+# or
+yarn install
+```
 
-3. **Set up environment variables**
-   
-   Create a `.env.local` file in the root directory and add the following:
-   ```env
-   # MongoDB
-   MONGODB_URI=your_mongodb_connection_string
-   
-   # NextAuth
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your_nextauth_secret
-   
-   # Email Configuration
-   EMAIL_USER=your_email@gmail.com
-   EMAIL_PASSWORD=your_app_password
-   EMAIL_FROM=noreply@healthcave.com
-   
-   # Optional: Payment Gateway (add your keys)
-   PAYMENT_API_KEY=your_payment_key
-   ```
+### 3. **Set up environment variables**
 
-4. **Run the development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
+Create a `.env.local` file in the root directory:
 
-5. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+```env
+# NextAuth Configuration
+NEXTAUTH_SECRET=your_nextauth_secret_key
+NEXTAUTH_URL=http://localhost:3000
 
-## 🎯 Usage
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/healthCave
 
-### For Patients:
-1. **Register/Login** - Create your account or sign in
-2. **Complete Your Profile** - Add your health information and medical history
-3. **Explore Doctors** - Browse through our verified healthcare professionals
-4. **Book Appointments** - Schedule consultations at your convenience
-5. **Track Your Health** - Use BMI calculators and monitor your wellness journey
-6. **Chat with AI** - Get instant health tips and guidance from our chatbot
+# Server URI
+NEXT_PUBLIC_SERVER_URI=http://localhost:5000
 
-### For Doctors:
-1. **Professional Registration** - Sign up with your medical credentials
-2. **Set Your Availability** - Manage your consultation schedule
-3. **Patient Management** - Access patient profiles and medical history
-4. **Generate E-Prescriptions** - Create digital prescriptions easily
-5. **Video Consultations** - Conduct online appointments seamlessly
+# Email Configuration (Gmail)
+EMAIL_FROM=support@healthcave.com
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# Stripe Payment Gateway
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_key
+STRIPE_SECRET_KEY=sk_test_your_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# ImgBB API (Image Upload)
+NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
+```
+
+### 4. **Run the development server**
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+### 5. **Open your browser**
+
+Navigate to [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🎯 Usage Guide
+
+### **For Patients:**
+
+1. **Register/Login**
+   - Create account with email or social login (Google/GitHub)
+   - Verify email address
+
+2. **Complete Profile**
+   - Add personal information
+   - Upload profile photo
+   - Set notification preferences
+
+3. **Find Doctors**
+   - Browse doctor directory
+   - Use filters (specialization, availability, price)
+   - View doctor profiles and ratings
+
+4. **Book Appointment**
+   - Select doctor and date
+   - Choose available time slot
+   - Fill appointment details
+   - Complete payment
+
+5. **Manage Appointments**
+   - View upcoming appointments
+   - Cancel or reschedule
+   - Pay pending fees
+
+6. **Use Health Tools**
+   - Calculate BMI
+   - Track hydration
+   - Monitor health metrics
+
+7. **Chat & Consult**
+   - Message doctors
+   - Use AI chatbot
+   - Join video consultations
+
+### **For Doctors:**
+
+1. **Professional Registration**
+   - Apply with medical credentials
+   - Wait for admin approval
+
+2. **Set Up Profile**
+   - Add qualifications and experience
+   - Upload professional photo
+   - Set consultation fees
+
+3. **Manage Availability**
+   - Set weekly schedule
+   - Mark off days
+   - Update working hours
+
+4. **Handle Appointments**
+   - View appointment requests
+   - Confirm or cancel
+   - Mark as completed
+
+5. **Patient Communication**
+   - Chat with patients
+   - Conduct video consultations
+   - Send follow-up messages
+
+### **For Admins:**
+
+1. **Dashboard Overview**
+   - View system statistics
+   - Monitor user activity
+   - Track payments
+
+2. **User Management**
+   - View all users
+   - Manage roles
+   - Handle reports
+
+3. **Doctor Management**
+   - Review applications
+   - Approve/reject doctors
+   - Add doctors manually
+
+4. **Appointment Oversight**
+   - Monitor all appointments
+   - Resolve disputes
+   - Generate reports
+
+---
 
 ## 📁 Project Structure
 
 ```
 Health-Cave/
 ├── src/
-│   ├── app/              # Next.js app directory
-│   │   ├── (auth)/       # Authentication pages
-│   │   ├── api/          # API routes
-│   │   ├── chatbot/      # Chatbot implementation
-│   │   ├── dashboard/    # User dashboards
-│   │   ├── doctors/      # Doctor listings & profiles
-│   │   └── ...
-│   ├── components/       # Reusable React components
-│   │   ├── authentication/
-│   │   ├── footer/
-│   │   ├── nav/
-│   │   └── ui/           # UI components
-│   ├── lib/              # Utility functions & configurations
-│   └── hooks/            # Custom React hooks
-├── public/               # Static assets
-│   ├── data/            # JSON data files
-│   └── images/          # Image assets
-└── ...
+│   ├── app/                      # Next.js App Router
+│   │   ├── (auth)/              # Authentication pages
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   ├── forgot-password/
+│   │   │   ├── reset-password/
+│   │   │   └── verify-email/
+│   │   ├── api/                 # API Routes
+│   │   │   ├── auth/           # NextAuth configuration
+│   │   │   ├── appointments/   # Appointment endpoints
+│   │   │   ├── profile/        # Profile management
+│   │   │   ├── stripe/         # Payment processing
+│   │   │   └── users/          # User management
+│   │   ├── dashboard/          # User Dashboards
+│   │   │   ├── appointments/   # Appointment management
+│   │   │   ├── profile/        # Profile settings
+│   │   │   ├── availability/   # Doctor availability
+│   │   │   ├── addDoctor/      # Add doctor (admin)
+│   │   │   ├── doctorList/     # Doctor list (admin)
+│   │   │   └── analytics/      # Analytics (admin)
+│   │   ├── doctors/            # Doctor Directory
+│   │   │   ├── [id]/          # Doctor detail page
+│   │   │   └── page.jsx       # Doctors list
+│   │   ├── book-appointment/   # Appointment Booking
+│   │   │   └── [id]/          # Book with specific doctor
+│   │   ├── appointment-confirmation/ # Confirmation page
+│   │   ├── payment/            # Payment pages
+│   │   ├── chat/               # Chat system
+│   │   ├── video-call/         # Video consultation
+│   │   ├── music/              # Audio therapy
+│   │   ├── about/              # About page
+│   │   ├── contact/            # Contact page
+│   │   └── doctorApply/        # Doctor application
+│   ├── components/             # Reusable Components
+│   │   ├── ui/                # UI components
+│   │   ├── nav/               # Navigation
+│   │   ├── footer/            # Footer
+│   │   └── authentication/    # Auth components
+│   ├── lib/                   # Utilities
+│   │   ├── mongodb.js        # MongoDB connection
+│   │   └── utils.js          # Helper functions
+│   ├── utils/                # Utility Functions
+│   │   ├── doctorUtils.js    # Doctor name formatting
+│   │   └── availabilityUtils.js # Availability logic
+│   └── hooks/                # Custom React Hooks
+├── public/                   # Static Assets
+│   ├── data/                # JSON data
+│   ├── images/              # Images
+│   └── audio/               # Audio files
+├── .env.local               # Environment variables
+├── next.config.js           # Next.js configuration
+├── tailwind.config.js       # Tailwind CSS config
+└── package.json             # Dependencies
 ```
 
-## 🌟 Features in Detail
+---
 
-### Smart Health Dashboard
-Your personalized dashboard gives you a bird's-eye view of your health metrics, upcoming appointments, recent consultations, and personalized health recommendations.
+## 🌟 Feature Highlights
 
-### AI-Powered Chatbot
-Our intelligent chatbot is trained to answer common health queries, help you navigate the platform, and provide basic health guidance 24/7.
+### **Smart Appointment Booking**
+Our intelligent booking system ensures you can only book valid appointments:
+- ✅ Only shows available time slots
+- ✅ Prevents booking past times
+- ✅ Respects doctor's off days
+- ✅ Shows doctor's weekly schedule
+- ✅ Real-time slot availability
 
-### Secure Authentication
-We use NextAuth.js with MongoDB adapter to ensure your account is protected with industry-standard security practices including password hashing and secure session management.
+### **Dynamic Doctor Availability**
+Each doctor has a unique schedule:
+- 📅 Different working hours per day
+- 🚫 Custom off days (not just weekends)
+- ⏰ 30-minute time slot intervals
+- 🔄 Real-time availability updates
 
-### Real-Time Notifications
-Stay updated with instant notifications for appointment confirmations, prescription updates, and important health reminders.
+### **Profile Photo Upload**
+Seamless image upload experience:
+- 📸 Click camera icon to upload
+- ✅ Automatic validation (type & size)
+- ☁️ Cloud storage via ImgBB
+- ⚡ Instant preview
+- 🔄 Auto-refresh after upload
+
+### **Comprehensive Dashboard**
+Role-specific dashboards for everyone:
+- 👤 **Patients**: Appointments, health tools, chat
+- 👨‍⚕️ **Doctors**: Schedule, patients, earnings
+- 🔐 **Admins**: Analytics, user management, oversight
+
+---
 
 ## 🚀 Deployment
 
-This project is deployed on **Vercel** for optimal performance and seamless CI/CD.
+### **Vercel Deployment** (Recommended)
 
-**Live Site:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
-
-### Deploy Your Own
-
-You can deploy your own instance of HealthCave on Vercel:
-
-1. Fork this repository
-2. Import your fork on [Vercel](https://vercel.com)
-3. Add your environment variables
+1. Push your code to GitHub
+2. Import project on [Vercel](https://vercel.com)
+3. Add environment variables
 4. Deploy!
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/hsanik/Health-Cave)
 
+### **Manual Deployment**
+
+```bash
+# Build the project
+npm run build
+
+# Start production server
+npm start
+```
+
+---
+
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions! Here's how:
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-## 🐛 Bug Reports
+### **Contribution Guidelines**
+- Follow existing code style
+- Write clear commit messages
+- Add tests for new features
+- Update documentation
+- Be respectful and collaborative
 
-Found a bug? Please [open an issue](https://github.com/hsanik/Health-Cave/issues/new) with:
-- A clear description of the problem
+---
+
+## 🐛 Bug Reports & Feature Requests
+
+Found a bug or have an idea? [Open an issue](https://github.com/hsanik/Health-Cave/issues/new)
+
+**Include:**
+- Clear description
 - Steps to reproduce
 - Expected vs actual behavior
 - Screenshots (if applicable)
+- Environment details
 
-## 📸 Screenshots & Features
+---
 
-Visit [https://healthcave.vercel.app/](https://healthcave.vercel.app/) to see:
+## 📸 Screenshots
 
-- **Homepage** - Beautiful landing page with health and wellness banner
-- **Doctor Directory** - Meet our team of certified healthcare professionals:
-  - Cardiac Surgery, Cardiology, Gynecology
-  - Psychiatry, Orthopedics, Dermatology specialists
-- **BMI Calculator** - Interactive tool with health categories
-- **FAQ Section** - Comprehensive answers to common questions
-- **Contact Page** - Get in touch with our support team
-- **Music Therapy** - Relaxation and wellness audio tracks
+Visit [https://healthcave.vercel.app/](https://healthcave.vercel.app/) to explore:
+
+- 🏠 **Homepage** - Modern landing page
+- 👨‍⚕️ **Doctor Directory** - Browse healthcare professionals
+- 📅 **Booking System** - Smart appointment scheduling
+- 💬 **Chat Interface** - Real-time messaging
+- 📊 **Dashboard** - Personalized user dashboard
+- 🧮 **Health Tools** - BMI calculator and more
+- 🎵 **Audio Therapy** - Relaxation music player
+
+---
+
+## 📝 API Documentation
+
+### **Authentication Endpoints**
+```
+POST /api/auth/register        - Register new user
+POST /api/auth/login           - User login
+POST /api/auth/verify-email    - Verify email
+POST /api/auth/forgot-password - Request password reset
+POST /api/auth/reset-password  - Reset password
+```
+
+### **Appointment Endpoints**
+```
+GET  /api/appointments              - Get all appointments
+GET  /api/appointments/user/:id     - Get user appointments
+GET  /api/appointments/doctor/:id   - Get doctor appointments
+POST /api/appointments              - Create appointment
+PUT  /api/appointments/:id/status   - Update status
+DELETE /api/appointments/:id        - Delete appointment
+```
+
+### **Doctor Endpoints**
+```
+GET  /api/doctors           - Get all doctors
+GET  /api/doctors/:id       - Get doctor by ID
+POST /api/doctors           - Add new doctor
+PUT  /api/doctors/:id       - Update doctor
+```
+
+### **Profile Endpoints**
+```
+GET  /api/profile/simple    - Get user profile
+PUT  /api/profile/update    - Update profile
+POST /api/profile/upload    - Upload profile photo
+```
+
+---
+
+## 🔐 Security Best Practices
+
+- ✅ Environment variables for sensitive data
+- ✅ Password hashing with bcrypt
+- ✅ JWT-based authentication
+- ✅ HTTPS in production
+- ✅ Input validation and sanitization
+- ✅ Rate limiting on API endpoints
+- ✅ CORS configuration
+- ✅ SQL injection prevention
+- ✅ XSS protection
+
+---
+
+## 📊 Performance Optimization
+
+- ⚡ Next.js Image Optimization
+- 🗜️ Code splitting and lazy loading
+- 💾 MongoDB indexing
+- 🔄 React Query for data caching
+- 📦 Bundle size optimization
+- 🚀 CDN for static assets
+- ⚡ Server-side rendering (SSR)
+- 🎯 Static site generation (SSG)
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+```
+
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
 
 ## 👥 Team
 
-Built with ❤️ by the DevBytes team
+Built with ❤️ by **DevBytes Team**
 
-## 📧 Contact
+### **Contributors**
+- **Piyal Islam** - Full Stack Developer
+- **Sajid Hassan Anik** - Full Stack Developer
 
-Have questions or suggestions? We'd love to hear from you!
+---
 
-- **Website:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
-- **Email:** support@healthcave.com
-- **GitHub:** [Health-Cave Repository](https://github.com/hsanik/Health-Cave)
-- **Issues:** [Report a Bug](https://github.com/hsanik/Health-Cave/issues)
+## 📧 Contact & Support
+
+**Need help?** We're here for you!
+
+- 🌐 **Website:** [https://healthcave.vercel.app/](https://healthcave.vercel.app/)
+- 📧 **Email:** support@healthcave.com
+- 💬 **GitHub Issues:** [Report a Bug](https://github.com/hsanik/Health-Cave/issues)
+- 📱 **Twitter:** [@HealthCave](https://twitter.com/healthcave)
+
+---
 
 ## 🙏 Acknowledgments
 
-- Thanks to all contributors who helped shape this project
-- Special thanks to the Next.js and MongoDB teams for amazing documentation
-- Icons by Lucide React
-- UI components inspired by shadcn/ui
+Special thanks to:
+- **Next.js Team** - Amazing framework
+- **MongoDB** - Reliable database
+- **Vercel** - Seamless deployment
+- **Stripe** - Secure payments
+- **ImgBB** - Image hosting
+- **shadcn/ui** - Beautiful components
+- **Lucide** - Icon library
+- **All Contributors** - Your support matters!
+
+---
+
+## 🎯 Roadmap
+
+### **Coming Soon**
+- [ ] Mobile app (React Native)
+- [ ] Prescription management system
+- [ ] Lab test booking
+- [ ] Medicine delivery integration
+- [ ] Health insurance integration
+- [ ] Multi-language support expansion
+- [ ] AI-powered diagnosis assistant
+- [ ] Wearable device integration
+- [ ] Telemedicine group sessions
+- [ ] Health records blockchain
+
+---
+
+## 📈 Stats
+
+![GitHub stars](https://img.shields.io/github/stars/hsanik/Health-Cave?style=social)
+![GitHub forks](https://img.shields.io/github/forks/hsanik/Health-Cave?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/hsanik/Health-Cave?style=social)
+![GitHub issues](https://img.shields.io/github/issues/hsanik/Health-Cave)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/hsanik/Health-Cave)
 
 ---
 
@@ -254,11 +638,15 @@ Have questions or suggestions? We'd love to hear from you!
 
 ### 🌟 [Visit HealthCave Live](https://healthcave.vercel.app/) 🌟
 
-Made with 💚 for a healthier world by the DevBytes team
+**Made with 💚 for a healthier world**
 
 **Deployed on:** [![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)](https://healthcave.vercel.app/)
 
 ⭐ **Star us on GitHub** — it motivates us a lot!
+
+---
+
+**© 2025 HealthCave. All rights reserved.**
 
 [⬆ Back to Top](#-healthcave)
 
