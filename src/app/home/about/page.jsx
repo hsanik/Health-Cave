@@ -39,7 +39,7 @@ const AboutPage = () => {
 
           {/* Text */}
           <div>
-            <h3 className="text-2xl font-semibold text-black mb-4">
+            <h3 className="text-2xl font-semibold text-black mb-4 dark:text-white">
               Personalized Care for Your Health
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-5">
@@ -59,7 +59,7 @@ const AboutPage = () => {
         <div className="grid md:grid-cols-2 items-center gap-12 px-6 lg:px-16">
           {/* Text */}
           <div className="order-2 md:order-1">
-            <h3 className="text-2xl font-semibold text-black mb-4">
+            <h3 className="text-2xl font-semibold text-black mb-4 dark:text-white">
               Expert Guidance, Anytime You Need
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-5">
@@ -103,7 +103,7 @@ const AboutPage = () => {
 
           {/* Text */}
           <div>
-            <h3 className="text-2xl font-semibold text-black mb-4">
+            <h3 className="text-2xl font-semibold text-black mb-4 dark:text-white">
               Join a Thriving Health Community
             </h3>
             <p className="text-gray-700 dark:text-gray-300 mb-5">

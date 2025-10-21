@@ -337,10 +337,10 @@ const CustomChatbot = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
+        className={`animate-bounce fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 ${
           isOpen
             ? "bg-red-500 hover:bg-red-600"
-            : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+            : "bg-[#136afb] hover:bg-[#43d5cb] cursor-pointer"
         }`}
         aria-label={isOpen ? "Minimize chat" : "Open chat"}
       >
