@@ -22,18 +22,15 @@ const Page = () => {
   };
 
   return (
-    <section className="w-11/12 mx-auto py-16">
+    <section className="py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Left Side: BMI Calculator */}
-        <div className="bg-[#fafafa] dark:bg-[#435ba1] shadow-md rounded-2xl p-8">
-          <h2 className="text-3xl font-bold text-center text-[#435ba1] dark:text-white mb-6">
+        <div className="border-2 border-[#e5e7eb] rounded-2xl p-8 md:p-20 transition-all duration-300 bg-white dark:bg-[#1a1a1a]">
+          <h2 className="text-3xl font-semibold text-center text-[#136afb] dark:text-white mb-6">
             BMI Calculator
           </h2>
 
-          <form
-            onSubmit={calculateBMI}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={calculateBMI} className="flex flex-col gap-4">
             <input
               type="number"
               placeholder="Height (cm)"
@@ -50,7 +47,7 @@ const Page = () => {
             />
             <button
               type="submit"
-              className="px-6 py-2 bg-[#435ba1] hover:bg-[#4c69c6] text-white font-semibold rounded-lg transition cursor-pointer"
+              className="px-6 py-2 bg-[#136afb] hover:bg-[#43d5cb] text-white font-semibold rounded-lg transition cursor-pointer"
             >
               Calculate
             </button>
@@ -68,32 +65,41 @@ const Page = () => {
           )}
         </div>
 
-        {/* Right Side: Standard Values */}
-        <div className="bg-[#fafafa] dark:bg-[#435ba1] shadow-md rounded-2xl p-8">
-          <h2 className="text-3xl font-bold text-center text-[#435ba1] dark:text-white mb-6">
+        {/* Right Side: BMI Categories */}
+        <div className="border-2 border-[#e5e7eb] rounded-2xl p-8 md:p-20 transition-all duration-300 bg-white dark:bg-[#1a1a1a]">
+          <h2 className="text-3xl font-semibold text-center text-[#136afb] dark:text-white mb-6">
             BMI Categories
           </h2>
           <ul className="space-y-4 text-lg">
-            <li className="flex justify-between">
-              <span className="font-semibold text-[#515151] dark:text-gray-200">Underweight</span>
+            <li className="flex justify-between border-b border-gray-200 pb-2">
+              <span className="font-semibold text-[#515151] dark:text-gray-200">
+                Underweight
+              </span>
               <span className="text-[#43d5cb]">&lt; 18.5</span>
             </li>
-            <li className="flex justify-between">
-              <span className="font-semibold text-[#515151] dark:text-gray-200">Normal weight</span>
+            <li className="flex justify-between border-b border-gray-200 pb-2">
+              <span className="font-semibold text-[#515151] dark:text-gray-200">
+                Normal weight
+              </span>
               <span className="text-[#43d5cb]">18.5 – 24.9</span>
             </li>
-            <li className="flex justify-between">
-              <span className="font-semibold text-[#515151] dark:text-gray-200">Overweight</span>
+            <li className="flex justify-between border-b border-gray-200 pb-2">
+              <span className="font-semibold text-[#515151] dark:text-gray-200">
+                Overweight
+              </span>
               <span className="text-[#43d5cb]">25 – 29.9</span>
             </li>
             <li className="flex justify-between">
-              <span className="font-semibold text-[#515151] dark:text-gray-200">Obese</span>
+              <span className="font-semibold text-[#515151] dark:text-gray-200">
+                Obese
+              </span>
               <span className="text-[#43d5cb]">30+</span>
             </li>
           </ul>
         </div>
       </div>
     </section>
+
   );
 };
 
