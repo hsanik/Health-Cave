@@ -6,6 +6,8 @@ import Bmi from './bmi/page';
 import Heilight from "../heilight/page"
 import DoctorHilight from './DoctorHilight/page';
 import Marquery from './marquery/page';
+import Form from './form/page';
+
 import Gallery from '@/components/gallery/gallery';
 import Faq from '@/components/faq/faq';
 
@@ -23,6 +25,7 @@ export default function Home() {
       <DoctorHilight></DoctorHilight>
       <Gallery />
       <Faq />
+      <Form></Form>
     </div>
   );
 }
