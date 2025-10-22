@@ -18,12 +18,12 @@ const Faq = () => {
                     </p>
                 </div>
 
-                <div className="max-w-4xl mx-auto mt-12">
+                <div className="mt-12">
                     <Accordion type="single" collapsible className="w-full">
                         {faqData.map((faq, index) => (
                             <AccordionItem value={`item-${index}`} key={index}>
-                                <AccordionTrigger>{faq.question}</AccordionTrigger>
-                                <AccordionContent>
+                                <AccordionTrigger className="text-[20px] font-normal">{faq.question}</AccordionTrigger>
+                                <AccordionContent className="text-[16px] font-normal">
                                     {faq.answer}
                                 </AccordionContent>
                             </AccordionItem>
