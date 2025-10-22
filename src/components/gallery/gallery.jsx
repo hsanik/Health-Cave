@@ -11,10 +11,10 @@ import {
 
 const Gallery = () => {
     return (
-        <section className="py-12 sm:py-16 lg:py-20">
-            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <section className="py-12 sm:py-16 lg:py-20 bg-gray-100 rounded-2xl">
+            <div className="sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold sm:text-4xl xl:text-5xl">Meet Our Team</h2>
+                    <h2 className="text-3xl font-semibold sm:text-4xl xl:text-5xl">Meet Our Team</h2>
                     <p className="max-w-3xl mx-auto mt-4 text-lg font-normal sm:mt-5">
                         Our team of dedicated and experienced doctors is here to provide you with the best possible care. We are committed to your health and well-being.
                     </p>
@@ -24,7 +24,7 @@ const Gallery = () => {
                     opts={{
                         align: "start",
                     }}
-                    className="w-full max-w-6xl mx-auto mt-12"
+                    className="w-full mt-12"
                 >
                     <CarouselContent>
                         {doctors.map((doctor) => (
