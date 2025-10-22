@@ -16,7 +16,10 @@ export function SimpleLineChart({ data, width = 400, height = 200 }) {
   const range = maxValue - minValue || 1
 
   const points = data.map((item, index) => {
-    const x = (index / (data.length - 1)) * (width - 40) + 20
+    // Handle case when there's only one data point to avoid division by zero
+    const x = data.length > 1 
+      ? (index / (data.length - 1)) * (width - 40) + 20 
+      : width / 2
     const y = height - 40 - ((item.revenue - minValue) / range) * (height - 80)
     return `${x},${y}`
   }).join(' ')
@@ -42,12 +45,15 @@ export function SimpleLineChart({ data, width = 400, height = 200 }) {
         
         {/* Data points */}
         {data.map((item, index) => {
-          const x = (index / (data.length - 1)) * (width - 40) + 20
+          // Handle case when there's only one data point to avoid division by zero
+          const x = data.length > 1 
+            ? (index / (data.length - 1)) * (width - 40) + 20 
+            : width / 2
           const y = height - 40 - ((item.revenue - minValue) / range) * (height - 80)
           return (
             <circle
               key={index}
-              cx={x}
+              cx={x.toString()}
               cy={y}
               r="4"
               fill="#ef4444"
