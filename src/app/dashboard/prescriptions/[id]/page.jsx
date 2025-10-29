@@ -15,8 +15,10 @@ import {
   Pill,
   ClipboardList,
   Edit,
+  Mail,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { downloadPrescriptionPDF } from "@/utils/pdfGenerator";
 
 const PrescriptionDetailPage = () => {
   const params = useParams();
@@ -50,9 +52,32 @@ const PrescriptionDetailPage = () => {
   };
 
   const handleDownload = () => {
-    toast("PDF download feature coming soon!", {
-      icon: "ℹ️",
-    });
+    try {
+      downloadPrescriptionPDF(prescription);
+      toast.success("Prescription PDF downloaded successfully!");
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+      toast.error("Failed to download PDF");
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!prescription.patientId || !prescription.patientId.includes('@')) {
+      toast.error("Invalid patient email address");
+      return;
+    }
+
+    try {
+      const loadingToast = toast.loading("Sending email...");
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/prescriptions/${prescription._id}/send-email`
+      );
+      toast.dismiss(loadingToast);
+      toast.success(`Prescription sent to ${prescription.patientId}`);
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      toast.error("Failed to send email");
+    }
   };
 
   const getStatusColor = (status) => {
@@ -121,6 +146,14 @@ const PrescriptionDetailPage = () => {
                 <Edit className="w-4 h-4" />
                 Edit
               </Link>
+              <button
+                onClick={handleSendEmail}
+                className="flex items-center gap-2 px-4 py-2 border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition-colors"
+                title="Send prescription to patient email"
+              >
+                <Mail className="w-4 h-4" />
+                Send Email
+              </button>
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

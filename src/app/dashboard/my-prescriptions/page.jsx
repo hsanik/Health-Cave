@@ -15,6 +15,7 @@ import {
   Pill,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { downloadPrescriptionPDF } from "@/utils/pdfGenerator";
 
 const MyPrescriptionsPage = () => {
   const { data: session } = useSession();
@@ -78,10 +79,18 @@ const MyPrescriptionsPage = () => {
     }
   };
 
-  const handleDownload = (prescriptionId) => {
-    toast("PDF download feature coming soon!", {
-      icon: "ℹ️",
-    });
+  const handleDownload = async (prescriptionId) => {
+    try {
+      // Fetch the full prescription data
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/prescriptions/${prescriptionId}`
+      );
+      downloadPrescriptionPDF(response.data);
+      toast.success("Prescription PDF downloaded successfully!");
+    } catch (error) {
+      console.error("Failed to download PDF:", error);
+      toast.error("Failed to download PDF");
+    }
   };
 
   if (loading) {
