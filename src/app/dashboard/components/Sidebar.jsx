@@ -21,7 +21,8 @@ import {
   House,
   UserSearch,
   CreditCard,
-  UserPlus
+  UserPlus,
+  Pill
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -60,6 +61,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
       { icon: Clock, label: "Availability", href: "/dashboard/availability" },
       { icon: Users, label: "My Patients", href: "/dashboard/patients" },
+      { icon: Pill, label: "E-Prescriptions", href: "/dashboard/prescriptions" },
       { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
       { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
       { icon: BarChart3, label: "Practice Analytics", href: "/dashboard/analytics" },
@@ -67,6 +69,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
 
     const userItems = [
       { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: Pill, label: "My Prescriptions", href: "/dashboard/my-prescriptions" },
       { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
       { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
     ]
