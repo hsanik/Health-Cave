@@ -85,7 +85,7 @@ const MyPrescriptionsPage = () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/prescriptions/${prescriptionId}`
       );
-      downloadPrescriptionPDF(response.data);
+      await downloadPrescriptionPDF(response.data);
       toast.success("Prescription PDF downloaded successfully!");
     } catch (error) {
       console.error("Failed to download PDF:", error);

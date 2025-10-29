@@ -1,7 +1,8 @@
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+export const generatePrescriptionPDF = async (prescription) => {
+  // Dynamic import for client-side only
+  const { default: jsPDF } = await import("jspdf");
+  const { default: autoTable } = await import("jspdf-autotable");
 
-export const generatePrescriptionPDF = (prescription) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -112,7 +113,7 @@ export const generatePrescriptionPDF = (prescription) => {
     med.instructions || "N/A",
   ]);
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: yPosition,
     head: [["#", "Medicine", "Dosage", "Frequency", "Duration", "Instructions"]],
     body: medicationData,
@@ -233,13 +234,13 @@ export const generatePrescriptionPDF = (prescription) => {
   return doc;
 };
 
-export const downloadPrescriptionPDF = (prescription) => {
-  const doc = generatePrescriptionPDF(prescription);
+export const downloadPrescriptionPDF = async (prescription) => {
+  const doc = await generatePrescriptionPDF(prescription);
   const fileName = `Prescription_${prescription.prescriptionNumber}_${prescription.patientName.replace(/\s+/g, "_")}.pdf`;
   doc.save(fileName);
 };
 
-export const getPrescriptionPDFBlob = (prescription) => {
-  const doc = generatePrescriptionPDF(prescription);
+export const getPrescriptionPDFBlob = async (prescription) => {
+  const doc = await generatePrescriptionPDF(prescription);
   return doc.output("blob");
 };

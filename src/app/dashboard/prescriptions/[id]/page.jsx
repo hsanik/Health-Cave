@@ -51,9 +51,9 @@ const PrescriptionDetailPage = () => {
     window.print();
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     try {
-      downloadPrescriptionPDF(prescription);
+      await downloadPrescriptionPDF(prescription);
       toast.success("Prescription PDF downloaded successfully!");
     } catch (error) {
       console.error("Failed to generate PDF:", error);
