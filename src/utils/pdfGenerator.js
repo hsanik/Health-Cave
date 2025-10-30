@@ -10,22 +10,32 @@ export const generatePrescriptionPDF = async (prescription) => {
 
   // Header with border
   doc.setFillColor(67, 91, 161); // #435ba1
-  doc.rect(0, 0, pageWidth, 30, "F");
+  doc.rect(0, 0, pageWidth, 35, "F");
+
+  // HealthCave Logo/Brand
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("HealthCave", 15, 12);
+  
+  // Tagline
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.text("Your Health, Our Priority", 15, 17);
 
   // Title
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(22);
+  doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
   doc.text("MEDICAL PRESCRIPTION", pageWidth / 2, 15, { align: "center" });
 
   // Prescription Number
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.text(`Prescription #: ${prescription.prescriptionNumber}`, pageWidth / 2, 23, {
     align: "center",
   });
 
-  yPosition = 40;
+  yPosition = 45;
 
   // Reset text color
   doc.setTextColor(0, 0, 0);
@@ -64,7 +74,7 @@ export const generatePrescriptionPDF = async (prescription) => {
   yPosition += 5;
   doc.text(`Specialization: ${prescription.doctorSpecialization}`, 15, yPosition);
   yPosition += 5;
-  doc.text(`ID: ${prescription.doctorId}`, 15, yPosition);
+  doc.text(`License ID: ${prescription.prescriptionNumber.split('-')[0]}`, 15, yPosition);
   yPosition += 10;
 
   // Patient Information Section
@@ -196,7 +206,7 @@ export const generatePrescriptionPDF = async (prescription) => {
   }
 
   // Footer
-  const footerY = pageHeight - 40;
+  const footerY = pageHeight - 45;
 
   // Divider line
   doc.setDrawColor(67, 91, 161);
@@ -206,6 +216,7 @@ export const generatePrescriptionPDF = async (prescription) => {
   // Footer text
   doc.setFontSize(8);
   doc.setFont("helvetica", "italic");
+  doc.setTextColor(80, 80, 80);
   doc.text("This is a digitally generated prescription.", 15, footerY + 5);
   doc.text("For any queries, please contact the doctor.", 15, footerY + 10);
 
@@ -215,19 +226,33 @@ export const generatePrescriptionPDF = async (prescription) => {
 
   // Doctor's Signature
   doc.setFont("helvetica", "normal");
+  doc.setTextColor(0, 0, 0);
   doc.text("Doctor's Signature", pageWidth - 15, footerY + 5, { align: "right" });
   doc.setLineWidth(0.3);
   doc.line(pageWidth - 60, footerY + 10, pageWidth - 15, footerY + 10);
   doc.setFont("helvetica", "bold");
   doc.text(prescription.doctorName, pageWidth - 15, footerY + 15, { align: "right" });
 
-  // Verification note
+  // HealthCave Footer Branding
+  doc.setFillColor(67, 91, 161);
+  doc.rect(0, pageHeight - 20, pageWidth, 20, "F");
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("HealthCave", pageWidth / 2, pageHeight - 12, { align: "center" });
+  
   doc.setFontSize(7);
+  doc.setFont("helvetica", "normal");
+  doc.text("Digital Healthcare Solutions | www.healthcave.com", pageWidth / 2, pageHeight - 7, { align: "center" });
+  
+  // Verification note
+  doc.setFontSize(6);
   doc.setFont("helvetica", "italic");
   doc.text(
     `Generated on: ${new Date().toLocaleString()}`,
     pageWidth / 2,
-    pageHeight - 10,
+    pageHeight - 3,
     { align: "center" }
   );
 

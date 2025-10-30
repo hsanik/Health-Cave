@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { PageSpinner } from "@/components/ui/loading-spinner";
@@ -20,8 +21,17 @@ import Link from "next/link";
 const EditPrescriptionPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Protect this page - only doctors and admins can edit prescriptions
+  useEffect(() => {
+    if (session && session.user.role !== 'doctor' && session.user.role !== 'admin') {
+      toast.error("Access denied. Only doctors can edit prescriptions.");
+      router.push('/dashboard');
+    }
+  }, [session, router]);
 
   const [formData, setFormData] = useState({
     patientName: "",

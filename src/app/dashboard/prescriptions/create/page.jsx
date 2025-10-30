@@ -24,6 +24,14 @@ const CreatePrescriptionPage = () => {
   const [paidAppointments, setPaidAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
+  // Protect this page - only doctors can create prescriptions
+  React.useEffect(() => {
+    if (session && session.user.role !== 'doctor' && session.user.role !== 'admin') {
+      toast.error("Access denied. Only doctors can create prescriptions.");
+      router.push('/dashboard');
+    }
+  }, [session, router]);
+
   const [formData, setFormData] = useState({
     appointmentId: "",
     patientName: "",

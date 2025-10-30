@@ -26,6 +26,14 @@ const PrescriptionsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
+  // Protect this page - only doctors and admins can manage prescriptions
+  useEffect(() => {
+    if (session && session.user.role !== 'doctor' && session.user.role !== 'admin') {
+      toast.error("Access denied. Only doctors can manage prescriptions.");
+      window.location.href = '/dashboard';
+    }
+  }, [session]);
+
   useEffect(() => {
     if (session?.user?.email) {
       fetchPrescriptions();
