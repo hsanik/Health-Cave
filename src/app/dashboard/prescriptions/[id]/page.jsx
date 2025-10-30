@@ -207,7 +207,14 @@ const PrescriptionDetailPage = () => {
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-gray-900 font-medium">{prescription.doctorName}</p>
               <p className="text-gray-600">{prescription.doctorSpecialization}</p>
-              <p className="text-gray-600 text-sm mt-1">{prescription.doctorId}</p>
+              {canEdit && (
+                <p className="text-gray-600 text-sm mt-1">{prescription.doctorId}</p>
+              )}
+              {!canEdit && (
+                <p className="text-gray-600 text-sm mt-1">
+                  License ID: {prescription.prescriptionNumber.split('-')[0]}
+                </p>
+              )}
             </div>
           </div>
 
