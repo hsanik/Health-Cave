@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
 import { PageSpinner } from "@/components/ui/loading-spinner";
@@ -23,8 +24,12 @@ import { downloadPrescriptionPDF } from "@/utils/pdfGenerator";
 const PrescriptionDetailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const [prescription, setPrescription] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Check if user is doctor or admin
+  const canEdit = session?.user?.role === 'doctor' || session?.user?.role === 'admin';
 
   useEffect(() => {
     if (params.id) {
@@ -139,21 +144,25 @@ const PrescriptionDetailPage = () => {
               <p className="text-gray-600 mt-1">{prescription.prescriptionNumber}</p>
             </div>
             <div className="flex gap-2">
-              <Link
-                href={`/dashboard/prescriptions/${prescription._id}/edit`}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-                Edit
-              </Link>
-              <button
-                onClick={handleSendEmail}
-                className="flex items-center gap-2 px-4 py-2 border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition-colors"
-                title="Send prescription to patient email"
-              >
-                <Mail className="w-4 h-4" />
-                Send Email
-              </button>
+              {canEdit && (
+                <>
+                  <Link
+                    href={`/dashboard/prescriptions/${prescription._id}/edit`}
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </Link>
+                  <button
+                    onClick={handleSendEmail}
+                    className="flex items-center gap-2 px-4 py-2 border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition-colors"
+                    title="Send prescription to patient email"
+                  >
+                    <Mail className="w-4 h-4" />
+                    Send Email
+                  </button>
+                </>
+              )}
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

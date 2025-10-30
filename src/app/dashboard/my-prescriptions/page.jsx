@@ -34,9 +34,19 @@ const MyPrescriptionsPage = () => {
   const fetchPrescriptions = async () => {
     try {
       setLoading(true);
+      console.log("=== Fetching Prescriptions ===");
+      console.log("Session user:", session?.user);
+      console.log("User ID:", session?.user?.id);
+      console.log("User email:", session?.user?.email);
+      
+      // Use user ID if available, otherwise use email
+      const identifier = session.user.id || session.user.email;
+      console.log("Fetching with identifier:", identifier);
+      
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_SERVER_URI}/prescriptions/patient/${session.user.email}`
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/prescriptions/patient/${identifier}`
       );
+      console.log("Prescriptions received:", response.data.length);
       setPrescriptions(response.data);
       setFilteredPrescriptions(response.data);
     } catch (error) {

@@ -29,21 +29,58 @@ export default function PatientDashboard() {
   const [recentAppointments, setRecentAppointments] = useState([])
   const [loading, setLoading] = useState(true)
 
+  console.log("PatientDashboard rendered, session:", session);
+
   useEffect(() => {
-    fetchPatientData()
-  }, [])
+    console.log("useEffect triggered, session:", session);
+    if (session?.user) {
+      console.log("Calling fetchPatientData...");
+      fetchPatientData()
+    } else {
+      console.log("No session user available yet");
+    }
+  }, [session])
 
   const fetchPatientData = async () => {
     try {
       setLoading(true)
       
-      const appointmentsRes = await axios.get(
-        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
-      )
+      console.log("=== Patient Dashboard Debug ===");
+      console.log("Session user:", session?.user);
+      console.log("Session user ID:", session?.user?.id);
+      console.log("Session user email:", session?.user?.email);
       
-      const userAppointments = appointmentsRes.data.filter(
-        apt => apt.userId === session.user.id
-      )
+      // Try to fetch user-specific appointments first
+      let userAppointments = [];
+      
+      if (session?.user?.id) {
+        try {
+          const userAppointmentsRes = await axios.get(
+            `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/user/${session.user.id}`
+          );
+          userAppointments = userAppointmentsRes.data;
+          console.log("Fetched appointments by user ID:", userAppointments.length);
+        } catch (error) {
+          console.log("Failed to fetch by user ID, trying email filter:", error.message);
+        }
+      }
+      
+      // Fallback: fetch all and filter by email if user ID didn't work
+      if (userAppointments.length === 0) {
+        const appointmentsRes = await axios.get(
+          `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments`
+        );
+        
+        console.log("Total appointments fetched:", appointmentsRes.data.length);
+        
+        userAppointments = appointmentsRes.data.filter(
+          apt => apt.patientEmail === session?.user?.email || apt.userId === session?.user?.id
+        );
+        
+        console.log("Filtered appointments by email/ID:", userAppointments.length);
+      }
+      
+      console.log("Final user appointments:", userAppointments);
 
       const totalAppointments = userAppointments.length
       const upcomingAppointments = userAppointments.filter(apt => {
