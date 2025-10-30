@@ -21,8 +21,11 @@ const CreatePrescriptionPage = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [paidAppointments, setPaidAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const [formData, setFormData] = useState({
+    appointmentId: "",
     patientName: "",
     patientAge: "",
     patientGender: "Male",
@@ -43,6 +46,46 @@ const CreatePrescriptionPage = () => {
   });
 
   const [labTestInput, setLabTestInput] = useState("");
+
+  // Fetch paid appointments
+  React.useEffect(() => {
+    if (session?.user?.email) {
+      fetchPaidAppointments();
+    }
+  }, [session]);
+
+  const fetchPaidAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/doctor/${session.user.email}/paid`
+      );
+      setPaidAppointments(response.data);
+    } catch (error) {
+      console.error("Failed to fetch appointments:", error);
+    }
+  };
+
+  const handleAppointmentSelect = (e) => {
+    const appointmentId = e.target.value;
+    setFormData((prev) => ({ ...prev, appointmentId }));
+
+    if (appointmentId) {
+      const appointment = paidAppointments.find((apt) => apt._id === appointmentId);
+      if (appointment) {
+        setSelectedAppointment(appointment);
+        setFormData((prev) => ({
+          ...prev,
+          appointmentId: appointment._id,
+          patientName: appointment.patientName || "",
+          patientAge: appointment.patientAge || "",
+          patientGender: appointment.patientGender || "Male",
+          patientId: appointment.userId || appointment.patientEmail || "",
+        }));
+      }
+    } else {
+      setSelectedAppointment(null);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -166,6 +209,56 @@ const CreatePrescriptionPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Appointment Selection */}
+          <div className="bg-blue-50 border-l-4 border-[#435ba1] rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-[#435ba1]" />
+              Select Paid Appointment
+            </h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Choose from paid appointments (Required)
+              </label>
+              <select
+                value={formData.appointmentId}
+                onChange={handleAppointmentSelect}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
+              >
+                <option value="">-- Select a paid appointment --</option>
+                {paidAppointments.map((apt) => (
+                  <option key={apt._id} value={apt._id}>
+                    {apt.patientName} - {new Date(apt.appointmentDate).toLocaleDateString()} at{" "}
+                    {apt.appointmentTime} (${apt.amount || apt.consultationFee})
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedAppointment && (
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Patient:</strong> {selectedAppointment.patientName}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Date:</strong>{" "}
+                  {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Payment:</strong>{" "}
+                  <span className="text-green-600 font-semibold">✓ Paid</span>
+                </p>
+              </div>
+            )}
+            {paidAppointments.length === 0 && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  No paid appointments available. Patients must complete payment before you can issue
+                  prescriptions.
+                </p>
+              </div>
+            )}
+          </div>
+
           {/* Patient Information */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">

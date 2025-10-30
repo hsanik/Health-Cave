@@ -53,6 +53,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
       { icon: Users, label: "Patients", href: "/dashboard/patients" },
       { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
+      { icon: Pill, label: "All Prescriptions", href: "/dashboard/admin-prescriptions" },
       { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
       { icon: BarChart3, label: "System Analytics", href: "/dashboard/analytics" },
     ]
