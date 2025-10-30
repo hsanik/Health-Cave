@@ -52,16 +52,23 @@ const CreatePrescriptionPage = () => {
     if (session?.user?.email) {
       fetchPaidAppointments();
     }
-  }, [session]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.email]);
 
   const fetchPaidAppointments = async () => {
     try {
+      console.log("Fetching appointments for doctor:", session.user.email);
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVER_URI}/appointments/doctor/${session.user.email}/paid`
       );
+      console.log("Appointments received:", response.data);
       setPaidAppointments(response.data);
+      if (response.data.length === 0) {
+        toast("No appointments found. Create an appointment first.", { icon: "ℹ️" });
+      }
     } catch (error) {
       console.error("Failed to fetch appointments:", error);
+      toast.error("Failed to load appointments");
     }
   };
 
@@ -217,15 +224,14 @@ const CreatePrescriptionPage = () => {
             </h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Choose from paid appointments (Required)
+                Choose from paid appointments (Recommended)
               </label>
               <select
                 value={formData.appointmentId}
                 onChange={handleAppointmentSelect}
-                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
               >
-                <option value="">-- Select a paid appointment --</option>
+                <option value="">-- Select a paid appointment or enter manually --</option>
                 {paidAppointments.map((apt) => (
                   <option key={apt._id} value={apt._id}>
                     {apt.patientName} - {new Date(apt.appointmentDate).toLocaleDateString()} at{" "}
@@ -233,6 +239,9 @@ const CreatePrescriptionPage = () => {
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Select a paid appointment to auto-fill patient details, or leave blank to enter manually
+              </p>
             </div>
             {selectedAppointment && (
               <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -276,7 +285,10 @@ const CreatePrescriptionPage = () => {
                   value={formData.patientName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
+                  readOnly={!!selectedAppointment}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent ${
+                    selectedAppointment ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
                   placeholder="Enter patient name"
                 />
               </div>
@@ -289,7 +301,10 @@ const CreatePrescriptionPage = () => {
                   name="patientId"
                   value={formData.patientId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
+                  readOnly={!!selectedAppointment}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent ${
+                    selectedAppointment ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
                   placeholder="Enter patient email or ID"
                 />
               </div>
@@ -305,7 +320,10 @@ const CreatePrescriptionPage = () => {
                   required
                   min="0"
                   max="150"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
+                  readOnly={!!selectedAppointment}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent ${
+                    selectedAppointment ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
                   placeholder="Enter age"
                 />
               </div>
@@ -318,7 +336,10 @@ const CreatePrescriptionPage = () => {
                   value={formData.patientGender}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent"
+                  disabled={!!selectedAppointment}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#435ba1] focus:border-transparent ${
+                    selectedAppointment ? "bg-gray-100 cursor-not-allowed" : ""
+                  }`}
                 >
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
