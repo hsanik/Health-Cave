@@ -54,6 +54,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: UserSearch, label: 'All Users', href: '/dashboard/allUsers' },
       { icon: Users, label: "Patients", href: "/dashboard/patients" },
       { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
+      { icon: Pill, label: "All Prescriptions", href: "/dashboard/admin-prescriptions" },
       { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
       { icon: BookMinus, label: "Add Blog", href: "/dashboard/addBlog" },
       { icon: BookOpenText, label: "All Blogs", href: "/dashboard/allBlogs" },
@@ -64,6 +65,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
       { icon: Clock, label: "Availability", href: "/dashboard/availability" },
       { icon: Users, label: "My Patients", href: "/dashboard/patients" },
+      { icon: Pill, label: "E-Prescriptions", href: "/dashboard/prescriptions" },
       { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
       { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
       { icon: BarChart3, label: "Practice Analytics", href: "/dashboard/analytics" },
@@ -71,6 +73,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
 
     const userItems = [
       { icon: Calendar, label: "My Appointments", href: "/dashboard/appointments" },
+      { icon: Pill, label: "My Prescriptions", href: "/dashboard/my-prescriptions" },
       { icon: FileText, label: "Medical Records", href: "/dashboard/records" },
       { icon: MessageSquare, label: "Messages", href: "/dashboard/messages" },
     ]
