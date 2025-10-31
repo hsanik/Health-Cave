@@ -16,6 +16,7 @@ const mainLinks = [
   { href: '/about', label: 'About' },
   { href: '/music', label: 'Music Therapy' },
   { href: '/contact', label: 'Contact' },
+  { href: '/blog', label: 'Blog' },
   { href: '/doctorApply', label: 'Become A Doctor', roleRestricted: true }, // Only show for users
 ]
 

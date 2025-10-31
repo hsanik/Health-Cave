@@ -21,7 +21,9 @@ import {
   House,
   UserSearch,
   CreditCard,
-  UserPlus
+  UserPlus,
+  BookMinus,
+  BookOpenText
 } from 'lucide-react'
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
@@ -53,6 +55,8 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, onBackToHome }) {
       { icon: Users, label: "Patients", href: "/dashboard/patients" },
       { icon: Calendar, label: "All Appointments", href: "/dashboard/appointments" },
       { icon: CreditCard, label: "Payments", href: "/dashboard/payments" },
+      { icon: BookMinus, label: "Add Blog", href: "/dashboard/addBlog" },
+      { icon: BookOpenText, label: "All Blogs", href: "/dashboard/allBlogs" },
       { icon: BarChart3, label: "System Analytics", href: "/dashboard/analytics" },
     ]
 
