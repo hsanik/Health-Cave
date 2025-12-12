@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -118,5 +119,49 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+
+/* Print Styles for Prescriptions */
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* Ensure prescription content fits on page */
+  .prescription-content {
+    page-break-inside: avoid;
+  }
+
+  /* Hide navigation, headers, and other UI elements */
+  nav,
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Optimize table printing */
+  table {
+    page-break-inside: avoid;
+  }
+
+  tr {
+    page-break-inside: avoid;
   }
 }

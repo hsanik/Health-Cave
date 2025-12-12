@@ -1,56 +1,115 @@
 import React from 'react'
 import Image from "next/image";
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Instagram, Mail, Phone } from "lucide-react";
+import { Facebook, Linkedin, Instagram, Mail, Phone, Clock, AlertCircle, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// X (Twitter) Icon Component
+const XIcon = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    className={className}
+    fill="currentColor"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/doctors", label: "Doctors" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
-  { href: "/dashboard", label: "Dashboard" },
+]
+
+const services = [
+  { href: "/doctors", label: "Find a Doctor" },
+  { href: "/music", label: "Music Therapy" },
+  { href: "/home/bmi", label: "BMI Calculator" },
+  { href: "/chatbot", label: "Health Assistant" },
+]
+
+const resources = [
+  { href: "/home", label: "Health Tips" },
+  { href: "/about", label: "Our Mission" },
+  { href: "/contact#faq", label: "FAQs" },
+  { href: "/doctors", label: "Specialties" },
+]
+
+const legal = [
+  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/terms-of-service", label: "Terms of Service" },
+  { href: "/hipaa-compliance", label: "HIPAA Compliance" },
+  { href: "/disclaimer", label: "Disclaimer" },
 ]
 
 export default function Footer() {
   return (
-    <footer className="border-t">
-      <div className="mx-auto w-11/12 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] md:items-start gap-8 md:gap-12">
-          {/* Left */}
-          <div className="space-y-3">
+    <footer className="border-t bg-background">
+      {/* Emergency Banner */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 border-b border-blue-200 dark:border-blue-900">
+        <div className="mx-auto w-11/12 py-3">
+          <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+            <AlertCircle className="size-4" />
+            <p className="font-medium">
+              Medical Emergency? Call 911 immediately. This platform is not for emergency services.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto w-11/12 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Company Info */}
+          <div className="space-y-4 lg:col-span-2">
             <Link href="/" className="inline-flex">
               <Image
                 src="/images/logo_light.png"
                 alt="HealthCave"
-                width={132}
+                width={172}
                 height={36}
                 className="block dark:hidden object-contain"
-                style={{ width: 'auto' }}
               />
               <Image
                 src="/images/logo_dark.png"
                 alt="HealthCave"
-                width={132}
+                width={172}
                 height={36}
                 className="hidden dark:block object-contain"
-                style={{ width: 'auto' }}
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm">
               Your trusted online medical platform — connect with doctors, get
               health advice, and book appointments from home.
             </p>
+            
+            {/* Working Hours */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Clock className="size-4" />
+                Support Hours
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>Monday - Friday: 8:00 AM - 8:00 PM</p>
+                <p>Saturday: 9:00 AM - 5:00 PM</p>
+                <p>Sunday: Closed</p>
+              </div>
+            </div>
           </div>
 
-          {/* Middle */}
-          <nav className="w-full max-w-[220px] md:justify-self-center">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
-              Quick Links
+          {/* Services */}
+          <nav className="space-y-3">
+            <p className="text-sm font-semibold uppercase tracking-wide">
+              Services
             </p>
             <ul className="flex flex-col gap-2 text-sm">
-              {navLinks.map((link) => (
+              {services.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="hover:underline">
+                  <Link 
+                    href={link.href} 
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -58,45 +117,96 @@ export default function Footer() {
             </ul>
           </nav>
 
-          {/* Right */}
-          <div className="md:justify-self-end">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
-              Get in touch
+          {/* Resources */}
+          <nav className="space-y-3">
+            <p className="text-sm font-semibold uppercase tracking-wide">
+              Resources
             </p>
-            <div className="space-y-2 text-sm">
-              <a
-                href="mailto:support@healthcave.com"
-                className="inline-flex items-center gap-2 hover:underline"
-              >
-                <Mail className="size-4" /> support@healthcave.com
-              </a>
-              <br />
-              <a
-                href="tel:+10000000000"
-                className="inline-flex items-center gap-2 hover:underline"
-              >
-                <Phone className="size-4" /> +1 (000) 000-0000
-              </a>
+            <ul className="flex flex-col gap-2 text-sm">
+              {resources.map((link) => (
+                <li key={link.href}>
+                  <Link 
+                    href={link.href} 
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Contact & Legal */}
+          <div className="space-y-6">
+            {/* Contact */}
+            <div className="space-y-3">
+              <p className="text-sm font-semibold uppercase tracking-wide">
+                Get in Touch
+              </p>
+              <div className="space-y-2 text-sm">
+                <a
+                  href="mailto:support@healthcave.com"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Mail className="size-4 flex-shrink-0" /> 
+                  <span className="break-all">support@healthcave.com</span>
+                </a>
+                <a
+                  href="tel:+10000000000"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Phone className="size-4 flex-shrink-0" /> +1 (000) 000-0000
+                </a>
+              </div>
             </div>
-            <div className="mt-4 flex items-center gap-2">
+
+            {/* Legal */}
+            <div className="space-y-3">
+              <p className="text-sm font-semibold uppercase tracking-wide">
+                Legal
+              </p>
+              <ul className="flex flex-col gap-2 text-sm">
+                {legal.map((link) => (
+                  <li key={link.href}>
+                    <Link 
+                      href={link.href} 
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Social Media */}
+        <div className="mt-10 pt-8 border-t">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Heart className="size-4 text-red-500 fill-red-500" />
+              <span>Caring for your health, anytime, anywhere</span>
+            </div>
+            <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" asChild>
                 <a
-                  href="https://github.com/"
+                  href="https://www.facebook.com/"
                   target="_blank"
                   rel="noreferrer"
-                  aria-label="GitHub"
+                  aria-label="Facebook"
                 >
-                  <Github className="size-4" />
+                  <Facebook className="size-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <a
-                  href="https://twitter.com/"
+                  href="https://x.com/"
                   target="_blank"
                   rel="noreferrer"
-                  aria-label="Twitter"
+                  aria-label="X (formerly Twitter)"
                 >
-                  <Twitter className="size-4" />
+                  <XIcon className="size-4" />
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
@@ -123,9 +233,11 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className='pb-4'>
+
+      {/* Copyright */}
+      <div className='py-4 border-t'>
         <p className="text-xs text-muted-foreground text-center">
-          © {new Date().getFullYear()} HealthCave. All rights reserved.
+          © {new Date().getFullYear()} HealthCave. All rights reserved. | Designed with care for your health
         </p>
       </div>
     </footer>
